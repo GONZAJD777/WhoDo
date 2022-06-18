@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+
+    >
+
+    <item
+        android:id="@+id/navigation_login_data_input"
+        android:title="@string/title_registration_data" />
+
+    <item
+        android:id="@+id/navigation_login_mail_input"
+        android:title="@string/title_login" />
+
+</menu>

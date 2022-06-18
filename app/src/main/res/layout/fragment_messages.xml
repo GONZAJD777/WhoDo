@@ -1,0 +1,74 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_scrollFlags="scroll">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/messages_appbar"
+        app:elevation="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/messages_collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:expandedTitleMarginStart="@dimen/activity_vertical_margin"
+            app:layout_scrollFlags="scroll"
+            app:statusBarScrim="@color/design_default_color_background">
+
+            <TextView
+                android:id="@+id/messages_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/general_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/general_horizontal_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:text="Mensajes"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="20sp" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/messages_TabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:tabGravity="start"
+            app:tabIndicatorColor="@color/cardview_shadow_start_color"
+            app:tabIndicatorFullWidth="false"
+            app:tabMode="scrollable"
+            app:tabPaddingEnd="@dimen/general_horizontal_margin"
+            app:tabPaddingStart="@dimen/general_horizontal_margin"
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <View
+            android:id="@+id/messages_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/Messages_ViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+
+    <!-- Your scrollable content here -->
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

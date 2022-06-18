@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/simpleTextInputLayout"
+        style="@style/CustomShapeAppearanceFrameLayout"
+        android:layout_width="367dp"
+        android:layout_height="45dp"
+        android:gravity="top|center_vertical"
+        app:boxBackgroundMode="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintVertical_bias="0.072">
+
+        <EditText
+            android:id="@+id/simpleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:gravity="fill"
+            android:hint="Correo Electronico"
+            android:padding="0dp"
+            android:singleLine="true"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="177dp"
+        android:layout_marginTop="52dp"
+        app:layout_constraintEnd_toEndOf="@+id/simpleTextInputLayout"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/simpleTextInputLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/whodo_logo"
+        android:contentDescription="TODO" />
+
+
+    <Button
+        android:id="@+id/button9"
+        android:layout_width="367dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="12dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Continuar"
+        android:textSize="16sp"
+        app:cornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/simpleTextInputLayout"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/simpleTextInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/simpleTextInputLayout"
+        tools:ignore="TouchTargetSizeCheck" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/button9"
+        app:layout_constraintTop_toBottomOf="@+id/button9"
+        app:layout_constraintVertical_bias="0.05">
+
+        <Button
+            android:id="@+id/button_log_with_google"
+            style="@android:style/Widget.Material.Button.Borderless"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="?attr/selectableItemBackground"
+            android:elevation="1dp"
+            tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:id="@+id/imageView_google"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/rounded_corner_16dp"
+            android:padding="10dp"
+            app:srcCompat="@drawable/buscar"
+            tools:ignore="ImageContrastCheck" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView2"
+        app:layout_constraintEnd_toEndOf="@+id/button9"
+        app:layout_constraintStart_toEndOf="@+id/cardView2"
+        app:layout_constraintTop_toTopOf="@+id/cardView2">
+
+
+        <Button
+            android:id="@+id/button_log_with_facebook"
+            style="@android:style/Widget.Material.Button.Borderless"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="?attr/selectableItemBackground"
+            android:elevation="1dp"
+            tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:id="@+id/imageView_facebook"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="@drawable/rounded_corner_16dp"
+            android:padding="10dp"
+            app:srcCompat="@drawable/facebook" />
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

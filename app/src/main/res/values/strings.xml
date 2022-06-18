@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">WhoDo</string>
+    <string name="title_hire">Contratar</string>
+    <string name="title_favorites">Favoritos</string>
+    <string name="title_messages">Mensajes</string>
+    <string name="title_activity">Actividad</string>
+    <string name="title_profile">Perfil</string>
+
+    <string name="title_registration_data">Registrar Usuario</string>
+    <string name="title_login">Login</string>
+
+</resources>

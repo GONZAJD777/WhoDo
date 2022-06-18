@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/textView_Label"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginStart="@dimen/general_horizontal_margin"
+        android:layout_marginTop="16dp"
+        android:text="Recordatorio"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_Notification"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/general_horizontal_margin"
+        android:lines="4"
+        android:maxLength="100"
+        android:maxLines="4"
+        android:text="Tienes una cita con Ricardo Fleitas PLOMERO/ELECTRICISTA el dia y hora indicada."
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView_Hour"
+        app:layout_constraintEnd_toStartOf="@+id/imageView_ItemNotification"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textView_Label"
+        app:layout_constraintTop_toBottomOf="@+id/textView_Label"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView_DayDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="23"
+        android:textColor="#FF1717"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_ItemNotification"
+        app:layout_constraintEnd_toEndOf="@+id/imageView_ItemNotification"
+        app:layout_constraintStart_toStartOf="@+id/imageView_ItemNotification"
+        app:layout_constraintTop_toTopOf="@+id/imageView_ItemNotification" />
+
+    <TextView
+        android:id="@+id/textView_DayMonthYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Nov 2021"
+        android:textColor="#000000"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView_ItemNotification"
+        app:layout_constraintHorizontal_bias="0.294"
+        app:layout_constraintStart_toStartOf="@+id/imageView_ItemNotification"
+        app:layout_constraintTop_toBottomOf="@+id/textView_DayDate" />
+
+    <TextView
+        android:id="@+id/textView_Hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="17:30"
+        android:textColor="#FF7700"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView_ItemNotification"
+        app:layout_constraintStart_toStartOf="@+id/imageView_ItemNotification"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_ItemNotification" />
+
+    <Button
+        android:id="@+id/button_ItemNotification"
+        style="@android:style/Widget.Material.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/imageView_ItemNotification"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/general_horizontal_margin"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/button_ItemNotification"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/calendar_light" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

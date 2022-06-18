@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:isScrollContainer="true"
+    android:verticalScrollbarPosition="right"
+    app:layout_anchorGravity="center_horizontal"
+    tools:context=".ui.profile.ProfileFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            android:isScrollContainer="true"
+            android:nestedScrollingEnabled="true"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/general_horizontal_margin"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="100dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/imageView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@android:drawable/sym_def_app_icon" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/text_profile2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mostar el perfil"
+                    android:textAlignment="center"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/text_profile1"
+                    app:layout_constraintTop_toBottomOf="@+id/text_profile1" />
+
+                <TextView
+                    android:id="@+id/text_profile1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="16dp"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@+id/text_profile2"
+                    app:layout_constraintStart_toEndOf="@+id/cardView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Gonzalo" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/text_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/general_horizontal_margin"
+                android:layout_marginTop="18dp"
+                android:text="CONFIGURACION DE LA CUENTA"
+                android:textSize="12sp" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <TextView
+                android:id="@+id/text_profile3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/general_horizontal_margin"
+                android:layout_marginTop="18dp"
+                android:text="PRESTADOR DE SERVICIOS"
+                android:textSize="12sp" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <TextView
+                android:id="@+id/text_profile4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/general_horizontal_margin"
+                android:layout_marginTop="18dp"
+                android:text="ASISTENCIA"
+                android:textSize="12sp" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <TextView
+                android:id="@+id/text_profile5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/general_horizontal_margin"
+                android:layout_marginTop="18dp"
+                android:text="LEGAL"
+                android:textSize="12sp" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <include
+                layout="@layout/item_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTintMode="add"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:persistentDrawingCache="animation" />
+
+            <TextView
+                android:id="@+id/text_profile7"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="VERSION 1.0.0"
+                android:textAlignment="center"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
