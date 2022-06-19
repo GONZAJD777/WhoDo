@@ -7,11 +7,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.whodo.ui.ViewPagerFragment;
 
 
-public class ActivityFrag_ViewPagerAdapter extends FragmentStateAdapter {
+public class FavoritesFrag_ViewPagerAdapter extends FragmentStateAdapter {
 
-    private final String[] Titles = new String[]{"Pendientes","Finalizadas","Canceladas"};
+    private final String[] Titles = new String[]{"Favoritos"};
 
-    public ActivityFrag_ViewPagerAdapter(@NonNull Fragment fragment) {
+    public FavoritesFrag_ViewPagerAdapter(@NonNull Fragment fragment) {
         super(fragment);
     }
 
@@ -21,22 +21,12 @@ public class ActivityFrag_ViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position)
-        {
-            case 0: return new ViewPagerFragment(2);
-            case 1: return new ViewPagerFragment(3);
-            case 2: return new ViewPagerFragment(4);
-
-
-            //adapter.addFrag(new ViewPagerFragment(1), "");
+        return new ViewPagerFragment(1);
 
             //adapter.addFrag(new ViewPagerFragment(5), "Messages");
             //adapter.addFrag(new ViewPagerFragment(6), "Notifications");
+     }
 
-        }
-
-        return new ViewPagerFragment(2);
-    }
     //cuenta la cantidad de items en el array Titles
     @Override
     public final int getItemCount() {

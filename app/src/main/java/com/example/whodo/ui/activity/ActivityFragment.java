@@ -14,6 +14,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.whodo.R;
 import com.example.whodo.adapters.ActivityFrag_ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 
 public class ActivityFragment extends Fragment {
@@ -37,36 +38,11 @@ public class ActivityFragment extends Fragment {
 
 
         Activity_ViewPager= root.findViewById(R.id.activity_ViewPager);
-        //setupViewPager(Activity_ViewPager);
-
         Activity_TabLayout= root.findViewById(R.id.activity_TabLayout);
-        //Activity_TabLayout.setupWithViewPager(Activity_ViewPager);
-
         Activity_ViewPagerAdapterFrag = new ActivityFrag_ViewPagerAdapter(this);
-
         Activity_ViewPager.setAdapter(Activity_ViewPagerAdapterFrag);
+        new TabLayoutMediator(Activity_TabLayout,Activity_ViewPager,((tab, position) -> tab.setText(Titles[position]))).attach();
 
-
-        //new TabLayoutMediator(Activity_TabLayout,Activity_ViewPager,((tab, position) -> tab.setText(adapter.getFragList[position]))).attach();
-
-
-
-        /*Activity_TabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-
-                Activity_ViewPager.setCurrentItem(tab.getPosition());
-                switch (tab.getPosition()) {
-                    case 0:
-                        // TODO
-                        break;
-                }
-            }
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });*/
 
         return root;
     }
