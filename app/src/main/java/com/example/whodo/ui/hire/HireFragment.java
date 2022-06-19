@@ -51,19 +51,12 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     private LinearLayout bottomSheet;
 
 
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
+@Override
+    public View onCreateView( LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        hireViewModel = new ViewModelProvider(this).get(HireViewModel.class);
+        //hireViewModel = new ViewModelProvider(this).get(HireViewModel.class);
         View root = inflater.inflate(R.layout.fragment_hire, container, false);
 
-        Button Btn = root.findViewById(R.id.button_ItemHire);
-
-        Btn.setOnClickListener(v -> {
-            //Intent intent = new Intent(v.getContext(),LoginActivity.class);
-           // v.getContext().startActivity(intent);
-            Log.i("botton1", "Presionaste el boton de la cinta");
-        });
 
         // Gets the MapView from the XML layout and creates it
         mapView = root.findViewById(R.id.mapView);
@@ -104,7 +97,13 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             }
 
         });
+        Button Btn = root.findViewById(R.id.button_ItemHire);
 
+     Btn.setOnClickListener(v -> {
+        //Intent intent = new Intent(v.getContext(),LoginActivity.class);
+        // v.getContext().startActivity(intent);
+        //Log.i("botton1", "Presionaste el boton de la cinta" )
+     });
 
         return root;
     }
@@ -144,11 +143,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     public void addMarkers(GoogleMap googleMap){
         //float zoomLevel = 13;      // el nivel del zoom con el cual inicia el mapa
         //-31.4226, -64.1801
-        LatLng Marker = new LatLng(-31.4226,-64.1801);  // las coordenadas (latitud, longitud) que lo agregas en position
+        //LatLng Marker = new LatLng(-31.4226,-64.1801);  // las coordenadas (latitud, longitud) que lo agregas en position
           // los marcadores (posición, título, ícono):
-        googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker()));
-
+        //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon()));
 
         //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(farma1, zoomLevel));  // para mostrar el mapa con zoom, en este caso nivel 13
     }

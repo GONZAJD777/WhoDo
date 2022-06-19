@@ -1,5 +1,6 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
@@ -48,7 +49,8 @@
             app:tabMode="scrollable"
             app:tabPaddingEnd="@dimen/general_horizontal_margin"
             app:tabPaddingStart="@dimen/general_horizontal_margin"
-            app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"/>
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <View
             android:id="@+id/messages_divider"
@@ -62,7 +64,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/Messages_ViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

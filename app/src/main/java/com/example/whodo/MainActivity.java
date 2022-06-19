@@ -2,22 +2,37 @@ package com.example.whodo;
 
 import android.os.Bundle;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.whodo.adapters.Main_ViewPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.viewpager2.widget.ViewPager2;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String[] Titles = new String[]{"Contratar","Favoritos","Actividad","Mensajes","Perfil"};
+    ViewPager2 ViewPager2;
+    TabLayout TabLayout;
+    Main_ViewPagerAdapter ViewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.hide();
+
+        ViewPager2=findViewById(R.id.Main_view_pager);
+        TabLayout=findViewById(R.id.Main_TabLayout);
+        ViewPagerAdapter = new Main_ViewPagerAdapter(this);
+
+        ViewPager2.setAdapter(ViewPagerAdapter);
+
+        new TabLayoutMediator(TabLayout,ViewPager2,((tab, position) -> tab.setText(Titles[position]))).attach();
 
         //FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
         //DatabaseReference mDatabaseReference = mDatabase.getReference();
@@ -27,16 +42,15 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        BottomNavigationView navView = findViewById(R.id.nav_view_main);
+        /*BottomNavigationView navView = findViewById(R.id.nav_view_main);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_hire, R.id.navigation_favorites,R.id.navigation_activity, R.id.navigation_messages, R.id.navigation_profile).build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.hide();
+        NavigationUI.setupWithNavController(navView, navController);*/
+
+
 
 
     }
