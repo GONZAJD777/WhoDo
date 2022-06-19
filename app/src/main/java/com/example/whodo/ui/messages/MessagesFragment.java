@@ -12,7 +12,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.whodo.R;
+import com.example.whodo.adapters.ActivityFrag_ViewPagerAdapter;
+import com.example.whodo.adapters.MessagesFrag_ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class MessagesFragment extends Fragment {
 
@@ -21,6 +24,8 @@ public class MessagesFragment extends Fragment {
     private TabLayout Messages_TabLayout;
     private ViewPager2 Messages_ViewPager;
     private static final String TAG = "TAG-1";
+    private MessagesFrag_ViewPagerAdapter Messages_ViewPagerAdapterFrag;
+    private final String[] Titles = new String[]{"Messages","Notifications"};
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -31,26 +36,11 @@ public class MessagesFragment extends Fragment {
         textView1.setText(messagesViewModel.getText());
 
         Messages_ViewPager= root.findViewById(R.id.Messages_ViewPager);
-        //setupViewPager(Messages_ViewPager);
-
         Messages_TabLayout= root.findViewById(R.id.messages_TabLayout);
-        //Messages_TabLayout.setupWithViewPager(Messages_ViewPager);
-        Messages_TabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
 
-                Messages_ViewPager.setCurrentItem(tab.getPosition());
-                switch (tab.getPosition()) {
-                    case 0:
-                        // TODO
-                        break;
-                }
-            }
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
+        Messages_ViewPagerAdapterFrag = new MessagesFrag_ViewPagerAdapter(this);
+        Messages_ViewPager.setAdapter(Messages_ViewPagerAdapterFrag);
+        new TabLayoutMediator(Messages_TabLayout,Messages_ViewPager,((tab, position) -> tab.setText(Titles[position]))).attach();
 
 
         return root;

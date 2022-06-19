@@ -27,10 +27,12 @@ public class MainActivity extends AppCompatActivity {
         actionBar.hide();
 
         ViewPager2=findViewById(R.id.Main_view_pager);
+        ViewPager2.setUserInputEnabled(false);
         TabLayout=findViewById(R.id.Main_TabLayout);
         ViewPagerAdapter = new Main_ViewPagerAdapter(this);
-
         ViewPager2.setAdapter(ViewPagerAdapter);
+
+
 
         new TabLayoutMediator(TabLayout,ViewPager2,((tab, position) -> tab.setText(Titles[position]))).attach();
 
