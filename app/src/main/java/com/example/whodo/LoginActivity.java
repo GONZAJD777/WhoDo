@@ -1,6 +1,7 @@
 package com.example.whodo;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,11 +10,20 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.whodo.adapters.Login_ViewPagerAdapter;
+import com.example.whodo.adapters.Main_ViewPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private final String[] Titles = new String[2];
+    private androidx.viewpager2.widget.ViewPager2 ViewPager2;
+    private com.google.android.material.tabs.TabLayout TabLayout;
+    private Login_ViewPagerAdapter Login_ViewPagerAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,17 +34,17 @@ public class LoginActivity extends AppCompatActivity {
         //mDatabaseReference = mDatabase.getReference (). child ("Users").child("1");
         //mDatabaseReference.setValue (user);
 
-
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        BottomNavigationView navView = findViewById(R.id.nav_view_login);
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_login_mail_input, R.id.navigation_login_data_input).build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment1);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.hide();
+
+        ViewPager2=findViewById(R.id.Login_view_pager);
+        TabLayout=findViewById(R.id.Login_TabLayout);
+
+        Login_ViewPagerAdapter = new Login_ViewPagerAdapter(this);
+        ViewPager2.setAdapter(Login_ViewPagerAdapter);
+        new TabLayoutMediator(TabLayout,ViewPager2,((tab, position) -> tab.setText(Titles[position]))).attach();
+
 
 
 

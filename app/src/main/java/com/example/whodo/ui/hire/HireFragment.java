@@ -3,10 +3,6 @@ package com.example.whodo.ui.hire;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,21 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-
 import com.example.whodo.LoginActivity;
 import com.example.whodo.R;
-import com.google.android.gms.common.internal.Constants;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -36,11 +22,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Objects;
 
 public class HireFragment extends Fragment implements OnMapReadyCallback {
     private HireViewModel hireViewModel;
@@ -100,9 +82,9 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         Button Btn = root.findViewById(R.id.button_ItemHire);
 
      Btn.setOnClickListener(v -> {
-        //Intent intent = new Intent(v.getContext(),LoginActivity.class);
-        // v.getContext().startActivity(intent);
-        //Log.i("botton1", "Presionaste el boton de la cinta" )
+        Intent intent = new Intent(v.getContext(),LoginActivity.class);
+        v.getContext().startActivity(intent);
+        Log.i("botton1", "Presionaste el boton de la cinta" );
      });
 
         return root;
@@ -112,9 +94,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
 
 
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+
         if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -123,10 +107,17 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            //
+
             return;
+
+
         }
 
+        //************************************************************************************//
+        //Hide bottomsheet on map click
         googleMap.setOnMapClickListener(
+
                 arg0 -> {
                     Log.i("onMapClick", "Horray!");
 
@@ -134,22 +125,33 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 });
-
+        //************************************************************************************//
 
         addMarkers(googleMap);
         googleMap.setMyLocationEnabled(true);
+
     }
 
     public void addMarkers(GoogleMap googleMap){
         //float zoomLevel = 13;      // el nivel del zoom con el cual inicia el mapa
+        //googleMap.setMinZoomPreference(zoomLevel);
         //-31.4226, -64.1801
-        //LatLng Marker = new LatLng(-31.4226,-64.1801);  // las coordenadas (latitud, longitud) que lo agregas en position
+        LatLng Marker = new LatLng(-31.4226,-64.1801);  // las coordenadas (latitud, longitud) que lo agregas en position
           // los marcadores (posición, título, ícono):
-        //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker()));
-        //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon()));
 
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(farma1, zoomLevel));  // para mostrar el mapa con zoom, en este caso nivel 13
+        LatLng Marker1 = new LatLng(-31.4226,-64.3501);  // las coordenadas (latitud, longitud) que lo agregas en position
+        // los marcadores (posición, título, ícono):
+        googleMap.addMarker(new MarkerOptions().position(Marker1).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker()));
+
+        LatLng Marker2 = new LatLng(-32.4226,-64.1801);  // las coordenadas (latitud, longitud) que lo agregas en position
+        // los marcadores (posición, título, ícono):
+        googleMap.addMarker(new MarkerOptions().position(Marker2).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+        //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker()));
+
+       // googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Marker, zoomLevel));  // para mostrar el mapa con zoom, en este caso nivel 13
     }
 
         

@@ -68,9 +68,9 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:paddingTop="10dp"
-        app:behavior_peekHeight="30dp"
         app:behavior_fitToContents="false"
         app:behavior_halfExpandedRatio="0.6"
+        app:behavior_peekHeight="15dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <View
