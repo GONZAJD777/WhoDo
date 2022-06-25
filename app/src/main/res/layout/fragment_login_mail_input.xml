@@ -7,23 +7,21 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/simpleTextInputLayout"
+        android:id="@+id/MailSimpleTextInputLayout"
         style="@style/CustomShapeAppearanceFrameLayout"
         android:layout_width="367dp"
         android:layout_height="45dp"
         android:gravity="top|center_vertical"
         app:boxBackgroundMode="none"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.072">
+        app:layout_constraintTop_toBottomOf="@+id/imageView2">
 
         <EditText
-            android:id="@+id/simpleEditText"
+            android:id="@+id/MailSimpleEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:autofillHints=""
             android:background="@android:color/transparent"
             android:gravity="fill"
             android:hint="Correo Electronico"
@@ -32,14 +30,44 @@
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ClaveSimpleTextInputLayout"
+        style="@style/CustomShapeAppearanceFrameLayout"
+        android:layout_width="367dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:animateLayoutChanges="false"
+        android:gravity="fill_horizontal"
+        android:hapticFeedbackEnabled="false"
+        android:layoutDirection="ltr"
+        app:boxBackgroundMode="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MailSimpleTextInputLayout">
+
+        <EditText
+            android:id="@+id/ClaveSimpleEditText"
+            android:layout_width="314dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@android:color/transparent"
+            android:hint="Clave"
+            android:inputType="none|textPassword"
+            android:padding="0dp"
+            android:singleLine="true"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="0dp"
         android:layout_height="177dp"
         android:layout_marginTop="52dp"
-        app:layout_constraintEnd_toEndOf="@+id/simpleTextInputLayout"
+        app:layout_constraintEnd_toEndOf="@+id/MailSimpleTextInputLayout"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/simpleTextInputLayout"
+        app:layout_constraintStart_toStartOf="@+id/MailSimpleTextInputLayout"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/whodo_logo"
         android:contentDescription="TODO" />
@@ -48,29 +76,59 @@
     <Button
         android:id="@+id/button9"
         android:layout_width="367dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="8dp"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:text="Continuar"
         android:textSize="16sp"
         app:cornerRadius="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/simpleTextInputLayout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/simpleTextInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/simpleTextInputLayout"
+        app:layout_constraintEnd_toEndOf="@+id/MailSimpleTextInputLayout"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/MailSimpleTextInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/ClaveSimpleTextInputLayout"
         tools:ignore="TouchTargetSizeCheck" />
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView2"
+        app:layout_constraintEnd_toEndOf="@+id/button9"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/cardView2"
+        app:layout_constraintTop_toTopOf="@+id/cardView2"
+        app:layout_constraintVertical_bias="0.0">
+
+
+        <Button
+            android:id="@+id/button_log_with_facebook"
+            style="@android:style/Widget.Material.Button.Borderless"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="?attr/selectableItemBackground"
+            android:elevation="1dp"
+            tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:id="@+id/imageView_facebook"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="@drawable/rounded_corner_16dp"
+            android:padding="10dp"
+            app:srcCompat="@drawable/facebook" />
+    </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:cardCornerRadius="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/button9"
-        app:layout_constraintTop_toBottomOf="@+id/button9"
-        app:layout_constraintVertical_bias="0.05">
+        app:layout_constraintTop_toBottomOf="@+id/button9">
 
         <Button
             android:id="@+id/button_log_with_google"
@@ -93,34 +151,18 @@
             tools:ignore="ImageContrastCheck" />
     </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        app:cardCornerRadius="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView2"
-        app:layout_constraintEnd_toEndOf="@+id/button9"
-        app:layout_constraintStart_toEndOf="@+id/cardView2"
-        app:layout_constraintTop_toTopOf="@+id/cardView2">
-
-
-        <Button
-            android:id="@+id/button_log_with_facebook"
-            style="@android:style/Widget.Material.Button.Borderless"
-            android:layout_width="180dp"
-            android:layout_height="75dp"
-            android:background="?attr/selectableItemBackground"
-            android:elevation="1dp"
-            tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
-
-        <ImageView
-            android:id="@+id/imageView_facebook"
-            android:layout_width="180dp"
-            android:layout_height="75dp"
-            android:background="@drawable/rounded_corner_16dp"
-            android:padding="10dp"
-            app:srcCompat="@drawable/facebook" />
-    </androidx.cardview.widget.CardView>
+    <ImageButton
+        android:id="@+id/LoginShowHideButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_view"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toBottomOf="@+id/ClaveSimpleTextInputLayout"
+        app:layout_constraintEnd_toEndOf="@+id/ClaveSimpleTextInputLayout"
+        app:layout_constraintTop_toTopOf="@+id/ClaveSimpleTextInputLayout"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

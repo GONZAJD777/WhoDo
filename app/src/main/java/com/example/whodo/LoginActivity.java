@@ -18,6 +18,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     private final String[] Titles = new String[2];
@@ -40,13 +42,13 @@ public class LoginActivity extends AppCompatActivity {
 
         ViewPager2=findViewById(R.id.Login_view_pager);
         TabLayout=findViewById(R.id.Login_TabLayout);
-
+        ViewPager2.setUserInputEnabled(false);
         Login_ViewPagerAdapter = new Login_ViewPagerAdapter(this);
         ViewPager2.setAdapter(Login_ViewPagerAdapter);
         new TabLayoutMediator(TabLayout,ViewPager2,((tab, position) -> tab.setText(Titles[position]))).attach();
 
-
-
+        Objects.requireNonNull(TabLayout.getTabAt(0)).setText("Login");
+        Objects.requireNonNull(TabLayout.getTabAt(1)).setText("Registrarse");
 
     }
 
