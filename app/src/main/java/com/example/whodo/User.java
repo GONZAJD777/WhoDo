@@ -11,13 +11,15 @@ public class User {
     private double LONGITUDE;
     private String PHONE;
     private String TYPE;
+    private String PASSWORD;
 
     public User() {}
 
-    public User(String name, int age, String email, String address, double latitude, double longitude, String phone, String type) {
+    public User(String name, int age, String email,String password, String address, double latitude, double longitude, String phone, String type) {
         this.NAME=name;
         this.AGE=age;
         this.EMAIL=email;
+        this.PASSWORD=password;
         this.ADDRESS=address;
         this.LATITUDE=latitude;
         this.LONGITUDE=longitude;
@@ -43,8 +45,13 @@ public class User {
     public String getEmail() {
         return EMAIL;
     }
-    public void setEmail(String email){
-        this.EMAIL=email;
+    public void setEmail(String email){this.EMAIL=email;}
+
+    public String getPassword() {
+        return PASSWORD;
+    }
+    public void setPassword(String password){
+        this.PASSWORD=password;
     }
 
     public String getAddress() {
@@ -78,10 +85,10 @@ public class User {
 
     public String getType() {
         return TYPE;}
-
     public void setType(String type){
         this.TYPE=type;
     }
+
 
 
 

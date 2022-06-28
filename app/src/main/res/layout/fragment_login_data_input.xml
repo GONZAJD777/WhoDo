@@ -1,6 +1,258 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ClaveSimpleTextInputLayout2"
+        style="@style/CustomShapeAppearanceFrameLayout"
+        android:layout_width="367dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:animateLayoutChanges="false"
+        android:gravity="fill_horizontal"
+        android:hapticFeedbackEnabled="false"
+        android:layoutDirection="ltr"
+        app:boxBackgroundMode="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ClaveSimpleTextInputLayout">
+
+        <EditText
+            android:id="@+id/ClaveSimpleEditText2"
+            android:layout_width="314dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@android:color/transparent"
+            android:hint="Confirmar Clave"
+            android:inputType="none|textPassword"
+            android:padding="0dp"
+            android:singleLine="true"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/loginShowHideButton2"
+        style="@android:style/Widget.Holo.ImageButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_view"
+        android:stateListAnimator="@anim/nav_default_pop_exit_anim"
+        android:tintMode="multiply"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toBottomOf="@+id/ClaveSimpleTextInputLayout2"
+        app:layout_constraintEnd_toEndOf="@+id/ClaveSimpleTextInputLayout2"
+        app:layout_constraintTop_toTopOf="@+id/ClaveSimpleTextInputLayout2"
+        tools:ignore="SpeakableTextPresentCheck,UseAppTint" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ClaveSimpleTextInputLayout"
+        style="@style/CustomShapeAppearanceFrameLayout"
+        android:layout_width="367dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:animateLayoutChanges="false"
+        android:gravity="fill_horizontal"
+        android:hapticFeedbackEnabled="false"
+        android:layoutDirection="ltr"
+        app:boxBackgroundMode="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MailSimpleTextInputLayout">
+
+        <EditText
+            android:id="@+id/ClaveSimpleEditText"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"
+            android:layout_width="314dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@android:color/transparent"
+            android:hint="Clave"
+            android:inputType="none|textPassword"
+            android:padding="0dp"
+            android:singleLine="true" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintStart_toStartOf="@+id/ClaveSimpleTextInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/button2">
+
+        <Button
+            android:id="@+id/button_log_with_google"
+            style="@android:style/Widget.Material.Button.Borderless"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="?attr/selectableItemBackground"
+            android:elevation="1dp"
+            tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:id="@+id/imageView_google"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/rounded_corner_16dp"
+            android:padding="10dp"
+            app:srcCompat="@drawable/buscar"
+            tools:ignore="ImageContrastCheck" />
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/loginShowHideButton"
+        style="@android:style/Widget.Holo.ImageButton"
+        tools:ignore="SpeakableTextPresentCheck,UseAppTint"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_view"
+        android:stateListAnimator="@anim/nav_default_pop_exit_anim"
+        android:tintMode="multiply"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toBottomOf="@+id/ClaveSimpleTextInputLayout"
+        app:layout_constraintEnd_toEndOf="@+id/ClaveSimpleTextInputLayout"
+        app:layout_constraintTop_toTopOf="@+id/ClaveSimpleTextInputLayout" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView2"
+        app:layout_constraintEnd_toEndOf="@+id/ClaveSimpleTextInputLayout"
+        app:layout_constraintTop_toTopOf="@+id/cardView2"
+        app:layout_constraintVertical_bias="0.0">
+
+
+        <Button
+            android:id="@+id/button_log_with_facebook"
+            style="@android:style/Widget.Material.Button.Borderless"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="?attr/selectableItemBackground"
+            android:elevation="1dp"
+            tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:id="@+id/imageView_facebook"
+            android:layout_width="180dp"
+            android:layout_height="75dp"
+            android:background="@drawable/rounded_corner_16dp"
+            android:padding="10dp"
+            app:srcCompat="@drawable/facebook" />
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/MailSimpleTextInputLayout"
+        style="@style/CustomShapeAppearanceFrameLayout"
+        android:layout_width="367dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="76dp"
+        android:gravity="top|center_vertical"
+        app:boxBackgroundMode="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/MailSimpleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:background="@android:color/transparent"
+            android:gravity="fill"
+            android:hint="Correo Electronico"
+            android:padding="0dp"
+            android:singleLine="true"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="367dp"
+        android:layout_height="48dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Continuar"
+        android:textSize="16sp"
+        app:cornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/MailSimpleTextInputLayout"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/MailSimpleTextInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox4"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-7dp"
+        android:button="?android:attr/textCheckMarkInverse"
+        android:clickable="false"
+        android:text="Debe tener entre 8 y 12 caracteres"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/ClaveSimpleTextInputLayout2"
+        app:layout_constraintTop_toBottomOf="@+id/ClaveSimpleTextInputLayout2" />
+
+    <CheckBox
+        android:id="@+id/checkBox2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-15dp"
+        android:button="?android:attr/textCheckMarkInverse"
+        android:clickable="false"
+        android:text="Deben incluir mayúsculas y minúsculas"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/checkBox"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+
+    <CheckBox
+        android:id="@+id/checkBox3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-15dp"
+        android:button="?android:attr/textCheckMarkInverse"
+        android:clickable="false"
+        android:text="Debe incluir al menos 1 numero y caracter especial"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/checkBox2"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
+
+
+    <CheckBox
+        android:id="@+id/checkBox4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Acepto los terminos y condiciones de uso, asi como las politicas de privacidad"
+        app:layout_constraintEnd_toEndOf="@+id/button2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/button2"
+        app:layout_constraintTop_toBottomOf="@+id/Register_divider" />
+
+    <View
+        android:id="@+id/Register_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="@+id/checkBox4"
+        app:layout_constraintStart_toStartOf="@+id/checkBox4"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

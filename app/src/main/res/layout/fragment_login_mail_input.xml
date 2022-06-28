@@ -74,12 +74,13 @@
 
 
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/LoginConfirmation"
         android:layout_width="367dp"
         android:layout_height="44dp"
         android:layout_marginTop="8dp"
         android:insetTop="0dp"
         android:insetBottom="0dp"
+        android:onClick="onClick"
         android:text="Continuar"
         android:textSize="16sp"
         app:cornerRadius="16dp"
@@ -96,7 +97,7 @@
         android:layout_marginStart="7dp"
         app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView2"
-        app:layout_constraintEnd_toEndOf="@+id/button9"
+        app:layout_constraintEnd_toEndOf="@+id/LoginConfirmation"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/cardView2"
         app:layout_constraintTop_toTopOf="@+id/cardView2"
@@ -104,12 +105,13 @@
 
 
         <Button
-            android:id="@+id/button_log_with_facebook"
+            android:id="@+id/Login_with_facebook"
             style="@android:style/Widget.Material.Button.Borderless"
             android:layout_width="180dp"
             android:layout_height="75dp"
             android:background="?attr/selectableItemBackground"
             android:elevation="1dp"
+            android:onClick="onClick"
             tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
 
         <ImageView
@@ -127,16 +129,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:cardCornerRadius="16dp"
-        app:layout_constraintStart_toStartOf="@+id/button9"
-        app:layout_constraintTop_toBottomOf="@+id/button9">
+        app:layout_constraintStart_toStartOf="@+id/LoginConfirmation"
+        app:layout_constraintTop_toBottomOf="@+id/LoginConfirmation">
 
         <Button
-            android:id="@+id/button_log_with_google"
+            android:id="@+id/Login_with_google"
             style="@android:style/Widget.Material.Button.Borderless"
             android:layout_width="180dp"
             android:layout_height="75dp"
             android:background="?attr/selectableItemBackground"
             android:elevation="1dp"
+            android:onClick="onClick"
             tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
 
         <ImageView
@@ -153,16 +156,21 @@
 
     <ImageButton
         android:id="@+id/LoginShowHideButton"
+        style="@android:style/Widget.Holo.ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="5dp"
         android:background="@android:color/transparent"
+        android:onClick="onClick"
+        android:scaleType="centerCrop"
         android:src="@android:drawable/ic_menu_view"
+        android:stateListAnimator="@anim/nav_default_pop_exit_anim"
+        android:tintMode="multiply"
         app:iconGravity="textStart"
         app:layout_constraintBottom_toBottomOf="@+id/ClaveSimpleTextInputLayout"
         app:layout_constraintEnd_toEndOf="@+id/ClaveSimpleTextInputLayout"
         app:layout_constraintTop_toTopOf="@+id/ClaveSimpleTextInputLayout"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="SpeakableTextPresentCheck,UseAppTint,UsingOnClickInXml" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
