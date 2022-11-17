@@ -79,6 +79,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             }
 
         });
+
         Button Btn = root.findViewById(R.id.button_ItemHire);
 
      Btn.setOnClickListener(v -> {

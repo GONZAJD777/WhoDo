@@ -1,17 +1,11 @@
 package com.example.whodo;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import com.example.whodo.adapters.Main_ViewPagerAdapter;
-import com.example.whodo.ui.activity.ActivityFragment;
-import com.example.whodo.ui.favorites.FavoritesFragment;
-import com.example.whodo.ui.hire.HireFragment;
-import com.example.whodo.ui.messages.MessagesFragment;
-import com.example.whodo.ui.profile.ProfileFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -24,10 +18,11 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     private final String[] Titles = new String[5];
     //private final String[] Titles = new String[]{"","","","",""};
-    ViewPager2 ViewPager2;
-    TabLayout TabLayout;
-    Main_ViewPagerAdapter Main_ViewPagerAdapter;
+    private ViewPager2 ViewPager2;
+    private TabLayout TabLayout;
+    private Main_ViewPagerAdapter Main_ViewPagerAdapter;
     private static final String TAG = "TAG-1";
+    public Integer isLoggedIn=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPager2.setUserInputEnabled(false);
         TabLayout=findViewById(R.id.Main_TabLayout);
 
+        isLoggedIn();
 
 
         Main_ViewPagerAdapter = new Main_ViewPagerAdapter(this);
@@ -98,17 +94,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-        //DatabaseReference mDatabaseReference = mDatabase.getReference();
-        //User user = new User ("Paul", 23, "Paul@gmail.com","CHACABUCO 44",-31.4228, -62.1802,"3512043546","CUSTOMER");
-        //mDatabaseReference = mDatabase.getReference (). child ("Users").child("1");
-        //mDatabaseReference.setValue (user);
+    }
 
+    public void isLoggedIn()
+    {
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account==null)
+        {
+            isLoggedIn=0;
+        }
+        else
+        {
+            isLoggedIn=1;
+        }
 
-
-           }
-
-
+    }
 
 
 }
