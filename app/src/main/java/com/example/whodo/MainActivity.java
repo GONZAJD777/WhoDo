@@ -3,11 +3,14 @@ package com.example.whodo;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.whodo.BusinessClasses.User;
 import com.example.whodo.adapters.Main_ViewPagerAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,13 +19,15 @@ import androidx.viewpager2.widget.ViewPager2;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+
+
     private final String[] Titles = new String[5];
     //private final String[] Titles = new String[]{"","","","",""};
     private ViewPager2 ViewPager2;
     private TabLayout TabLayout;
     private Main_ViewPagerAdapter Main_ViewPagerAdapter;
     private static final String TAG = "TAG-1";
-    public Integer isLoggedIn=0;
+    public User LoggedUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +38,23 @@ public class MainActivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.hide();
 
+
         ViewPager2=findViewById(R.id.Main_view_pager);
         ViewPager2.setUserInputEnabled(false);
         TabLayout=findViewById(R.id.Main_TabLayout);
 
-        isLoggedIn();
+        // Initialize Firebase Auth
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser != null){
+            LoggedUser.setEmail(currentUser.getEmail());
+            LoggedUser.setUid(currentUser.getUid());
+        }
+
+
+
 
 
         Main_ViewPagerAdapter = new Main_ViewPagerAdapter(this);
@@ -96,21 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void isLoggedIn()
-    {
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account==null)
-        {
-            isLoggedIn=0;
-        }
-        else
-        {
-            isLoggedIn=1;
-        }
 
-    }
 
 
 }
