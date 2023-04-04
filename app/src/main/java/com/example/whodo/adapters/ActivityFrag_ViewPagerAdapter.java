@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.whodo.ui.ViewPagerFragment;
+import com.example.whodo.ViewPagerFragment;
 
 
 public class ActivityFrag_ViewPagerAdapter extends FragmentStateAdapter {
@@ -29,7 +29,6 @@ public class ActivityFrag_ViewPagerAdapter extends FragmentStateAdapter {
 
 
             //adapter.addFrag(new ViewPagerFragment(1), "");
-
             //adapter.addFrag(new ViewPagerFragment(5), "Messages");
             //adapter.addFrag(new ViewPagerFragment(6), "Notifications");
 

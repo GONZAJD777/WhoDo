@@ -18,14 +18,14 @@ import java.util.List;
 
 public class Main_ViewPagerAdapter extends FragmentStateAdapter {
 
-    private final String[] Titles = new String[5];
+    //private final String[] Titles = new String[5];
 
     public Main_ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {super(fragmentActivity);
     }
 
     //***************************************************************************
     // Estos metodos crean los fragmentos principales cuando se llama al constructor
-    @NonNull
+
     @Override
     public Fragment createFragment(int position) {
         switch (position)
@@ -37,12 +37,13 @@ public class Main_ViewPagerAdapter extends FragmentStateAdapter {
             case 4: return new ProfileFragment();
         }
 
-        return new HireFragment();
+        //return new HireFragment();
+        return null;
     }
     //cuenta la cantidad de items en el array Titles
     @Override
     public final int getItemCount() {
-        return Titles.length;
+        return 5;
     }
 
 

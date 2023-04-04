@@ -5,13 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.whodo.ui.activity.ActivityFragment;
-import com.example.whodo.ui.favorites.FavoritesFragment;
-import com.example.whodo.ui.hire.HireFragment;
-import com.example.whodo.ui.login.DataInputFragment;
-import com.example.whodo.ui.login.MailInputFragment;
-import com.example.whodo.ui.messages.MessagesFragment;
-import com.example.whodo.ui.profile.ProfileFragment;
+import com.example.whodo.ui.login.RegisterUserFragment;
+import com.example.whodo.ui.login.SignInFragment;
 
 
 public class Login_ViewPagerAdapter extends FragmentStateAdapter {
@@ -28,12 +23,12 @@ public class Login_ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position)
         {
-            case 0: return new MailInputFragment();
-            case 1: return new DataInputFragment();
+            case 0: return new SignInFragment();
+            case 1: return new RegisterUserFragment();
 
         }
 
-        return new HireFragment();
+        return new SignInFragment();
     }
     //cuenta la cantidad de items en el array Titles
     @Override

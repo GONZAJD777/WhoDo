@@ -18,9 +18,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD6fudFVcF1t0szms6jQTw_S6P_IYi8NFY" />
 
-
-        <activity
-            android:name=".MainActivity"
+        <activity android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,12 +26,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LoginActivity" >
-
+        <activity
+            android:name=".MainActivity">
         </activity>
 
         <activity
-            android:name=".UserDetail">
+            android:name=".ui.profile.ProfileActivity">
         </activity>
 
     </application>

@@ -1,7 +1,6 @@
 package com.example.whodo.ui.hire;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +12,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import com.example.whodo.LoginActivity;
+
 import com.example.whodo.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -30,14 +29,13 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
 
     private BottomSheetBehavior bottomSheetBehavior;
-    private LinearLayout bottomSheet;
 
 
-@Override
+    @Override
     public View onCreateView( LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         //hireViewModel = new ViewModelProvider(this).get(HireViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_hire, container, false);
+        View root = inflater.inflate(R.layout.act_main_frag_hire, container, false);
 
 
         // Gets the MapView from the XML layout and creates it
@@ -45,7 +43,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        bottomSheet=root.findViewById(R.id.ll_bottom_sheet);
+        LinearLayout bottomSheet = root.findViewById(R.id.ll_bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -83,8 +81,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         Button Btn = root.findViewById(R.id.button_ItemHire);
 
      Btn.setOnClickListener(v -> {
-        Intent intent = new Intent(v.getContext(),LoginActivity.class);
-        v.getContext().startActivity(intent);
+
         Log.i("botton1", "Presionaste el boton de la cinta" );
      });
 

@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.whodo.R;
-import com.example.whodo.adapters.ActivityFrag_ViewPagerAdapter;
 import com.example.whodo.adapters.MessagesFrag_ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -30,7 +29,7 @@ public class MessagesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         messagesViewModel= new ViewModelProvider(this).get(MessagesViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_messages, container, false);
+        View root = inflater.inflate(R.layout.act_main_frag_messages, container, false);
 
         textView1 = root.findViewById(R.id.messages_textView);
         textView1.setText(messagesViewModel.getText());

@@ -1,22 +1,16 @@
 package com.example.whodo;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.whodo.adapters.Login_ViewPagerAdapter;
-import com.example.whodo.adapters.Main_ViewPagerAdapter;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
@@ -26,19 +20,17 @@ public class LoginActivity extends AppCompatActivity {
     private androidx.viewpager2.widget.ViewPager2 ViewPager2;
     private com.google.android.material.tabs.TabLayout TabLayout;
     private Login_ViewPagerAdapter Login_ViewPagerAdapter;
-
+    private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
+    private final FirebaseUser currentUser= mAuth.getCurrentUser();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        //FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-        //DatabaseReference mDatabaseReference = mDatabase.getReference();
-        //User user = new User ("Paul", 23, "Paul@gmail.com","CHACABUCO 44",-31.4228, -62.1802,"3512043546","CUSTOMER");
-        //mDatabaseReference = mDatabase.getReference (). child ("Users").child("1");
-        //mDatabaseReference.setValue (user);
+        setContentView(R.layout.act_login);
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.hide();
+
+
 
         ViewPager2=findViewById(R.id.Login_view_pager);
         TabLayout=findViewById(R.id.Login_TabLayout);
@@ -50,6 +42,28 @@ public class LoginActivity extends AppCompatActivity {
         Objects.requireNonNull(TabLayout.getTabAt(0)).setText("Login");
         Objects.requireNonNull(TabLayout.getTabAt(1)).setText("Registrarse");
 
-    }
+        checkLoggedUser ();
 
+    }
+    private void checkLoggedUser ()
+    {
+
+
+        if(currentUser != null){
+            currentUser.getEmail();
+            Intent intent = new Intent(this,MainActivity.class);
+            //Bundle b = new Bundle();
+            //b.putString("LoggedUser_Email",currentUser.getEmail());
+            //b.putString("LoggedUser_Uid",currentUser.getUid());
+            //intent.putExtras(b); //Put your id to your next Intent
+            this.startActivity(intent);
+            this.finish();
+            Toast.makeText(this, "You are logged with: "+currentUser.getEmail(),Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Toast.makeText(this, "You are not logged in the application",Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }

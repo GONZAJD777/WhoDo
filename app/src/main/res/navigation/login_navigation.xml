@@ -7,11 +7,11 @@
 
 <fragment
 android:id="@+id/navigation_login_mail_input"
-tools:layout="@layout/fragment_login_mail_input" />
+tools:layout="@layout/act_login_frag_sign_in" />
 
 <fragment
 android:id="@+id/navigation_login_data_input"
-tools:layout="@layout/fragment_login_data_input" />
+tools:layout="@layout/act_login_frag_register_user" />
 
 
 

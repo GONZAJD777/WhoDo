@@ -11,10 +11,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.whodo.R;
-import com.example.whodo.adapters.ActivityFrag_ViewPagerAdapter;
 import com.example.whodo.adapters.FavoritesFrag_ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 public class FavoritesFragment extends Fragment {
 
@@ -27,7 +25,7 @@ public class FavoritesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_favorites, container, false);
+        View root = inflater.inflate(R.layout.act_main_frag_favorites, container, false);
         FavoritesViewModel favoritesViewModel = new ViewModelProvider(this).get(FavoritesViewModel.class);
         TextView textView1 = root.findViewById(R.id.favorites_textView);
         textView1.setText("");

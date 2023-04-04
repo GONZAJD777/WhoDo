@@ -1,8 +1,7 @@
 package com.example.whodo.BusinessClasses;
 
 
-import com.google.firebase.database.PropertyName;
-import com.google.firebase.database.util.JsonMapper;
+import android.net.Uri;
 
 public class User  {
 
@@ -10,7 +9,7 @@ public class User  {
     private String Name;            // Name or Nick Used for User
     private long Birthday;           // Date Used to calculate the Age of User
     private String Email;           // Email asociated to Account and used to log in.
-    private String Address;         // Phisical address registered for customer and priveders
+    private String Address;         // Phisical address registered for customer and providers
     private double Latitude;        // Latitude of User Address, no current Location used to pin in the map
     private double Longitude;       // Longitude of User Address, no current Location used to pin in the map
     private String Phone;           // Phone Number asociated with the account
@@ -20,10 +19,9 @@ public class User  {
     private long DeleteDate;         // Account Logic Deletion Date
     private int State;              // Flag that indicates the state of account (0=deleted, 1=active,2..3 reserved for further use)
     private int isValidated;        // Flag that indicate if account Email was validated or not (1=true,0=false)
+    private String ProfilePicture;
 
-
-
-   public User ()
+    public User ()
    {}
 
    public User(String Name, int Birthday, String Email, String Address, double Latitude, double Longitude, String Phone, String Type,String Password) {
@@ -41,6 +39,9 @@ public class User  {
         this.DeleteDate=20991231;
         this.State=1;
         this.isValidated=0;
+       String defaultProfilePicture_CloudFile = "Android-Logo-2008-2014.png";
+       this.ProfilePicture="https://firebasestorage.googleapis.com/v0/b/whodo-2f534.appspot.com/o/WHODO-IMAGES%2FPROFILE-PICTURE%2F"+ defaultProfilePicture_CloudFile +"?alt=media&token=a7f64bef-77ed-40b3-b62d-e44d986ac2da";
+
     }
 
 
@@ -139,6 +140,10 @@ public class User  {
         this.isValidated=isValidated;
     }
 
+    public String getProfilePicture() {return ProfilePicture;}
+    public void setProfilePicture(String profilePicture){
+        this.ProfilePicture=profilePicture;
+    }
 
 
 

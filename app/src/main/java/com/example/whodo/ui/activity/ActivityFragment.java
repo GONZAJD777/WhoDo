@@ -31,7 +31,7 @@ public class ActivityFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_activity, container, false);
+        View root = inflater.inflate(R.layout.act_main_frag_activity, container, false);
 
         textView1 = root.findViewById(R.id.activity_textView);
         textView1.setText(activityViewModel.getText());

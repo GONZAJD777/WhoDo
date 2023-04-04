@@ -3,7 +3,13 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">#3F51B5</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+
     </style>
+
+
 
 
     <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">

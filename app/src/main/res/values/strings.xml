@@ -9,4 +9,32 @@
     <string name="title_registration_data">Registrar Usuario</string>
     <string name="title_login">Login</string>
 
+
+    <string name="profileFrag_text_profile_Config">CONFIGURACION DE LA CUENTA</string>
+    <string name="profileFrag_text_profile_Name">NAME</string>
+    <string name="profileFrag_text_profile_EditProfile">Editar Perfil</string>
+    <string name="profileFrag_text_profile_UserType">TIPO DE USUARIO</string>
+    <string name="profileFrag_text_profile_Asistency">ASISTENCIA</string>
+    <string name="profileFrag_text_profile_Legal">INFORMACION LEGAL</string>
+    <string name="profileFrag_text_profile_CloseSession">Cerrar Sesión</string>
+    <string name="profileFrag_text_profile_Version">VERSION 1.0.0</string>
+    <string name="profileFrag_image_View">USER PICTURE</string>
+
+
+
+    <string name="profileFrag_ItemText_PersonalInfo">Información Personal</string>
+    <string name="profileFrag_ItemText_SesionSecurity">Seguridad</string>
+    <string name="profileFrag_ItemText_Payment">Pagos</string>
+    <string name="profileFrag_ItemText_ProviderSettings">Configuracion Modo Proveedor</string>
+    <string name="profileFrag_ItemText_HowItWorks">Como funciona WhoDo?</string>
+    <string name="profileFrag_ItemText_Recomendations">Recomendaciones</string>
+    <string name="profileFrag_ItemText_Support">Soporte</string>
+    <string name="profileFrag_ItemText_Comments">Envia tus comentarios</string>
+    <string name="profileFrag_ItemText_LegalTerms">Terminos de servicio</string>
+    <string name="profileFrag_ItemText_PrivacyPolitics">Politicas de Privacidad</string>
+    <string name="profileFrag_prifileActivity_PictureDescription">Pick your profile picture</string>
+
+    <string name="PersonalInfoFrag_Description">Acerca de mi</string>
+
+
 </resources>

@@ -1,4 +1,4 @@
-package com.example.whodo.ui;
+package com.example.whodo;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -13,21 +13,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.whodo.R;
-
+import com.example.whodo.crud.CRUD;
 
 
 public class ViewPagerFragment extends Fragment {
 
 
     private static final String TAG = "TAG-1";
-    private final Integer FragType;
+    private  Integer FragType=0;
 
     private LinearLayout LinearLayoutItems;
     private View ItemMessage;
     private View ItemFavoritesItem;
     private View ItemNotificactions;
 
-
+    public ViewPagerFragment(){}
     public ViewPagerFragment(Integer Ft) {
         FragType=Ft;
     }
@@ -40,6 +40,8 @@ public class ViewPagerFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_viewpager, container, false);
         Log.d(TAG, "MessViewPagerFragment agregando message_list");
         LinearLayoutItems = root.findViewById(R.id.viewPager_linearLayout);
+
+
 
         ItemMessage = inflater.inflate(R.layout.item_messages,container,false);
         ItemNotificactions = inflater.inflate(R.layout.item_notifications,container,false);
