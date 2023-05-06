@@ -2,6 +2,7 @@ package com.example.whodo.ui.hire;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,43 +10,57 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.whodo.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 
 public class HireFragment extends Fragment implements OnMapReadyCallback {
-    private HireViewModel hireViewModel;
+    boolean mLocationPermissionsGranted = false;
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private static final float DEFAULT_ZOOM = 13f;
     private static final String TAG = "TAG-1";
     private MapView mapView;
+    private GoogleMap mMap;
 
-    private BottomSheetBehavior bottomSheetBehavior;
+    private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
 
 
     @Override
     public View onCreateView( LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //hireViewModel = new ViewModelProvider(this).get(HireViewModel.class);
         View root = inflater.inflate(R.layout.act_main_frag_hire, container, false);
-
+        Button Btn = root.findViewById(R.id.button_ItemHire);
 
         // Gets the MapView from the XML layout and creates it
         mapView = root.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+        getLocationPermission();
 
         LinearLayout bottomSheet = root.findViewById(R.id.ll_bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
+
+        Btn.setOnClickListener(v -> {
+            Log.i("botton1", "Presionaste el boton de la cinta" );
+        });
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -78,42 +93,16 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
         });
 
-        Button Btn = root.findViewById(R.id.button_ItemHire);
 
-     Btn.setOnClickListener(v -> {
-
-        Log.i("botton1", "Presionaste el boton de la cinta" );
-     });
 
         return root;
     }
 
 
-
-
-
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-        if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //
-
-            return;
-
-
-        }
-
-        //************************************************************************************//
-        //Hide bottomsheet on map click
+        mMap = googleMap;
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         googleMap.setOnMapClickListener(
 
                 arg0 -> {
@@ -123,12 +112,59 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 });
-        //************************************************************************************//
+        if (mLocationPermissionsGranted) {
 
-        addMarkers(googleMap);
-        googleMap.setMyLocationEnabled(true);
+            if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                return;
+            }
+            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            googleMap.setMyLocationEnabled(true);
+            getDeviceLocation();
+            addMarkers(googleMap);
+            //init();
+
+        }
+
 
     }
+
+    private void getLocationPermission(){
+        Log.d(TAG, "getLocationPermission: getting location permissions");
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if(ContextCompat.checkSelfPermission(this.requireContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(this.requireContext(),
+                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                 mLocationPermissionsGranted = true;
+                //initMap();
+            }else{
+                ActivityCompat.requestPermissions(this.requireActivity(),
+                        permissions,
+                        LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        }else{
+            ActivityCompat.requestPermissions(this.requireActivity(),
+                    permissions,
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+        initMap();
+    }
+
+    private void initMap(){
+        Log.d(TAG, "initMap: initializing map");
+        mapView.getMapAsync(this);
+
+    }
+
+
+
+        //hideSoftKeyboard();
+
 
     public void addMarkers(GoogleMap googleMap){
         //float zoomLevel = 13;      // el nivel del zoom con el cual inicia el mapa
@@ -152,6 +188,50 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
        // googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Marker, zoomLevel));  // para mostrar el mapa con zoom, en este caso nivel 13
     }
 
+
+    private void getDeviceLocation(){
+        Log.d(TAG, "getDeviceLocation: getting the devices current location");
+
+        FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireActivity());
+
+        try{
+            if(mLocationPermissionsGranted){
+
+                final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        Log.d(TAG, "onComplete: found location!");
+
+                        Location currentLocation = (Location) task.getResult();
+                        if (currentLocation != null) {
+                            LatLng mLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                            moveCamera(mLatLng, DEFAULT_ZOOM);
+                        }
+
+                    }else{
+                        Log.d(TAG, "onComplete: current location is null");
+
+                    }
+                });
+            }
+        }catch (SecurityException e){
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
+        }
+    }
+
+    private void moveCamera(LatLng latLng, float zoom){
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+       /* if(!title.equals("My Location")){
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng)
+                    .title(title);
+            mMap.addMarker(options);
+       }*/
+
+
+    }
         
     @Override
     public void onResume() {

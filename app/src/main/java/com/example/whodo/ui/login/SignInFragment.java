@@ -90,10 +90,10 @@ public class SignInFragment extends Fragment {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success");
+                                Log.d(TAG, "LoginUserWithEmail:success");
                                 FirebaseUser currentUser = mAuth.getCurrentUser();
                                 assert currentUser != null;
-                                Log.d(TAG, "createUserWithEmail:success ///// UID: " + currentUser.getUid());
+                                Log.d(TAG, "LoginUserWithEmail:success ///// UID: " + currentUser.getUid());
                                 Toast.makeText(requireContext(), "Authentication Success. Please verify your Email", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(requireActivity(), MainActivity.class);
                                 //Bundle b = new Bundle();
@@ -104,7 +104,7 @@ public class SignInFragment extends Fragment {
                                 requireActivity().finish();
                             } else {
                                 // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                Log.w(TAG, "LoginUserWithEmail:failure", task.getException());
                                 Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
                             }
                         });

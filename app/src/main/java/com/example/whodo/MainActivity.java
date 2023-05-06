@@ -10,16 +10,17 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager2.widget.ViewPager2;
+
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private final String[] Titles = new String[5];
-    private ViewPager2 ViewPager2;
     private TabLayout TabLayout;
-    private Main_ViewPagerAdapter Main_ViewPagerAdapter;
     private static final String TAG = "TAG-1";
     private static final User LoggedUser = new User();
+    private static ArrayList<String> Services= new ArrayList<>();
+    private static ArrayList<String> Languages= new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,19 +31,21 @@ public class MainActivity extends AppCompatActivity {
         MainActivityViewModel model = new ViewModelProvider(this).get(MainActivityViewModel.class);
         // update UI
         model.getLoggedUser().observe(this, MainActivity::UpdateLoggedUser);
+        model.getServices().observe(this, MainActivity::UpdateServices);
+        model.getLanguages().observe(this, MainActivity::UpdateLanguages);
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.hide();
 
-        ViewPager2=findViewById(R.id.Main_view_pager);
-        ViewPager2.setUserInputEnabled(false);
+        androidx.viewpager2.widget.ViewPager2 viewPager2 = findViewById(R.id.Main_view_pager);
+        viewPager2.setUserInputEnabled(false);
         TabLayout=findViewById(R.id.Main_TabLayout);
 
-        Main_ViewPagerAdapter = new Main_ViewPagerAdapter(this);
-        ViewPager2.setAdapter(Main_ViewPagerAdapter);
+        com.example.whodo.adapters.Main_ViewPagerAdapter main_ViewPagerAdapter = new Main_ViewPagerAdapter(this);
+        viewPager2.setAdapter(main_ViewPagerAdapter);
 
-        new TabLayoutMediator(TabLayout,ViewPager2,((tab, position) -> tab.setText(Titles[position]))).attach();
+        new TabLayoutMediator(TabLayout, viewPager2,((tab, position) -> tab.setText(Titles[position]))).attach();
         Objects.requireNonNull(TabLayout.getTabAt(0)).setIcon(R.drawable.ic_hire_black);
         Objects.requireNonNull(TabLayout.getTabAt(1)).setIcon(R.drawable.ic_favorites_black);
         Objects.requireNonNull(TabLayout.getTabAt(2)).setIcon(R.drawable.ic_activity_black);
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                //Objects.requireNonNull(TabLayout.getTabAt(tab.getPosition())).setText("");
+                Objects.requireNonNull(TabLayout.getTabAt(tab.getPosition())).setText("");
             }
 
             @Override
@@ -100,6 +103,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    private static void UpdateServices(ArrayList<String> ArrayServices) {
+        MainActivity.Services=ArrayServices;
+    }
+
+    private static void UpdateLanguages(ArrayList<String> ArrayLanguages) {
+        MainActivity.Languages=ArrayLanguages;
+    }
+
+    public static ArrayList<String> getServices() {
+        return MainActivity.Services;
+    }
+    public static ArrayList<String> getLanguages() {
+        return MainActivity.Languages;
+
+    }
+
 
     public static User getLoggedUser() {
         return MainActivity.LoggedUser;
@@ -122,21 +142,9 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.LoggedUser.setState(p_user.getState());
         MainActivity.LoggedUser.setIsValidated(p_user.getIsValidated());
         MainActivity.LoggedUser.setProfilePicture(p_user.getProfilePicture());
+        MainActivity.LoggedUser.setLanguages(p_user.getLanguages());
+        MainActivity.LoggedUser.setDescription(p_user.getDescription());
 
-        //this.Uid="";
-        //this.Name=Name;
-        //this.Birthday=Birthday;
-        //this.Email=Email;
-        //this.Address=Address;
-        //this.Latitude=Latitude;
-        //this.Longitude=Longitude;
-        //this.Phone=Phone;
-        //this.Type=Type;
-        //this.Password=Password;
-        //this.CreateDate=19700101;
-        //this.DeleteDate=20991231;
-        //this.State=1;
-        //this.isValidated=0;
 
     }
 

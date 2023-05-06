@@ -21,6 +21,10 @@ public class User  {
     private int isValidated;        // Flag that indicate if account Email was validated or not (1=true,0=false)
     private String ProfilePicture;
 
+    private String Languages;
+
+    private String Description;
+
     public User ()
    {}
 
@@ -39,9 +43,10 @@ public class User  {
         this.DeleteDate=20991231;
         this.State=1;
         this.isValidated=0;
-       String defaultProfilePicture_CloudFile = "Android-Logo-2008-2014.png";
-       this.ProfilePicture="https://firebasestorage.googleapis.com/v0/b/whodo-2f534.appspot.com/o/WHODO-IMAGES%2FPROFILE-PICTURE%2F"+ defaultProfilePicture_CloudFile +"?alt=media&token=a7f64bef-77ed-40b3-b62d-e44d986ac2da";
-
+        String defaultProfilePicture_CloudFile = "Android-Logo-2008-2014.png";
+        this.ProfilePicture="https://firebasestorage.googleapis.com/v0/b/whodo-2f534.appspot.com/o/WHODO-IMAGES%2FPROFILE-PICTURE%2F"+ defaultProfilePicture_CloudFile +"?alt=media&token=a7f64bef-77ed-40b3-b62d-e44d986ac2da";
+        this.Languages="";
+        this.Description="";
     }
 
 
@@ -145,7 +150,14 @@ public class User  {
         this.ProfilePicture=profilePicture;
     }
 
-
+    public String getLanguages() {return Languages;}
+    public void setLanguages(String Languages){
+        this.Languages=Languages;
+    }
+    public String getDescription() {return Description;}
+    public void setDescription(String Description){
+        this.Description=Description;
+    }
 
     //The best way of storing double values in SharedPreferences without losing precision is:
 

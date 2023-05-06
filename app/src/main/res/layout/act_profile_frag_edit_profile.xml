@@ -1,154 +1,342 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:fitsSystemWindows="false"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     app:layout_scrollFlags="scroll">
 
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/SaveChangesButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="33dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="192dp"
+                    android:clickable="true"
+                    android:contentDescription="TODO"
+                    android:focusable="true"
+                    app:backgroundTint="#FFFFFF"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/cardView2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:srcCompat="@android:drawable/ic_menu_save" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/PickImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Pick your photo"
+                    android:cropToPadding="false"
+                    app:backgroundTint="@color/design_default_color_on_primary"
+                    app:fabCustomSize="35dp"
+                    app:fabSize="normal"
+                    app:layout_constraintBottom_toBottomOf="@+id/cardView2"
+                    app:layout_constraintEnd_toEndOf="@+id/cardView2"
+                    app:layout_constraintHorizontal_bias="0.95"
+                    app:layout_constraintStart_toStartOf="@+id/cardView2"
+                    app:layout_constraintTop_toTopOf="@+id/cardView2"
+                    app:layout_constraintVertical_bias="0.95"
+                    app:srcCompat="@android:drawable/ic_menu_camera" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView2"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="106dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="106dp"
+                    android:layout_marginBottom="32dp"
+                    app:cardCornerRadius="100dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/imagePicker"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:contentDescription="@string/profileFrag_prifileActivity_PictureDescription"
+                        android:scaleType="centerCrop"
+                        tools:srcCompat="@drawable/foto_ejemplo" />
+
+                </androidx.cardview.widget.CardView>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
     <LinearLayout
+        android:id="@+id/BlackBackground_bottom_sheet"
+        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="@color/design_default_color_on_secondary"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        app:behavior_fitToContents="false"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/Description_bottom_sheet"
+        style="@style/CustomShapeAppearanceBottomSheetDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:clickable="true"
+        android:clipToPadding="false"
+        android:gravity="center|top|center_vertical"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="32dp"
+        app:behavior_fitToContents="false"
+        app:behavior_halfExpandedRatio="0.6"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <View
+            android:id="@+id/bottom_sheet_notch"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center"
+            android:background="?attr/actionBarDivider"
+            android:backgroundTint="#535353"
+            android:backgroundTintMode="add" />
+
+        <TextView
+            android:id="@+id/DescriptionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="14dp"
+            android:text="@string/PersonalInfoFrag_Description"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/DescriptionTextViewMultiline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:text="@string/PersonalInfoFrag_Label_Description" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/DescriptionSimpleTextInputLayout"
+            style="@style/CustomShapeAppearanceFrameLayout"
+            android:layout_width="367dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            app:boxBackgroundMode="none"
+            app:endIconMode="clear_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/DescriptionSimpleEditText"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="start"
+                android:autoText="false"
+                android:background="@android:color/transparent"
+                android:gravity="start|top"
+                android:inputType="textMultiLine"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/Location_bottom_sheet"
+        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        app:behavior_fitToContents="false"
+        app:behavior_halfExpandedRatio="0.6"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <View
+            android:id="@+id/Location_bottom_sheet_notch"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center"
+            android:background="?attr/actionBarDivider"
+            android:backgroundTint="#535353"
+            android:backgroundTintMode="add" />
+
+        <TextView
+            android:id="@+id/LocationTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="14dp"
+            android:text="@string/PersonalInfoFrag_Location"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/LocationTextViewMultiline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:text="@string/PersonalInfoFrag_Label_Location" />
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/DescriptionSimpleTextInputLayout1"
-                style="@style/CustomShapeAppearanceFrameLayout"
-                android:layout_width="367dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
-                android:layoutDirection="ltr"
-                app:boxBackgroundMode="none"
-                app:counterEnabled="true"
-                app:counterMaxLength="400"
-
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView2"
-                app:layout_constraintVertical_bias="0.0"
-                tools:ignore="MissingConstraints">
-
-                <EditText
-                    android:id="@+id/DescriptionSimpleEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="128dp"
-                    android:layout_gravity=""
-                    android:background="@android:color/transparent"
-                    android:gravity="clip_vertical"
-                    android:hint="@string/PersonalInfoFrag_Description"
-                    android:inputType="textMultiLine"
-                    android:maxLength="400"
-                    android:overScrollMode="always"
-                    android:scrollbarStyle="insideInset"
-                    android:scrollbars="vertical" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
+           
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/LocationSimpleTextInputLayout"
                 style="@style/CustomShapeAppearanceFrameLayout"
                 android:layout_width="367dp"
                 android:layout_height="wrap_content"
-                android:paddingBottom="13dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="32dp"
+                android:gravity="top|center_vertical"
+                android:paddingBottom="12dp"
+                android:translationZ="1dp"
                 app:boxBackgroundMode="none"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.724"
-                app:startIconDrawable="@android:drawable/ic_menu_mylocation">
-
-                <EditText
-                    android:id="@+id/LocationSimpleEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="28dp"
-                    android:autofillHints=""
-                    android:background="@android:color/transparent"
-                    android:gravity="fill"
-                    android:hint="Ubicacion"
-                    android:padding="0dp"
-                    android:singleLine="true"
-                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/LanguageSimpleTextInputLayout"
-                style="@style/CustomShapeAppearanceFrameLayout"
-                android:layout_width="367dp"
-                android:layout_height="wrap_content"
-                android:paddingBottom="13dp"
-                app:boxBackgroundMode="none"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.821"
-
-                >
-
-                <EditText
-                    android:id="@+id/LanguageSimpleEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="28dp"
-                    android:autofillHints=""
-                    android:background="@android:color/transparent"
-                    android:gravity="fill"
-                    android:hint="Idiomas"
-                    android:padding="0dp"
-                    android:singleLine="true"
-                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="105dp"
-                android:layout_marginTop="59dp"
-                android:layout_marginEnd="106dp"
-                android:layout_marginBottom="472dp"
-                app:cardCornerRadius="100dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/imagePicker"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:contentDescription="@string/profileFrag_prifileActivity_PictureDescription"
-                    android:scaleType="centerCrop"
-                    tools:srcCompat="@drawable/foto_ejemplo" />
 
-            </androidx.cardview.widget.CardView>
+                <EditText
+                    android:id="@+id/LocationSimpleEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:background="@android:color/transparent"
+                    android:gravity="fill"
+                    android:padding="0dp"
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/floatingActionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="Pick your photo"
-                android:cropToPadding="false"
-                app:backgroundTint="@color/design_default_color_on_primary"
-                app:fabCustomSize="35dp"
-                app:fabSize="normal"
-                app:layout_constraintBottom_toBottomOf="@+id/cardView2"
-                app:layout_constraintEnd_toEndOf="@+id/cardView2"
-                app:layout_constraintHorizontal_bias="0.95"
-                app:layout_constraintStart_toStartOf="@+id/cardView2"
-                app:layout_constraintTop_toTopOf="@+id/cardView2"
-                app:layout_constraintVertical_bias="0.95"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
 
+                    android:singleLine="true"
+                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.example.whodo.CustomMapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="SpeakableTextPresentCheck">
+
+            </com.example.whodo.CustomMapView>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/Languages_bottom_sheet"
+        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        app:behavior_fitToContents="false"
+        android:paddingTop="10dp"
+        app:behavior_halfExpandedRatio="0.6"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+    <View
+        android:id="@+id/Languages_bottom_sheet_notch"
+        android:layout_width="40dp"
+        android:layout_height="3dp"
+        android:layout_gravity="center"
+        android:background="?attr/actionBarDivider"
+        android:backgroundTint="#535353"
+        android:backgroundTintMode="add" />
+
+    <TextView
+        android:id="@+id/LanguagesTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="14dp"
+        android:text="@string/PersonalInfoFrag_Description"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/LanguagesTextViewMultiline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:text="@string/PersonalInfoFrag_Label_Description" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/LanguagesLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:orientation="vertical" />
+        </androidx.core.widget.NestedScrollView>
+
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

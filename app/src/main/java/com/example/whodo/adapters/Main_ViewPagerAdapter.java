@@ -20,12 +20,14 @@ public class Main_ViewPagerAdapter extends FragmentStateAdapter {
 
     //private final String[] Titles = new String[5];
 
-    public Main_ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {super(fragmentActivity);
+    public Main_ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity)
+    {super(fragmentActivity);
     }
 
     //***************************************************************************
     // Estos metodos crean los fragmentos principales cuando se llama al constructor
 
+    @NonNull
     @Override
     public Fragment createFragment(int position) {
         switch (position)

@@ -35,6 +35,25 @@
     <string name="profileFrag_prifileActivity_PictureDescription">Pick your profile picture</string>
 
     <string name="PersonalInfoFrag_Description">Acerca de mi</string>
+    <string name="PersonalInfoFrag_Description1">Editar tu descripcion</string>
+    <string name="PersonalInfoFrag_Label_Description">Escribe algo sobre ti para que tus clientes o proveedores de servicios te conocan un poco</string>
+    <string name="PersonalInfoFrag_Location">Ubicacion</string>
+    <string name="PersonalInfoFrag_Location1">Editar Ubicacion</string>
+    <string name="PersonalInfoFrag_Label_Location">Marca con un pin tu ubicacion e ingresa tu direccion incluyendo depto, piso y cualquier otro dato que ayude a otros usuarios a encontrarte.</string>
+    <string name="PersonalInfoFrag_Languages">Idiomas</string>
+    <string name="PersonalInfoFrag_Languages1">Editar Idiomas</string>
+
+    <string name="PersonalInfoFrag_UserName">Nombre de Usuario</string>
+    <string name="PersonalInfoFrag_UserName1">Editar Nombre de Usuario</string>
+    <string name="PersonalInfoFrag_PhoneNumber">Numero Telefonico </string>
+    <string name="PersonalInfoFrag_PhoneNumber1">Editar Numero Telefonico </string>
+    <string name="PersonalInfoFrag_Email">Correo Electronico</string>
+    <string name="PersonalInfoFrag_Email1">Editar Correo Electronico</string>
+
+    <string name="PersonalInfoFrag_Label_UserName">Escribe el nombre por el que quieres que otros usuarios te conozcan</string>
+    <string name="PersonalInfoFrag_Label_PhoneNumber">Este numero sera utilizado para validar tu cuenta</string>
+    <string name="PersonalInfoFrag_Label_Email">Esta direccion de correo esta asociada directamente a tu cuenta, se utiliza para logear y validar tu cuenta</string>
+
 
 
 </resources>
