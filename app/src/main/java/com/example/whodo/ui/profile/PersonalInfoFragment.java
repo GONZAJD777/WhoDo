@@ -82,7 +82,7 @@ public class PersonalInfoFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setUserInfoText(MainActivity.getLoggedUser().getName(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
+                    setUserInfoText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
                     setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
                 }
             });
@@ -100,12 +100,12 @@ public class PersonalInfoFragment extends Fragment {
                         break;
                     case STATE_COLLAPSED:
                         Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserInfoText(MainActivity.getLoggedUser().getName(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
+                        setUserInfoText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
                         setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
                         break;
                     case STATE_HIDDEN:
                         Log.i("BottomSheetBehavior", "STATE_HIDDEN");
-                        setUserInfoText(MainActivity.getLoggedUser().getName(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
+                        setUserInfoText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
                         setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -134,7 +134,7 @@ public class PersonalInfoFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setUserInfoText(MainActivity.getLoggedUser().getPhone(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
+                    setUserInfoText(PhoneNumberSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
                     setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
                 }
             });
@@ -153,12 +153,12 @@ public class PersonalInfoFragment extends Fragment {
                         break;
                     case STATE_COLLAPSED:
                         Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserInfoText(MainActivity.getLoggedUser().getPhone(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
+                        setUserInfoText(PhoneNumberSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
                         setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
                         break;
                     case STATE_HIDDEN:
                         Log.i("BottomSheetBehavior", "STATE_HIDDEN");
-                        setUserInfoText(MainActivity.getLoggedUser().getPhone(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
+                        setUserInfoText(PhoneNumberSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
                         setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -187,7 +187,7 @@ public class PersonalInfoFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setUserInfoText(MainActivity.getLoggedUser().getEmail(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                    setUserInfoText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
                     setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                 }
             });
@@ -206,12 +206,12 @@ public class PersonalInfoFragment extends Fragment {
                         break;
                     case STATE_COLLAPSED:
                         Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserInfoText(MainActivity.getLoggedUser().getEmail(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                        setUserInfoText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
                         setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                         break;
                     case STATE_HIDDEN:
                         Log.i("BottomSheetBehavior", "STATE_HIDDEN");
-                        setUserInfoText(MainActivity.getLoggedUser().getEmail(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                        setUserInfoText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
                         setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -267,7 +267,13 @@ public class PersonalInfoFragment extends Fragment {
     private void setUserInfoText(String text1,String text2,ProfileItem ProfileItem1){
         if ( text1.trim().length() != 0  ) {
             ProfileItem1.setText(text1);
-            LoggedUserEmail=text1;
+            if (item_UserName.equals(ProfileItem1)) {
+                LoggedUserName = text1;
+            } else if (item_PhoneNumber.equals(ProfileItem1)) {
+                LoggedUserPhoneNumber = text1;
+            } else if (item_Email.equals(ProfileItem1)) {
+                LoggedUserEmail = text1;
+            }
         }
         else
         {

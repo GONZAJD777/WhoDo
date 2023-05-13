@@ -37,6 +37,7 @@ public class Main_ViewPagerAdapter extends FragmentStateAdapter {
             case 2: return new ActivityFragment();
             case 3: return new MessagesFragment();
             case 4: return new ProfileFragment();
+
         }
 
         //return new HireFragment();

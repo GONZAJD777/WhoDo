@@ -30,15 +30,17 @@
                     android:id="@+id/SaveChangesButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="339dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="192dp"
+                    android:layout_marginBottom="16dp"
                     android:clickable="true"
                     android:contentDescription="TODO"
                     android:focusable="true"
                     app:backgroundTint="#FFFFFF"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
                     app:srcCompat="@android:drawable/ic_menu_save" />
@@ -120,7 +122,6 @@
             android:layout_height="wrap_content"
             android:paddingBottom="14dp"
             app:boxBackgroundMode="none"
-            app:endIconMode="clear_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -134,7 +135,7 @@
                 android:autoText="false"
                 android:background="@android:color/transparent"
                 android:gravity="start|top"
-                android:inputType="textMultiLine"
+                android:inputType="text"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
@@ -196,24 +197,24 @@
             style="@style/CustomShapeAppearanceFrameLayout"
             android:layout_width="367dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="32dp"
-            android:gravity="top|center_vertical"
-            android:paddingBottom="12dp"
-            android:translationZ="1dp"
-            app:boxBackgroundMode="none">
+            android:paddingBottom="14dp"
+            app:boxBackgroundMode="none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
 
             <EditText
                 android:id="@+id/EmailSimpleEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
+                android:layout_gravity="start"
+                android:autoText="false"
                 android:background="@android:color/transparent"
-                android:gravity="fill"
-                android:padding="0dp"
-
-
+                android:gravity="start|top"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
                 android:singleLine="true"
                 tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -252,7 +253,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:paddingTop="14dp"
-            android:text="@string/PersonalInfoFrag_Email"
+            android:text="@string/PersonalInfoFrag_PhoneNumber"
             android:textSize="20sp" />
 
         <TextView
@@ -274,7 +275,6 @@
             android:layout_height="wrap_content"
             android:paddingBottom="14dp"
             app:boxBackgroundMode="none"
-            app:endIconMode="clear_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
