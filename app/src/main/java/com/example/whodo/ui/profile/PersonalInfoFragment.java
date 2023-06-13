@@ -1,69 +1,127 @@
 package com.example.whodo.ui.profile;
 
-import static com.example.whodo.MainActivity.getLoggedUser;
+import static android.content.ContentValues.TAG;
+import static com.example.whodo.ui.profile.ProfileActivity.hideKeyboard;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.whodo.BusinessClasses.User;
+import com.example.whodo.CustomDatePicker;
+import com.example.whodo.LoginActivity;
 import com.example.whodo.MainActivity;
 import com.example.whodo.R;
-import com.google.android.gms.maps.model.LatLng;
+import com.example.whodo.crud.CRUD;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.squareup.picasso.Picasso;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
 
 public class PersonalInfoFragment extends Fragment {
 
     private String LoggedUserName;
     private String LoggedUserPhoneNumber;
+    private String LoggedUserCCN;
     private String LoggedUserEmail;
     private ProfileItem item_UserName;
     private ProfileItem item_PhoneNumber;
     private ProfileItem item_Email;
     private EditText UserNameSimpleEditText;
     private EditText PhoneNumberSimpleEditText;
+    private EditText CredentialsEmailSimpleEditText;
+    private EditText CredentialsPassSimpleEditText;
     private EditText EmailSimpleEditText;
     private LinearLayout BlackBackground_bottom_sheet;
+    private BottomSheetBehavior<LinearLayout> UserNameBottomSheetBehavior ;
+    private BottomSheetBehavior<LinearLayout> PhoneBottomSheetBehavior;
+    private BottomSheetBehavior<LinearLayout> EmailBottomSheetBehavior;
+    Spinner countryCodeSpinner;
+    private CustomDatePicker BirthdayCalendar;
+
+
+    private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
+    private final FirebaseUser currentUser=mAuth.getCurrentUser();
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_profile_frag_personal_info, container, false);
 
+        //TODO agregar selector de fechas para la fecha de nacimiento - DONE
+
+
         UserNameSimpleEditText = root.findViewById(R.id.UserNameSimpleEditText);
         PhoneNumberSimpleEditText = root.findViewById(R.id.PhoneNumberSimpleEditText);
+        CredentialsEmailSimpleEditText = root.findViewById(R.id.CredentialsEmailSimpleEditText);
+        CredentialsPassSimpleEditText = root.findViewById(R.id.CredentialsPassSimpleEditText);
         EmailSimpleEditText = root.findViewById(R.id.EmailSimpleEditText);
+        EmailSimpleEditText = root.findViewById(R.id.EmailSimpleEditText);
+        countryCodeSpinner = root.findViewById(R.id.CountryCodeSpinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),R.array.CountryCodeArray, R.layout.support_simple_spinner_dropdown_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        countryCodeSpinner.setAdapter(adapter);
+        countryCodeSpinner.setSelection(0);
+
+        TextView ReadyLabelButtonUserName = root.findViewById(R.id.ReadyLabelButtonUserName);
+        TextView ReadyLabelButtonEmail = root.findViewById(R.id.ReadyLabelButtonEmail);
+        TextView ReadyLabelButtonPhoneNumber = root.findViewById(R.id.ReadyLabelButtonPhoneNumber);
+        Button UpdateEmailButton = root.findViewById(R.id.UpdateEmailButton);
+
+        ReadyLabelButtonUserName.setOnClickListener(this::onClick);
+        ReadyLabelButtonEmail.setOnClickListener(this::onClick);
+        ReadyLabelButtonPhoneNumber.setOnClickListener(this::onClick);
+        UpdateEmailButton.setOnClickListener(this::onClick);
+
         LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
         LinearLayout UserName_bottom_sheet = root.findViewById(R.id.UserName_bottom_sheet);
         LinearLayout PhoneNumber_bottom_sheet = root.findViewById(R.id.PhoneNumber_bottom_sheet);
         LinearLayout Email_bottom_sheet = root.findViewById(R.id.Email_bottom_sheet);
         BlackBackground_bottom_sheet = root.findViewById(R.id.BlackBackground_bottom_sheet);
-        BottomSheetBehavior<LinearLayout> UserNameBottomSheetBehavior = BottomSheetBehavior.from(UserName_bottom_sheet);
-        BottomSheetBehavior<LinearLayout> PhoneBottomSheetBehavior = BottomSheetBehavior.from(PhoneNumber_bottom_sheet);
-        BottomSheetBehavior<LinearLayout> EmailBottomSheetBehavior = BottomSheetBehavior.from(Email_bottom_sheet);
+        UserNameBottomSheetBehavior = BottomSheetBehavior.from(UserName_bottom_sheet);
+        PhoneBottomSheetBehavior = BottomSheetBehavior.from(PhoneNumber_bottom_sheet);
+        EmailBottomSheetBehavior = BottomSheetBehavior.from(Email_bottom_sheet);
         BottomSheetBehavior<LinearLayout> BlackBackgroundBottomSheetBehavior = BottomSheetBehavior.from(BlackBackground_bottom_sheet);
-        UserNameBottomSheetBehavior.setFitToContents(true);
-        PhoneBottomSheetBehavior.setFitToContents(true);
-        EmailBottomSheetBehavior.setFitToContents(true);
+
+        UserNameBottomSheetBehavior.setDraggable(false);
+        PhoneBottomSheetBehavior.setDraggable(false);
+        EmailBottomSheetBehavior.setDraggable(false);
+
+        //UserNameBottomSheetBehavior.setExpandedOffset(500);
+        //PhoneBottomSheetBehavior.setExpandedOffset(500);
+        //EmailBottomSheetBehavior.setExpandedOffset(500);
+
         BlackBackgroundBottomSheetBehavior.setState(STATE_EXPANDED);
         BlackBackgroundBottomSheetBehavior.setDraggable(false);
         BlackBackground_bottom_sheet.setClickable(false);
@@ -82,11 +140,13 @@ public class PersonalInfoFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setUserInfoText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
+                    setUserNameText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
                     setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
                 }
             });
             Toast.makeText(getContext(), "Presionaste: " + getString(R.string.PersonalInfoFrag_Description), Toast.LENGTH_LONG).show();
+
+
         });
         UserNameBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -100,12 +160,12 @@ public class PersonalInfoFragment extends Fragment {
                         break;
                     case STATE_COLLAPSED:
                         Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserInfoText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
+                        setUserNameText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
                         setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
                         break;
                     case STATE_HIDDEN:
                         Log.i("BottomSheetBehavior", "STATE_HIDDEN");
-                        setUserInfoText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
+                        setUserNameText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
                         setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -134,7 +194,7 @@ public class PersonalInfoFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setUserInfoText(PhoneNumberSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
+                    setUserPhoneNumber(PhoneNumberSimpleEditText.getText().toString(),countryCodeSpinner.getSelectedItem().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
                     setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
                 }
             });
@@ -153,12 +213,12 @@ public class PersonalInfoFragment extends Fragment {
                         break;
                     case STATE_COLLAPSED:
                         Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserInfoText(PhoneNumberSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
+                        setUserPhoneNumber(PhoneNumberSimpleEditText.getText().toString(),countryCodeSpinner.getSelectedItem().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
                         setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
                         break;
                     case STATE_HIDDEN:
                         Log.i("BottomSheetBehavior", "STATE_HIDDEN");
-                        setUserInfoText(PhoneNumberSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
+                        setUserPhoneNumber(PhoneNumberSimpleEditText.getText().toString(),countryCodeSpinner.getSelectedItem().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
                         setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -175,6 +235,7 @@ public class PersonalInfoFragment extends Fragment {
         });
         //----------------------------------------------------------
         //EMAIL
+        //TODO agregar validacion cuando cliente cambia de EMAIL y actualizar la base
         TextView label_Email = new TextView(getContext());
         label_Email.setText(getString(R.string.PersonalInfoFrag_Email));
         label_Email.setPadding(85, 85, 0, 0);
@@ -187,7 +248,8 @@ public class PersonalInfoFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setUserInfoText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                   //setUserEmailText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                    EmailSimpleEditText.setText(LoggedUserEmail);
                     setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                 }
             });
@@ -206,12 +268,14 @@ public class PersonalInfoFragment extends Fragment {
                         break;
                     case STATE_COLLAPSED:
                         Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserInfoText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                        //setUserEmailText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                        EmailSimpleEditText.setText(LoggedUserEmail);
                         setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                         break;
                     case STATE_HIDDEN:
                         Log.i("BottomSheetBehavior", "STATE_HIDDEN");
-                        setUserInfoText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                        //setUserEmailText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                        EmailSimpleEditText.setText(LoggedUserEmail);
                         setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -228,59 +292,229 @@ public class PersonalInfoFragment extends Fragment {
         });
 
         //----------------------------------------------------------
+        //BIRTHDAY
+        TextView label_Birthday = new TextView(getContext());
+        label_Birthday.setText(getString(R.string.PersonalInfoFrag_Birthday));
+        label_Birthday.setPadding(85, 85, 0, 0);
+        //----------------------------------------------------------
+        BirthdayCalendar = new CustomDatePicker(getContext());
+        BirthdayCalendar.setPadding(85, 85, 85, 85);
+
+        //----------------------------------------------------------
+
         linearLayout.addView(label_UserName);
         linearLayout.addView(item_UserName);
         linearLayout.addView(label_PhoneNumber);
         linearLayout.addView(item_PhoneNumber);
         linearLayout.addView(label_Email);
         linearLayout.addView(item_Email);
+        linearLayout.addView(label_Birthday);
+        linearLayout.addView(BirthdayCalendar);
 
         FloatingActionButton SaveChangesButton = root.findViewById(R.id.SaveChangesButton);
         SaveChangesButton.setOnClickListener(v -> {
             //Toast.makeText(getContext(), "Remplazar por tu codigo", Toast.LENGTH_LONG).show();
             saveUserData();
         });
-
         loadUserData();
         return root;
     }
 
+    @SuppressLint("NonConstantResourceId")
+    private void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ReadyLabelButtonUserName:
+                setUserNameText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
+                setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
+                break;
+            case R.id.ReadyLabelButtonEmail:
+                //setUserEmailText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
+                EmailSimpleEditText.setText(LoggedUserEmail);
+                setBottomSheetBehavior(EmailBottomSheetBehavior,1);
+                break;
+            case R.id.ReadyLabelButtonPhoneNumber:
+                setUserPhoneNumber(PhoneNumberSimpleEditText.getText().toString(),countryCodeSpinner.getSelectedItem().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
+                setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
+                break;
+            case R.id.UpdateEmailButton:
+                //mostrar cartelito con confirmacion informando que necesitara validar el email y se desconectara.
+                //si acepta, dar update al auth email
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                if (currentUser != null) {
+                                    reAuthenticate(); // Comienda el proceso de Update solicitando credenciales
+                                }
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
+                AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+                builder.setMessage(R.string.PersonalInfoFrag_UpdEmailDialog).setPositiveButton("SI", dialogClickListener).setNegativeButton("NO", dialogClickListener).show();
+
+                break;
+        }
+        }
+
+    private void reAuthenticate (){
+        if (!CredentialsEmailSimpleEditText.getText().toString().equals(EmailSimpleEditText.getText().toString())){
+                if ((CredentialsEmailSimpleEditText!=null && CredentialsPassSimpleEditText!=null) && (!CredentialsEmailSimpleEditText.getText().toString().equals("") && !CredentialsPassSimpleEditText.getText().toString().equals(""))){
+                    AuthCredential vCredentials= EmailAuthProvider.getCredential(CredentialsEmailSimpleEditText.getText().toString(),CredentialsPassSimpleEditText.getText().toString());
+
+                    assert currentUser != null;
+                    currentUser.reauthenticate(vCredentials).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("WHODO_LOG", "User re-authenticated.");
+                                updateAuthEmail();
+                            } else {
+                                Toast.makeText(requireContext(), "Wrong credentials",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(requireContext(), "Credentials cannot be null or empty",Toast.LENGTH_SHORT).show();
+                }
+        } else {
+                Toast.makeText(requireContext(), "Old Email and the new one are equal",Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void updateAuthEmail(){
+        assert currentUser != null;
+        currentUser.updateEmail(EmailSimpleEditText.getText().toString().trim()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d("WHODO_LOG", "User email address updated.");
+                    //desconectar al usuario
+                    sendVerificationEmail();
+
+                } else {
+                    Toast.makeText(requireContext(), "We found a problem trying to update the email, please check your data and try again",Toast.LENGTH_SHORT).show();
+
+                    Log.d("WHODO_LOG", "Error al actualizar el email " );
+                }
+            }
+        });
+    }
+    private void sendVerificationEmail(){
+
+        assert currentUser != null;
+        currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(requireContext(), "Email Update Success. Please verify your Email",Toast.LENGTH_SHORT).show();
+
+                }
+                else
+                {
+                    // email not sent, so display message and restart the activity or do whatever you wish to do
+                    Toast.makeText(getContext(), "We could not send you validation email, please rollback the update with the link we send you", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+
     private void loadUserData () {
-
-        setUserInfoText(MainActivity.getLoggedUser().getName(),getString(R.string.PersonalInfoFrag_UserName1),item_UserName);
-        UserNameSimpleEditText.setText(MainActivity.getLoggedUser().getName());
-        setUserInfoText(MainActivity.getLoggedUser().getPhone(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
-        PhoneNumberSimpleEditText.setText(MainActivity.getLoggedUser().getPhone());
-        setUserInfoText(MainActivity.getLoggedUser().getEmail(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
-        EmailSimpleEditText.setText(MainActivity.getLoggedUser().getEmail());
-
+        //TODO Verificar conexion para evitar errores en esta ventana
+            setUserNameText(MainActivity.getLoggedUser().getName(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
+            UserNameSimpleEditText.setText(MainActivity.getLoggedUser().getName());
+            setUserPhoneNumber(MainActivity.getLoggedUser().getPhone(), MainActivity.getLoggedUser().getPhone_ccn(), getString(R.string.PersonalInfoFrag_PhoneNumber1), item_PhoneNumber);
+            PhoneNumberSimpleEditText.setText(MainActivity.getLoggedUser().getPhone());
+            countryCodeSpinner.setSelection(setCCNIndex());
+            setUserEmailText(MainActivity.getLoggedUser().getEmail(), getString(R.string.PersonalInfoFrag_Email1), item_Email);
+            EmailSimpleEditText.setText(MainActivity.getLoggedUser().getEmail());
+            String YEAR=String.valueOf(MainActivity.getLoggedUser().getBirthday()).substring(0,4);
+            String MONTH=String.valueOf(MainActivity.getLoggedUser().getBirthday()).substring(4,6);
+            String DAY=String.valueOf(MainActivity.getLoggedUser().getBirthday()).substring(6,8);
+            BirthdayCalendar.updateDate(Integer.parseInt(YEAR), Integer.parseInt(MONTH)-1, Integer.parseInt(DAY));
     }
     private void saveUserData (){
-
         MainActivity.getLoggedUser().setName(LoggedUserName);
         MainActivity.getLoggedUser().setPhone(LoggedUserPhoneNumber);
+        MainActivity.getLoggedUser().setPhone_ccn(LoggedUserCCN);
         MainActivity.getLoggedUser().setEmail(LoggedUserEmail);
-
+        MainActivity.getLoggedUser().setBirthday(Long.parseLong(SetBirthday()));
         requireActivity().finish();
     }
+    private String SetBirthday (){
+        String CustomDate;
+        String MONTH;
+        String DAY;
 
-    private void setUserInfoText(String text1,String text2,ProfileItem ProfileItem1){
-        if ( text1.trim().length() != 0  ) {
-            ProfileItem1.setText(text1);
-            if (item_UserName.equals(ProfileItem1)) {
-                LoggedUserName = text1;
-            } else if (item_PhoneNumber.equals(ProfileItem1)) {
-                LoggedUserPhoneNumber = text1;
-            } else if (item_Email.equals(ProfileItem1)) {
-                LoggedUserEmail = text1;
-            }
+        if (BirthdayCalendar.getDayOfMonth() <10){
+            DAY = "0"+BirthdayCalendar.getDayOfMonth();
+        } else {
+            DAY = BirthdayCalendar.getDayOfMonth()+"";
+        }
+
+        if ((BirthdayCalendar.getMonth() + 1) <10) {
+            MONTH = "0"+(BirthdayCalendar.getMonth()+1);
+        } else {
+            MONTH = (BirthdayCalendar.getMonth()+1)+"";
+        }
+
+        CustomDate = BirthdayCalendar.getYear() + MONTH + DAY + "";
+
+        Log.i("CustomDate", "CustomDate: " + CustomDate);
+        return CustomDate;
+    }
+    private int setCCNIndex(){
+        int index=0;
+        for(int i = 0; i< countryCodeSpinner.getCount(); i++) {
+
+          if (countryCodeSpinner.getItemAtPosition(i).toString().equals(LoggedUserCCN))
+          {index=i;}
+
+        }
+        return index;
+    }
+    private void setUserNameText(String UserName,String EmptyString, ProfileItem ProfileItem1){
+        if ( UserName.trim().length() != 0  ) {
+            ProfileItem1.setText(UserName);
+                LoggedUserName = UserName;
         }
         else
         {
-            ProfileItem1.setText(text2);
-            LoggedUserEmail="";
-        }
+                LoggedUserName = MainActivity.getLoggedUser().getEmail();
+                UserNameSimpleEditText.setText(LoggedUserName);
+                ProfileItem1.setText(LoggedUserName);
 
+        }
+    }
+    private void setUserEmailText(String Email,String EmptyString, ProfileItem ProfileItem1){
+        if ( Email.trim().length() != 0  ) {
+            LoggedUserEmail = Email;
+            //Actualizar el email implica desconectar, por lo que nunca se reemplaza si cierra la ventana
+
+            ProfileItem1.setText(LoggedUserEmail);
+        }
+        else
+        {
+                LoggedUserEmail = MainActivity.getLoggedUser().getEmail();
+                ProfileItem1.setText(LoggedUserEmail);
+
+        }
+    }
+    private void setUserPhoneNumber(String NIM,String CCN,String EmptyString, ProfileItem MenuItem){
+        if ( NIM.trim().length() != 0 && !Objects.equals(CCN, "-")) {
+           LoggedUserPhoneNumber = NIM;
+           LoggedUserCCN=CCN;
+           MenuItem.setText(CCN+" "+NIM);
+        }
+        else
+        {
+            MenuItem.setText(EmptyString);
+            LoggedUserPhoneNumber="";
+            LoggedUserCCN="-";
+        }
     }
     private void setBottomSheetBehavior (BottomSheetBehavior<LinearLayout> mBottomSheetBehavior, Integer mState){
         if (mState==0){
@@ -289,16 +523,16 @@ public class PersonalInfoFragment extends Fragment {
             BlackBackground_bottom_sheet.setClickable(true);
             BlackBackground_bottom_sheet.setAlpha(0.25F);
 
+
         } else {
+            hideKeyboard(requireActivity());
             mBottomSheetBehavior.setHideable(true);
             mBottomSheetBehavior.setState(STATE_HIDDEN);
             BlackBackground_bottom_sheet.setClickable(false);
             BlackBackground_bottom_sheet.setAlpha(0);
+
         }
     }
-
-
-
 
 
 }

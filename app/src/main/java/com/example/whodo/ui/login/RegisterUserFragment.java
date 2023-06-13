@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.whodo.BusinessClasses.User;
+import com.example.whodo.LoginActivity;
 import com.example.whodo.MainActivity;
 import com.example.whodo.R;
 import com.example.whodo.crud.CRUD;
@@ -30,6 +31,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
 
 public class RegisterUserFragment extends Fragment {
     private EditText MailSimpleEditText;
@@ -134,51 +139,15 @@ public class RegisterUserFragment extends Fragment {
 
                 if (!MailSimpleEditText.getText().toString().equals("") && lengthValidationCheckBox.isChecked() && lowerUpperCaseCheckBox.isChecked() && symbolCaseCheckBox.isChecked() && agreementCheckbox.isChecked())
                 {
-                    //should get most of this parameters like address and lat from googlelocations and set the other with default values to be updated later
-                    // emial, pass, cell_phone are mandatory
-                    CRUD CRUD = new CRUD();
-                    Log.i("botton1", "Presionaste el boton <Registrarse>" );
-
-                        String Name=MailSimpleEditText.getText().toString().toUpperCase();
-                        int Birthdate=19000101;
-                        String Email=MailSimpleEditText.getText().toString();
-                        String Address="".toUpperCase();
-                        double Latitude=0.0;
-                        double Longitude=0.0;
-                        String Phone="321";
-                        String Type="CUSTOMER";
-                        String Password=ClaveSimpleEditText.getText().toString();
-
-
-                        //DEFAULT DATA USER
-                        User DefaultUser = new User(Name, Birthdate, Email,Address,Latitude,Longitude,Phone,Type,Password);
-
-
-                        mAuth.createUserWithEmailAndPassword(DefaultUser.getEmail(), DefaultUser.getPassword())
-                            .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                        mAuth.createUserWithEmailAndPassword(MailSimpleEditText.getText().toString(),ClaveSimpleEditText.getText().toString()).addOnCompleteListener( new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        Log.d(TAG, "createUserWithEmail:success");
-                                        currentUser= mAuth.getCurrentUser();
-                                        assert currentUser != null;
-                                        DefaultUser.setUid(currentUser.getUid());
-                                        Log.d(TAG, "createUserWithEmail:success ///// UID: " + DefaultUser.getUid());
-                                        CRUD.CreateUser(DefaultUser); // necesary to create DEFAULT data in USERS
-                                        Toast.makeText(requireContext(), "Authentication Success. Please verify your Email",Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(requireActivity(), MainActivity.class);
-                                        //Bundle b = new Bundle();
-                                        //b.putString("LoggedUser_Email",currentUser.getEmail());
-                                        //b.putString("LoggedUser_Uid",currentUser.getUid());
-                                        //intent.putExtras(b); //Put your id to your next Intent
-                                        requireActivity().startActivity(intent);
-                                        requireActivity().finish();
+                                        sendVerificationEmail();
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                                         Toast.makeText(requireContext(), "Authentication failed.",Toast.LENGTH_SHORT).show();
-
                                     }
                                 }
                             });
@@ -251,8 +220,53 @@ public class RegisterUserFragment extends Fragment {
         String password = String.valueOf(data);
         return !password.equals(password.toUpperCase());
     }
+    private void sendVerificationEmail()
+    {
+        currentUser= mAuth.getCurrentUser();
+        assert currentUser != null;
+        currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //TODO buscar la fecha de creacion del usuario y enviarla como parametro en la creacion del objeto USER - DONE
 
+                            CRUD CRUD = new CRUD();
+                            String Name=MailSimpleEditText.getText().toString().toUpperCase();
+                            String Email=MailSimpleEditText.getText().toString();
+                            String Password=ClaveSimpleEditText.getText().toString();
+                            String Uid=currentUser.getUid();
+                            User DefaultUser = new User(Uid,Name,Email,Password);
+                            DefaultUser.setCreateDate(creationDateParse(Objects.requireNonNull(mAuth.getCurrentUser().getMetadata()).getCreationTimestamp()));
+                            CRUD.CreateUser(DefaultUser);
 
+                            //Luego de la creacion se procede a mostrar un mensaje, llamar a MainActivity y cerrar la actividad de logeo
+                            Log.d(TAG, "createUserWithEmail:success ///// UID: " + DefaultUser.getUid());
+                            Toast.makeText(requireContext(), "Authentication Success. Please verify your Email",Toast.LENGTH_SHORT).show();
+
+                            // email sent
+                            // after email is sent just logout the user and finish this activity
+                            Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                            requireActivity().startActivity(intent);
+                            FirebaseAuth.getInstance().signOut();
+                            requireActivity().finish();
+                        }
+                        else
+                        {
+                            // email not sent, so display message and restart the activity or do whatever you wish to do
+                            Toast.makeText(getContext(), "We could not send you validation email, please try again using a valid email address", Toast.LENGTH_LONG).show();
+                            currentUser.delete();
+                        }
+                    }
+                });
+    }
+
+    private long creationDateParse ( Long pTimestamp)
+    {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        long dateString = Long.parseLong(formatter.format(new Date(Long.parseLong(String.valueOf(pTimestamp)))));
+        Log.i("DATE", "User Creation Date: "+ dateString);
+        return dateString;
+    }
 
     }
 

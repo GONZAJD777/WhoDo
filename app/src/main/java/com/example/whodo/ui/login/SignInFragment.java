@@ -65,7 +65,6 @@ public class SignInFragment extends Fragment {
         @SuppressLint("NonConstantResourceId")
         private void onClick(View view)
     {
-
         switch (view.getId()) {
 
             case R.id.LoginShowHideButton:
@@ -85,27 +84,14 @@ public class SignInFragment extends Fragment {
                 Log.i("botton1", "Presionaste el boton <login with Email>" );
             if (!MailSimpleEditText.getText().toString().equals("") && !ClaveSimpleEditText.getText().toString().equals("") ) {
                 FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-                mAuth.signInWithEmailAndPassword(MailSimpleEditText.getText().toString(), ClaveSimpleEditText.getText().toString())
-                        .addOnCompleteListener(task -> {
+                mAuth.signInWithEmailAndPassword(MailSimpleEditText.getText().toString(), ClaveSimpleEditText.getText().toString()).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "LoginUserWithEmail:success");
-                                FirebaseUser currentUser = mAuth.getCurrentUser();
-                                assert currentUser != null;
-                                Log.d(TAG, "LoginUserWithEmail:success ///// UID: " + currentUser.getUid());
-                                Toast.makeText(requireContext(), "Authentication Success. Please verify your Email", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(requireActivity(), MainActivity.class);
-                                //Bundle b = new Bundle();
-                                //b.putString("LoggedUser_Email",currentUser.getEmail());
-                                //b.putString("LoggedUser_Uid",currentUser.getUid());
-                                //intent.putExtras(b); //Put your id to your next Intent
-                                requireActivity().startActivity(intent);
-                                requireActivity().finish();
+                                checkIfEmailVerified();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "LoginUserWithEmail:failure", task.getException());
-                                Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(requireContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
                             }
                         });
             }
@@ -126,5 +112,31 @@ public class SignInFragment extends Fragment {
                 Log.i("botton3", "Presionaste el boton <login with Facebook>" );
                 break;
             }
+    }
+    private void checkIfEmailVerified()
+    {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        assert user != null;
+        if (user.isEmailVerified())
+        {
+            //TODO actualizar en la base el estado y fecha de validacion de la cuenta una vez que el usuario logea tomar la variable de validacion y verificar si esta en 1, sino lo esta actualizarla a 1 y actualizar la fecha de validacion - DONE
+            //TODO implementar mecanismo para borrar cuentas no validadas
+            Log.d(TAG, "LoginUserWithEmail:success");
+            // user is verified, so you can finish this activity or send user to activity which you want.
+            Toast.makeText(requireContext(), "Authentication Success", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(requireActivity(), MainActivity.class);
+
+            requireActivity().startActivity(intent);
+            requireActivity().finish();
+        }
+        else
+        {
+            // email is not verified, so just prompt the message to the user and restart this activity.
+            // NOTE: don't forget to log out the user.
+            Toast.makeText(requireContext(), "Authentication Failed, you should verify your email address", Toast.LENGTH_SHORT).show();
+            FirebaseAuth.getInstance().signOut();
+
+        }
     }
 }

@@ -13,6 +13,8 @@ public class User  {
     private double Latitude;        // Latitude of User Address, no current Location used to pin in the map
     private double Longitude;       // Longitude of User Address, no current Location used to pin in the map
     private String Phone;           // Phone Number asociated with the account
+
+    private String Phone_ccn;           // CCN Phone Number asociated with the account
     private String Type;            // Customer or Provider
     private String Password;        // Account Password registered in the Account
     private long CreateDate;         // Account Creation Date
@@ -27,17 +29,18 @@ public class User  {
 
     public User ()
    {}
+   public User(String Uid,String Name,String Email,String Password) {
 
-   public User(String Name, int Birthday, String Email, String Address, double Latitude, double Longitude, String Phone, String Type,String Password) {
-        this.Uid="";
+        this.Uid=Uid;
         this.Name=Name;
-        this.Birthday=Birthday;
+        this.Birthday=19000101;
         this.Email=Email;
-        this.Address=Address;
-        this.Latitude=Latitude;
-        this.Longitude=Longitude;
-        this.Phone=Phone;
-        this.Type=Type;
+        this.Address="";
+        this.Latitude=0.0;
+        this.Longitude=0.0;
+        this.Phone="";
+        this.Phone_ccn="-";
+        this.Type="CUSTOMER";
         this.Password=Password;
         this.CreateDate=19700101;
         this.DeleteDate=20991231;
@@ -118,6 +121,11 @@ public class User  {
     }
     public void setPhone(String Phone){
         this.Phone=Phone;
+    }
+
+    public String getPhone_ccn() {return Phone_ccn;}
+    public void setPhone_ccn(String Phone_ccn){
+        this.Phone_ccn=Phone_ccn;
     }
 
     public String getType() {return Type;}

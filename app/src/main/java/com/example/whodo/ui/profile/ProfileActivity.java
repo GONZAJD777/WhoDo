@@ -1,9 +1,11 @@
 package com.example.whodo.ui.profile;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -16,8 +18,6 @@ import com.example.whodo.adapters.Profile_ViewPagerAdapter;
 
 public class ProfileActivity extends AppCompatActivity {
 
-
-    private androidx.viewpager2.widget.ViewPager2 ViewPager2;
 
     @SuppressLint({"RestrictedApi", "LongLogTag"})
     @Override
@@ -36,9 +36,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         //actionBar.hide();
 
-        ViewPager2 = findViewById(R.id.Profile_view_pager);
+        androidx.viewpager2.widget.ViewPager2 viewPager2 = findViewById(R.id.Profile_view_pager);
         Profile_ViewPagerAdapter Profile_ViewPagerAdapter = new Profile_ViewPagerAdapter(this,FragmentId);
-        ViewPager2.setAdapter(Profile_ViewPagerAdapter);
+        viewPager2.setAdapter(Profile_ViewPagerAdapter);
 
     }
 
@@ -46,6 +46,16 @@ public class ProfileActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 

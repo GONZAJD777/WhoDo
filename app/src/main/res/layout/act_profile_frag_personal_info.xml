@@ -69,7 +69,7 @@
 
     <LinearLayout
         android:id="@+id/UserName_bottom_sheet"
-        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        style="@style/CustomShapeAppearanceFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -83,15 +83,17 @@
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior"
         android:focusable="true">
-
-        <View
-            android:id="@+id/UserName_bottom_sheet_notch"
-            android:layout_width="40dp"
-            android:layout_height="3dp"
-            android:layout_gravity="center"
-            android:background="?attr/actionBarDivider"
-            android:backgroundTint="#535353"
-            android:backgroundTintMode="add" />
+        <TextView
+            android:id="@+id/ReadyLabelButtonUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="33dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/PersonalInfoFrag_ReadyLabelButton"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/UserNameTextView"
@@ -118,10 +120,12 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/UserNameSimpleTextInputLayout"
             style="@style/CustomShapeAppearanceFrameLayout"
-            android:layout_width="367dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="14dp"
             app:boxBackgroundMode="none"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="22dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -136,6 +140,7 @@
                 android:background="@android:color/transparent"
                 android:gravity="start|top"
                 android:inputType="text"
+                android:maxLength="100"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
@@ -145,7 +150,7 @@
 
     <LinearLayout
         android:id="@+id/Email_bottom_sheet"
-        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        style="@style/CustomShapeAppearanceFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -160,15 +165,17 @@
         app:layout_behavior="@string/bottom_sheet_behavior"
         android:focusable="true">
 
-        <View
-            android:id="@+id/Email_bottom_sheet_notch"
-            android:layout_width="40dp"
-            android:layout_height="3dp"
-            android:layout_gravity="center"
-            android:background="?attr/actionBarDivider"
-            android:backgroundTint="#535353"
-            android:backgroundTintMode="add" />
-
+        <TextView
+            android:id="@+id/ReadyLabelButtonEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="33dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/PersonalInfoFrag_ReadyLabelButton"
+            android:textSize="20sp" />
         <TextView
             android:id="@+id/EmailTextView"
             android:layout_width="match_parent"
@@ -191,12 +198,79 @@
             android:paddingBottom="14dp"
             android:text="@string/PersonalInfoFrag_Label_Email" />
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/CredentialsEmailTextInputLayout"
+            style="@style/CustomShapeAppearanceFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            app:boxBackgroundMode="none"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="22dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+        <EditText
+            android:id="@+id/CredentialsEmailSimpleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:autoText="false"
+            android:background="@android:color/transparent"
+            android:gravity="start|top"
+            android:inputType="textWebEmailAddress"
+            android:maxLength="100"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:singleLine="true"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/CredentialsPassTextInputLayout"
+            style="@style/CustomShapeAppearanceFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            app:boxBackgroundMode="none"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="22dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+        <EditText
+            android:id="@+id/CredentialsPassSimpleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:autoText="false"
+            android:background="@android:color/transparent"
+            android:gravity="start|top"
+            android:inputType="textWebEmailAddress"
+            android:maxLength="100"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:singleLine="true"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/EmailSimpleTextInputLayout"
             style="@style/CustomShapeAppearanceFrameLayout"
-            android:layout_width="367dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="22dp"
             android:paddingBottom="14dp"
             app:boxBackgroundMode="none"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -213,17 +287,27 @@
                 android:autoText="false"
                 android:background="@android:color/transparent"
                 android:gravity="start|top"
+                android:inputType="textWebEmailAddress"
+                android:maxLength="100"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
                 tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/UpdateEmailButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="22dp"
+            android:text="@string/PersonalInfoFrag_VerifyButtonEmail" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/PhoneNumber_bottom_sheet"
-        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        style="@style/CustomShapeAppearanceFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -231,20 +315,25 @@
         android:gravity="center|top|center_vertical"
         android:orientation="vertical"
         android:paddingTop="10dp"
+
         android:paddingBottom="32dp"
         app:behavior_fitToContents="false"
         app:behavior_halfExpandedRatio="0.6"
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior"
         android:focusable="true">
-        <View
-            android:id="@+id/PhoneNumber_bottom_sheet_notch"
-            android:layout_width="40dp"
-            android:layout_height="3dp"
-            android:layout_gravity="center"
-            android:background="?attr/actionBarDivider"
-            android:backgroundTint="#535353"
-            android:backgroundTintMode="add" />
+
+        <TextView
+            android:id="@+id/ReadyLabelButtonPhoneNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="33dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/PersonalInfoFrag_ReadyLabelButton"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/PhoneNumberTextView"
@@ -268,11 +357,24 @@
             android:paddingBottom="14dp"
             android:text="@string/PersonalInfoFrag_Label_PhoneNumber" />
 
+        <Spinner
+            android:id="@+id/CountryCodeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="22dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounded_corner_16dp"
+            android:spinnerMode="dialog" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/PhoneNumberSimpleTextInputLayout"
             style="@style/CustomShapeAppearanceFrameLayout"
-            android:layout_width="367dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="22dp"
             android:paddingBottom="14dp"
             app:boxBackgroundMode="none"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -285,9 +387,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:autoText="false"
                 android:background="@android:color/transparent"
                 android:gravity="start|top"
+                android:inputType="number"
+                android:maxLength="15"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"

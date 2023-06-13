@@ -1,6 +1,7 @@
 package com.example.whodo.ui.profile;
 
 import static com.example.whodo.MainActivity.getLoggedUser;
+import static com.example.whodo.ui.profile.ProfileActivity.hideKeyboard;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED;
@@ -8,6 +9,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -56,7 +58,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
-import java.net.URI;
 import java.util.ArrayList;
 
 public class EditProfileFragment extends Fragment implements OnMapReadyCallback {
@@ -72,7 +73,6 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private ImageView imagePicker;
     private LatLng mLatLng;
-
     private String LoggedUserImage;
     private String LoggedUserLanguages="";
     private String LoggedUserDescription="";
@@ -84,8 +84,11 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private ProfileItem item_Languages;
     private EditText DescriptionSimpleEditText;
     private EditText LocationSimpleEditText;
-    LinearLayout LanguagesLinearLayout;
-    LinearLayout BlackBackground_bottom_sheet;
+    private LinearLayout LanguagesLinearLayout;
+    private LinearLayout BlackBackground_bottom_sheet;
+    private BottomSheetBehavior<LinearLayout> DescriptionBottomSheetBehavior;
+    private BottomSheetBehavior<LinearLayout> LocationBottomSheetBehavior;
+    private BottomSheetBehavior<LinearLayout> LanguagesBottomSheetBehavior;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -97,6 +100,14 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         mapView.onCreate(savedInstanceState);
         getLocationPermission();
 
+        TextView ReadyLabelButtonDescription = root.findViewById(R.id.ReadyLabelButtonDescription);
+        TextView ReadyLabelButtonLocation = root.findViewById(R.id.ReadyLabelButtonLocation);
+        TextView ReadyLabelButtonLanguages = root.findViewById(R.id.ReadyLabelButtonLanguages);
+
+        ReadyLabelButtonDescription.setOnClickListener(this::onClick);
+        ReadyLabelButtonLocation.setOnClickListener(this::onClick);
+        ReadyLabelButtonLanguages.setOnClickListener(this::onClick);
+
         DescriptionSimpleEditText = root.findViewById(R.id.DescriptionSimpleEditText);
         LocationSimpleEditText = root.findViewById(R.id.LocationSimpleEditText);
         LanguagesLinearLayout= root.findViewById(R.id.LanguagesLinearLayout);;
@@ -105,11 +116,13 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         LinearLayout Location_bottom_sheet = root.findViewById(R.id.Location_bottom_sheet);
         LinearLayout Languages_bottom_sheet = root.findViewById(R.id.Languages_bottom_sheet);
         BlackBackground_bottom_sheet = root.findViewById(R.id.BlackBackground_bottom_sheet);
-        BottomSheetBehavior<LinearLayout> DescriptionBottomSheetBehavior = BottomSheetBehavior.from(Description_bottom_sheet);
-        BottomSheetBehavior<LinearLayout> LocationBottomSheetBehavior = BottomSheetBehavior.from(Location_bottom_sheet);
-        BottomSheetBehavior<LinearLayout> LanguagesBottomSheetBehavior = BottomSheetBehavior.from(Languages_bottom_sheet);
+        DescriptionBottomSheetBehavior = BottomSheetBehavior.from(Description_bottom_sheet);
+        LocationBottomSheetBehavior = BottomSheetBehavior.from(Location_bottom_sheet);
+        LanguagesBottomSheetBehavior = BottomSheetBehavior.from(Languages_bottom_sheet);
         BottomSheetBehavior<LinearLayout> BlackBackgroundBottomSheetBehavior = BottomSheetBehavior.from(BlackBackground_bottom_sheet);
-        DescriptionBottomSheetBehavior.setFitToContents(true);
+        //DescriptionBottomSheetBehavior.setFitToContents(true);
+        //DescriptionBottomSheetBehavior.setExpandedOffset(500);
+        DescriptionBottomSheetBehavior.setDraggable(false);
         LanguagesBottomSheetBehavior.setFitToContents(true);
         BlackBackgroundBottomSheetBehavior.setState(STATE_EXPANDED);
         BlackBackgroundBottomSheetBehavior.setDraggable(false);
@@ -129,7 +142,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setDescriptionText(DescriptionSimpleEditText.getText().toString(),item_Description,getString(R.string.PersonalInfoFrag_Description1));
+                    setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
                     setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
                 }
             });
@@ -147,12 +160,12 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                         break;
                     case STATE_COLLAPSED:
                         Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setDescriptionText(DescriptionSimpleEditText.getText().toString(),item_Description,getString(R.string.PersonalInfoFrag_Description1));
+                        setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
                         setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
                         break;
                     case STATE_HIDDEN:
                         Log.i("BottomSheetBehavior", "STATE_HIDDEN");
-                        setDescriptionText(DescriptionSimpleEditText.getText().toString(),item_Description,getString(R.string.PersonalInfoFrag_Description1));
+                        setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
                         setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -300,10 +313,10 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             // Callback is invoked after the user selects a media item or closes the
             // photo picker.
             if (uri != null) {
+                requireContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 Log.d("PhotoPicker", "Selected URI: " + uri);
                 Picasso.get().load(uri).into(imagePicker);
                 LoggedUserImage= String.valueOf(uri);
-                //CRUD.uploadProfileImage();
             } else {
                 Log.d("PhotoPicker", "No media selected");
             }
@@ -334,10 +347,34 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         loadUserData();
         return root;
     }
+
+    @SuppressLint("NonConstantResourceId")
+    private void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ReadyLabelButtonDescription:
+                setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
+                setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
+                break;
+            case R.id.ReadyLabelButtonLocation:
+                setLocationText(LocationSimpleEditText.getText().toString(),mLatLng,getString(R.string.PersonalInfoFrag_Location1),item_Location);
+                setBottomSheetBehavior(LocationBottomSheetBehavior,1);
+
+                break;
+            case R.id.ReadyLabelButtonLanguages:
+                setLanguagesText(LoggedUserLanguages,getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
+                setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);
+
+                break;
+
+        }
+
+
+    }
+
     private void loadUserData () {
         Picasso.get().load(getLoggedUser().getProfilePicture()).into(imagePicker);
         LoggedUserImage=getLoggedUser().getProfilePicture();
-        setDescriptionText(MainActivity.getLoggedUser().getDescription(),item_Description,getString(R.string.PersonalInfoFrag_Description1));
+        setDescriptionText(MainActivity.getLoggedUser().getDescription(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
         DescriptionSimpleEditText.setText(MainActivity.getLoggedUser().getDescription());
         setLocationText(MainActivity.getLoggedUser().getAddress(),new LatLng(MainActivity.getLoggedUser().getLatitude(),MainActivity.getLoggedUser().getLongitude()),getString(R.string.PersonalInfoFrag_Location1),item_Location);
         LocationSimpleEditText.setText(MainActivity.getLoggedUser().getAddress());
@@ -380,7 +417,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         MainActivity.getLoggedUser().setProfilePicture(LoggedUserImage);
         requireActivity().finish();
     }
-    private void setDescriptionText(String text1, ProfileItem ProfileItem1,String text2){
+    private void setDescriptionText(String text1,String text2,ProfileItem ProfileItem1){
         if (text1.trim().length() != 0 ) {
             ProfileItem1.setText(text1);
             LoggedUserDescription=text1;
@@ -429,6 +466,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             mBottomSheetBehavior.setState(STATE_HIDDEN);
             BlackBackground_bottom_sheet.setClickable(false);
             BlackBackground_bottom_sheet.setAlpha(0);
+            hideKeyboard(requireActivity());
         }
     }
     public void addMarkers(GoogleMap googleMap,LatLng LatLng){
@@ -488,11 +526,10 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
 
     }
     // Select Image method
+
     private void SelectImage() {
         ActivityResultContracts.PickVisualMedia.ImageOnly VisualMediaType = ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE;
-        pickMedia.launch(new PickVisualMediaRequest.Builder()
-                .setMediaType(VisualMediaType)
-                .build());
+        pickMedia.launch(new PickVisualMediaRequest.Builder().setMediaType(VisualMediaType).build());
     }
     //MAP METHODS
     @Override
@@ -514,24 +551,19 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     }
     private void getLocationPermission(){
         Log.d(TAG, "getLocationPermission: getting location permissions");
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION};
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION};
 
-        if(ContextCompat.checkSelfPermission(this.requireContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this.requireContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if(ContextCompat.checkSelfPermission(this.requireContext(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            if(ContextCompat.checkSelfPermission(this.requireContext(),COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            {
                 mLocationPermissionsGranted = true;
                 //initMap();
-            }else{
-                ActivityCompat.requestPermissions(this.requireActivity(),
-                        permissions,
-                        LOCATION_PERMISSION_REQUEST_CODE);
+            } else {
+                ActivityCompat.requestPermissions(this.requireActivity(),permissions,LOCATION_PERMISSION_REQUEST_CODE);
             }
-        }else{
-            ActivityCompat.requestPermissions(this.requireActivity(),
-                    permissions,
-                    LOCATION_PERMISSION_REQUEST_CODE);
+        }else {
+            ActivityCompat.requestPermissions(this.requireActivity(), permissions,LOCATION_PERMISSION_REQUEST_CODE);
         }
         initMap();
     }
@@ -554,11 +586,10 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                         Log.d(TAG, "onComplete: found location!");
                         Location currentLocation = (Location) task.getResult();
                         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                        moveCamera(currentLatLng,DEFAULT_ZOOM);
+                        moveCamera(currentLatLng);
 
                     }else{
                         Log.d(TAG, "onComplete: current location is null");
-
                     }
                 });
             }
@@ -566,9 +597,9 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
         }
     }
-    private void moveCamera(LatLng latLng, float zoom){
+    private void moveCamera(LatLng latLng){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, EditProfileFragment.DEFAULT_ZOOM));
 
        /* if(!title.equals("My Location")){
             MarkerOptions options = new MarkerOptions()

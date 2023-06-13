@@ -25,6 +25,8 @@ import com.example.whodo.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 
 public class ProfileFragment extends Fragment {
 
@@ -63,7 +65,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_PersonalInfo.setText(getString(R.string.profileFrag_ItemText_PersonalInfo));
         item_Profile_PersonalInfo.setImage(R.drawable.ic_activity_black);
         item_Profile_PersonalInfo.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_PersonalInfo), Toast.LENGTH_LONG).show();
             profileActivityIntent(1,getString(R.string.profileFrag_ItemText_PersonalInfo));
         });
         //----------------------------------------------------------
@@ -71,7 +72,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_SesionSecurity.setText(getString(R.string.profileFrag_ItemText_SesionSecurity));
         //item_Profile_SesionSecurity.setImage(R.drawable.);
         item_Profile_SesionSecurity.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_SesionSecurity), Toast.LENGTH_LONG).show();
             profileActivityIntent(2,getString(R.string.profileFrag_ItemText_SesionSecurity));
         });
         //----------------------------------------------------------
@@ -79,7 +79,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_Payment.setText(getString(R.string.profileFrag_ItemText_Payment));
         //item_Profile_Payment.setImage(R.drawable.);
         item_Profile_Payment.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_Payment), Toast.LENGTH_LONG).show();
             profileActivityIntent(3,getString(R.string.profileFrag_ItemText_Payment));
         });
 
@@ -92,7 +91,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_ProviderSettings.setText(getString(R.string.profileFrag_ItemText_ProviderSettings));
         //item_Profile_ProviderSettings.setImage(R.drawable.);
         item_Profile_ProviderSettings.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_ProviderSettings), Toast.LENGTH_LONG).show();
             profileActivityIntent(4,getString(R.string.profileFrag_ItemText_ProviderSettings));
         });
 
@@ -105,7 +103,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_HowItWorks.setText(getString(R.string.profileFrag_ItemText_HowItWorks));
         //item_Profile_HowItWorks.setImage(R.drawable.);
         item_Profile_HowItWorks.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_HowItWorks), Toast.LENGTH_LONG).show();
             profileActivityIntent(5,getString(R.string.profileFrag_ItemText_HowItWorks));
         });
 
@@ -114,7 +111,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_Recomendations.setText(getString(R.string.profileFrag_ItemText_Recomendations));
         //item_Profile_Recomendations.setImage(R.drawable.);
         item_Profile_Recomendations.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_Recomendations), Toast.LENGTH_LONG).show();
             profileActivityIntent(6,getString(R.string.profileFrag_ItemText_Recomendations));
         });
 
@@ -123,7 +119,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_Support.setText(getString(R.string.profileFrag_ItemText_Support));
         //item_Profile_Support.setImage(R.drawable.);
         item_Profile_Support.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_Support), Toast.LENGTH_LONG).show();
             profileActivityIntent(7,getString(R.string.profileFrag_ItemText_Support));
         });
 
@@ -132,7 +127,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_Comments.setText(getString(R.string.profileFrag_ItemText_Comments));
         //item_Profile_Comments.setImage(R.drawable.);
         item_Profile_Comments.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_Comments), Toast.LENGTH_LONG).show();
             profileActivityIntent(8,getString(R.string.profileFrag_ItemText_Comments));
         });
 
@@ -145,7 +139,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_LegalTerms.setText(getString(R.string.profileFrag_ItemText_LegalTerms));
         //item_Profile_LegalTerms.setImage(R.drawable.);
         item_Profile_LegalTerms.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_LegalTerms), Toast.LENGTH_LONG).show();
             profileActivityIntent(9,getString(R.string.profileFrag_ItemText_LegalTerms));
         });
 
@@ -154,7 +147,6 @@ public class ProfileFragment extends Fragment {
         item_Profile_PrivacyPolitics.setText(getString(R.string.profileFrag_ItemText_PrivacyPolitics));
         //item_Profile_PrivacyPolitics.setImage(R.drawable.);
         item_Profile_PrivacyPolitics.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.profileFrag_ItemText_PrivacyPolitics), Toast.LENGTH_LONG).show();
             profileActivityIntent(10,getString(R.string.profileFrag_ItemText_PrivacyPolitics));
         });
         //----------------------------------------------------------
@@ -188,13 +180,7 @@ public class ProfileFragment extends Fragment {
         linearLayout.addView(label_CloseSession);
         linearLayout.addView(label_Version);
 
-        label_CloseSession.setOnClickListener(v -> {
-            //Toast.makeText(getContext(), "Remplazar por tu codigo", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(requireActivity(), LoginActivity.class);
-            requireActivity().startActivity(intent);
-            FirebaseAuth.getInstance().signOut();
-            requireActivity().finish();
-        });
+        label_CloseSession.setOnClickListener(v -> {LogoutUser();});
 
         Log.i("Operacion ProfileFragment.OnCreate()", "Se ejecuta OnCreate() ");
 
@@ -209,16 +195,26 @@ public class ProfileFragment extends Fragment {
         Log.i("Operacion ProfileFragment.onResume()", "La informacion del usuario a cambiado");
     }
 
-    public void profileActivityIntent(int p_fragmentId, String p_fragmentTitle)
-    {
-        Intent intent = new Intent(requireActivity(), ProfileActivity.class);
-        Bundle b = new Bundle();
-        b.putInt("FragmentId",p_fragmentId);
-        b.putString("FragmentTitle",p_fragmentTitle);
-        intent.putExtras(b); //Put your id to your next Intent
-        requireActivity().startActivity(intent);
+    public void profileActivityIntent(int p_fragmentId, String p_fragmentTitle) {
+        if (getLoggedUser().getName() == null) {
+            Toast.makeText(getContext(), "We could not recover user information, you might have conection problem" , Toast.LENGTH_LONG).show();
+        } else{
+            Intent intent = new Intent(requireActivity(), ProfileActivity.class);
+            Bundle b = new Bundle();
+            b.putInt("FragmentId", p_fragmentId);
+            b.putString("FragmentTitle", p_fragmentTitle);
+            intent.putExtras(b); //Put your id to your next Intent
+            requireActivity().startActivity(intent);
+    }
     }
 
+    private void LogoutUser (){
+        //Toast.makeText(getContext(), "Remplazar por tu codigo", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        requireActivity().startActivity(intent);
+        FirebaseAuth.getInstance().signOut();
+        requireActivity().finish();
+    }
 
 
 

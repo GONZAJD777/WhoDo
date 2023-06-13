@@ -1,7 +1,9 @@
 package com.example.whodo;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -101,6 +103,7 @@ public class MainActivityViewModel extends ViewModel {
                     LoggedUser.setLatitude(UserSS.getLatitude());
                     LoggedUser.setLongitude(UserSS.getLongitude());
                     LoggedUser.setPhone(UserSS.getPhone());
+                    LoggedUser.setPhone_ccn(UserSS.getPhone_ccn());
                     LoggedUser.setType(UserSS.getType());
                     LoggedUser.setPassword(UserSS.getPassword());
                     LoggedUser.setCreateDate(UserSS.getCreateDate());
@@ -121,7 +124,10 @@ public class MainActivityViewModel extends ViewModel {
             @SuppressLint("LongLogTag")
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("Operacion MainActivityViewModel.loadUser()",  "Operacion devolvio error " + error );
+
+                Log.i("Operacion MainActivityViewModel.loadUser",  "ERROR CONECTAnDO A LA BASE");
+
+
             }
         });
 

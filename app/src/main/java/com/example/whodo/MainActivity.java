@@ -1,12 +1,20 @@
 package com.example.whodo;
 
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.example.whodo.BusinessClasses.User;
 import com.example.whodo.adapters.Main_ViewPagerAdapter;
+import com.example.whodo.crud.CRUD;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,8 +27,13 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout TabLayout;
     private static final String TAG = "TAG-1";
     private static final User LoggedUser = new User();
+    private static final User LoggedUserSnapshot = new User();
     private static ArrayList<String> Services= new ArrayList<>();
     private static ArrayList<String> Languages= new ArrayList<>();
+    private final CRUD BackgroundUpdateUser= new CRUD();
+
+    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static final FirebaseUser currentUser =mAuth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +114,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        StartUserUpdateThread();
 
+    }
+
+
+    private void StartUserUpdateThread ()
+    {
+        final Handler handler = new Handler();
+
+        new Thread(new Runnable() {
+            public void run() {
+                try{
+
+                    BackgroundUpdateUser.UpdateUser(LoggedUser);
+                }
+                catch (Exception e)
+                {
+                    Log.i("StartUserUpdateThread()", "Ocurrio un error al llamar la funcion BackgroundUpdateUser.UpdateUser(LoggedUser): "+ e );
+                }
+                finally
+                {
+                    //also call the same runnable to call it at regular interval
+                    handler.postDelayed(this, 60000);
+                }
+            }
+        }).start();
     }
 
     private static void UpdateServices(ArrayList<String> ArrayServices) {
@@ -117,35 +155,67 @@ public class MainActivity extends AppCompatActivity {
     }
     public static ArrayList<String> getLanguages() {
         return MainActivity.Languages;
-
     }
-
-
     public static User getLoggedUser() {
         return MainActivity.LoggedUser;
-
     }
+
+    public static User getLoggedUserSnapshot() {
+        return MainActivity.LoggedUserSnapshot;
+    }
+
     public static void UpdateLoggedUser(User p_user){
-        Log.i(TAG, "CARGANDO LOS DATOS DEL USUARIO LOGEADO");
-        MainActivity.LoggedUser.setUid(p_user.getUid());
-        MainActivity.LoggedUser.setName(p_user.getName());
-        MainActivity.LoggedUser.setBirthday(p_user.getBirthday());
-        MainActivity.LoggedUser.setEmail(p_user.getEmail());
-        MainActivity.LoggedUser.setAddress(p_user.getAddress());
-        MainActivity.LoggedUser.setLatitude(p_user.getLatitude());
-        MainActivity.LoggedUser.setLongitude(p_user.getLongitude());
-        MainActivity.LoggedUser.setPhone(p_user.getPhone());
-        MainActivity.LoggedUser.setType(p_user.getType());
-        MainActivity.LoggedUser.setPassword(p_user.getPassword());
-        MainActivity.LoggedUser.setCreateDate(p_user.getCreateDate());
-        MainActivity.LoggedUser.setDeleteDate(p_user.getDeleteDate());
-        MainActivity.LoggedUser.setState(p_user.getState());
-        MainActivity.LoggedUser.setIsValidated(p_user.getIsValidated());
-        MainActivity.LoggedUser.setProfilePicture(p_user.getProfilePicture());
-        MainActivity.LoggedUser.setLanguages(p_user.getLanguages());
-        MainActivity.LoggedUser.setDescription(p_user.getDescription());
+        if(currentUser != null) {
+            MainActivity.LoggedUser.setEmail(currentUser.getEmail());
+            Log.i(TAG, "CARGANDO LOS DATOS DEL USUARIO LOGEADO "+currentUser.getEmail());
+        } else {
+            Log.i("UpdateLoggedUser()", "CURRENT USER WAS NULL!");
+            MainActivity.LoggedUser.setEmail(p_user.getEmail());
+            Log.i(TAG, "CARGANDO LOS DATOS DEL USUARIO LOGEADO "+p_user.getEmail());
+        }
+
+
+           MainActivity.LoggedUser.setUid(p_user.getUid());
+           MainActivity.LoggedUser.setName(p_user.getName());
+           MainActivity.LoggedUser.setBirthday(p_user.getBirthday());
+           MainActivity.LoggedUser.setAddress(p_user.getAddress());
+           MainActivity.LoggedUser.setLatitude(p_user.getLatitude());
+           MainActivity.LoggedUser.setLongitude(p_user.getLongitude());
+           MainActivity.LoggedUser.setPhone(p_user.getPhone());
+           MainActivity.LoggedUser.setPhone_ccn(p_user.getPhone_ccn());
+           MainActivity.LoggedUser.setType(p_user.getType());
+           MainActivity.LoggedUser.setPassword(p_user.getPassword());
+           MainActivity.LoggedUser.setCreateDate(p_user.getCreateDate());
+           MainActivity.LoggedUser.setDeleteDate(p_user.getDeleteDate());
+           MainActivity.LoggedUser.setState(p_user.getState());
+           MainActivity.LoggedUser.setIsValidated(1);
+           MainActivity.LoggedUser.setProfilePicture(p_user.getProfilePicture());
+           MainActivity.LoggedUser.setLanguages(p_user.getLanguages());
+           MainActivity.LoggedUser.setDescription(p_user.getDescription());
+           MainActivity.LoggedUserSnapshot.setUid(p_user.getUid());
+           MainActivity.LoggedUserSnapshot.setName(p_user.getName());
+           MainActivity.LoggedUserSnapshot.setBirthday(p_user.getBirthday());
+           MainActivity.LoggedUserSnapshot.setEmail(p_user.getEmail());
+           MainActivity.LoggedUserSnapshot.setAddress(p_user.getAddress());
+           MainActivity.LoggedUserSnapshot.setLatitude(p_user.getLatitude());
+           MainActivity.LoggedUserSnapshot.setLongitude(p_user.getLongitude());
+           MainActivity.LoggedUserSnapshot.setPhone(p_user.getPhone());
+           MainActivity.LoggedUserSnapshot.setPhone_ccn(p_user.getPhone_ccn());
+           MainActivity.LoggedUserSnapshot.setType(p_user.getType());
+           MainActivity.LoggedUserSnapshot.setPassword(p_user.getPassword());
+           MainActivity.LoggedUserSnapshot.setCreateDate(p_user.getCreateDate());
+           MainActivity.LoggedUserSnapshot.setDeleteDate(p_user.getDeleteDate());
+           MainActivity.LoggedUserSnapshot.setState(p_user.getState());
+           MainActivity.LoggedUserSnapshot.setIsValidated(p_user.getIsValidated());
+           MainActivity.LoggedUserSnapshot.setProfilePicture(p_user.getProfilePicture());
+           MainActivity.LoggedUserSnapshot.setLanguages(p_user.getLanguages());
+           MainActivity.LoggedUserSnapshot.setDescription(p_user.getDescription());
+
+       }
+
+
 
 
     }
 
-}
+

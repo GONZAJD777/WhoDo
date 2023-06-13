@@ -111,7 +111,7 @@
 
     <LinearLayout
         android:id="@+id/Description_bottom_sheet"
-        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        style="@style/CustomShapeAppearanceFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -125,14 +125,17 @@
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
-        <View
-            android:id="@+id/bottom_sheet_notch"
-            android:layout_width="40dp"
-            android:layout_height="3dp"
-            android:layout_gravity="center"
-            android:background="?attr/actionBarDivider"
-            android:backgroundTint="#535353"
-            android:backgroundTintMode="add" />
+        <TextView
+            android:id="@+id/ReadyLabelButtonDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="33dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/PersonalInfoFrag_ReadyLabelButton"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/DescriptionTextView"
@@ -159,15 +162,20 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/DescriptionSimpleTextInputLayout"
             style="@style/CustomShapeAppearanceFrameLayout"
-            android:layout_width="367dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="22dp"
             android:paddingBottom="14dp"
             app:boxBackgroundMode="none"
             app:endIconMode="clear_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:counterEnabled="true"
+            app:counterMaxLength="200"
+            >
 
             <EditText
                 android:id="@+id/DescriptionSimpleEditText"
@@ -178,6 +186,7 @@
                 android:background="@android:color/transparent"
                 android:gravity="start|top"
                 android:inputType="textMultiLine"
+                android:maxLength="200"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
@@ -207,6 +216,18 @@
             android:background="?attr/actionBarDivider"
             android:backgroundTint="#535353"
             android:backgroundTintMode="add" />
+
+        <TextView
+            android:id="@+id/ReadyLabelButtonLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="33dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/PersonalInfoFrag_ReadyLabelButton"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/LocationTextView"
@@ -299,6 +320,18 @@
         android:backgroundTint="#535353"
         android:backgroundTintMode="add" />
 
+        <TextView
+            android:id="@+id/ReadyLabelButtonLanguages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="33dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/PersonalInfoFrag_ReadyLabelButton"
+            android:textSize="20sp" />
+
     <TextView
         android:id="@+id/LanguagesTextView"
         android:layout_width="match_parent"
@@ -306,7 +339,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:paddingTop="14dp"
-        android:text="@string/PersonalInfoFrag_Description"
+        android:text="@string/PersonalInfoFrag_Languages"
         android:textSize="20sp" />
 
     <TextView
@@ -319,7 +352,7 @@
         android:gravity="start|top"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
-        android:text="@string/PersonalInfoFrag_Label_Description" />
+        android:text="@string/PersonalInfoFrag_Label_Languages" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
