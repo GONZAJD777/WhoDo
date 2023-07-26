@@ -1,6 +1,482 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/Items_NestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/Items_LinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:layout_marginTop="22dp">
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <LinearLayout
+        android:id="@+id/BlackBackground_bottom_sheet"
+        style="@style/CustomShapeAppearanceBottomSheetDialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="@color/design_default_color_on_secondary"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        app:behavior_fitToContents="false"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/PasswordChange_bottom_sheet"
+        style="@style/Widget.Design.BottomSheet.Modal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        android:clipToPadding="false"
+        android:focusable="true"
+        android:gravity="center|clip_vertical|top"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        app:behavior_expandedOffset="32dp"
+        app:behavior_fitToContents="true"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/ReadyLabelButtonPassUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="33dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/ReadyLabelButton"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/EmailTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:paddingTop="14dp"
+                    android:text="@string/SecurityFrag_Password_ItemLabel_Title"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/EmailTextViewMultiline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:gravity="start|top"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:text="@string/SecurityFrag_Password_Label_TextHint" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/EmailSimpleTextInputLayout"
+                    style="@style/CustomShapeAppearanceFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="14dp"
+                    app:boxBackgroundMode="none"
+                    app:hintEnabled="true">
+
+                    <EditText
+                        android:id="@+id/EmailSimpleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:autofillHints="emailAddress"
+                        android:background="@android:color/transparent"
+                        android:gravity="start|top"
+                        android:hint="@string/SecurityFrag_Password_Hint_Email"
+                        android:inputType="textEmailAddress"
+                        android:maxLength="100"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/PasswordeSimpleTextInputLayout"
+                    style="@style/CustomShapeAppearanceFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="14dp"
+                    app:boxBackgroundMode="none"
+                    app:hintEnabled="true"
+                    >
+
+                    <EditText
+                        android:id="@+id/PasswordSimpleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:autofillHints="password"
+                        android:background="@android:color/transparent"
+                        android:gravity="start|top"
+                        android:hint="@string/SecurityFrag_Password_Hint_Password"
+                        android:inputType="textPassword"
+                        android:maxLength="100"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/NewPass1SimpleTextInputLayout"
+                    style="@style/CustomShapeAppearanceFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="14dp"
+                    app:boxBackgroundMode="none">
+
+                    <EditText
+                        android:id="@+id/NewPass1SimpleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:autofillHints="password"
+                        android:background="@android:color/transparent"
+
+                        android:gravity="start|top"
+                        android:hint="@string/SecurityFrag_Password_Hint_NewPass1"
+                        android:inputType="textPassword"
+                        android:maxLength="100"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/NewPass2SimpleTextInputLayout"
+                    style="@style/CustomShapeAppearanceFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="14dp"
+                    app:boxBackgroundMode="none">
+
+                    <EditText
+                        android:id="@+id/NewPass2SimpleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:autofillHints="password"
+                        android:background="@android:color/transparent"
+                        android:gravity="start|top"
+                        android:hint="@string/SecurityFrag_Password_Hint_NewPass2"
+                        android:inputType="textPassword"
+                        android:maxLength="100"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="-7dp"
+                    android:button="?android:attr/textCheckMarkInverse"
+                    android:clickable="false"
+                    android:text="@string/PasswordConditions_CheckButton1"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/ClaveSimpleTextInputLayout2"
+                    app:layout_constraintTop_toBottomOf="@+id/ClaveSimpleTextInputLayout2" />
+
+                <CheckBox
+                    android:id="@+id/checkBox2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="-15dp"
+                    android:button="?android:attr/textCheckMarkInverse"
+                    android:clickable="false"
+                    android:text="@string/PasswordConditions_CheckButton2"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/checkBox"
+                    app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+
+                <CheckBox
+                    android:id="@+id/checkBox3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="-15dp"
+                    android:button="?android:attr/textCheckMarkInverse"
+                    android:clickable="false"
+                    android:text="@string/PasswordConditions_CheckButton3"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/checkBox2"
+                    app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
+
+                <Button
+                    android:id="@+id/UpdatePasswordButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:text="@string/PersonalInfoFrag_VerifyButtonEmail" />
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/WalletAddress_bottom_sheet"
+        style="@style/Widget.Design.BottomSheet.Modal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        android:clipToPadding="true"
+        android:focusable="true"
+        android:gravity="center|clip_vertical|top"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        app:behavior_expandedOffset="32dp"
+        app:behavior_fitToContents="true"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/ReadyLabelButtonWalletAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="33dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/ReadyLabelButton"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/WalletAddressTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:paddingTop="14dp"
+                    android:text="@string/SecurityFrag_WalletAddress_Label_Title"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/WalletAddressTextViewMultiline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:gravity="start|top"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:text="@string/SecurityFrag_WalletAddress_Label_TextHint" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/walletAddressTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:gravity="center"
+                        android:paddingTop="14dp"
+                        android:text="@string/SecurityFrag_WalletAddress_Label_Amount"
+                        android:textColor="#3F51B5"
+                        android:textSize="60sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/walletAddressTextView2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center"
+                        android:paddingTop="14dp"
+                        android:text="@string/SecurityFrag_WalletAddress_Label_Unit"
+                        android:textColor="#3F51B5"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/walletAddressTextView"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.321" />
+
+                    <TextView
+                        android:id="@+id/walletAddressTextView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center"
+                        android:paddingTop="14dp"
+                        android:text="@string/SecurityFrag_WalletAddress_Label_DollarValue"
+                        android:textSize="20sp"
+                        app:layout_constraintEnd_toEndOf="@+id/walletAddressTextView2"
+                        app:layout_constraintStart_toStartOf="@+id/walletAddressTextView"
+                        app:layout_constraintTop_toBottomOf="@+id/walletAddressTextView2" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/WalletEmailSimpleTextInputLayout"
+                    style="@style/CustomShapeAppearanceFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="14dp"
+                    app:boxBackgroundMode="none"
+                    app:hintEnabled="true">
+
+                    <EditText
+                        android:id="@+id/WalletEmailSimpleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:autofillHints="emailAddress"
+                        android:background="@android:color/transparent"
+                        android:gravity="start|top"
+                        android:hint="@string/SecurityFrag_WalletAddress_Hint_Email"
+                        android:inputType="textEmailAddress"
+                        android:maxLength="100"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/WalletPassSimpleTextInputLayout"
+                    style="@style/CustomShapeAppearanceFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="14dp"
+                    app:boxBackgroundMode="none"
+                    app:hintEnabled="true">
+
+                    <EditText
+                        android:id="@+id/WalletPassSimpleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:autofillHints="password"
+                        android:background="@android:color/transparent"
+                        android:gravity="start|top"
+                        android:hint="@string/SecurityFrag_WalletAddress_Hint_Password"
+                        android:inputType="textPassword"
+                        android:maxLength="100"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/WalletAddressSimpleTextInputLayout"
+                    style="@style/CustomShapeAppearanceFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginBottom="14dp"
+                    android:paddingBottom="14dp"
+                    app:boxBackgroundMode="none"
+                    app:hintEnabled="true">
+
+                    <EditText
+                        android:id="@+id/WalletAddressSimpleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:autofillHints="password"
+                        android:background="@android:color/transparent"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%/()='?\¡¿,.;:{}[]`´¨*+~"
+                        android:gravity="start|top"
+                        android:hint="@string/SecurityFrag_WalletAddress_Hint_Address"
+                        android:inputType="text"
+                        android:maxLength="400"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/UpdateWalletAddressButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:text="@string/SecurityFrag_WithdrawButton" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -13,7 +13,6 @@ public class User  {
     private double Latitude;        // Latitude of User Address, no current Location used to pin in the map
     private double Longitude;       // Longitude of User Address, no current Location used to pin in the map
     private String Phone;           // Phone Number asociated with the account
-
     private String Phone_ccn;           // CCN Phone Number asociated with the account
     private String Type;            // Customer or Provider
     private String Password;        // Account Password registered in the Account
@@ -22,34 +21,33 @@ public class User  {
     private int State;              // Flag that indicates the state of account (0=deleted, 1=active,2..3 reserved for further use)
     private int isValidated;        // Flag that indicate if account Email was validated or not (1=true,0=false)
     private String ProfilePicture;
-
     private String Languages;
-
     private String Description;
 
-    public User ()
-   {}
-   public User(String Uid,String Name,String Email,String Password) {
+    private String Wallet;
+    public User (){}
+   public User(String pUid,String pName,String pEmail,String pPassword) {
 
-        this.Uid=Uid;
-        this.Name=Name;
-        this.Birthday=19000101;
-        this.Email=Email;
-        this.Address="";
-        this.Latitude=0.0;
-        this.Longitude=0.0;
-        this.Phone="";
-        this.Phone_ccn="-";
-        this.Type="CUSTOMER";
-        this.Password=Password;
-        this.CreateDate=19700101;
-        this.DeleteDate=20991231;
-        this.State=1;
-        this.isValidated=0;
+        Uid=pUid;
+        Name=pName;
+        Birthday=19000101;
+        Email=pEmail;
+        Address="";
+        Latitude=0.0;
+        Longitude=0.0;
+        Phone="";
+        Phone_ccn="-";
+        Type="CUSTOMER";
+        Password=pPassword;
+        CreateDate=19700101;
+        DeleteDate=20991231;
+        State=1;
+        isValidated=0;
         String defaultProfilePicture_CloudFile = "Android-Logo-2008-2014.png";
-        this.ProfilePicture="https://firebasestorage.googleapis.com/v0/b/whodo-2f534.appspot.com/o/WHODO-IMAGES%2FPROFILE-PICTURE%2F"+ defaultProfilePicture_CloudFile +"?alt=media&token=a7f64bef-77ed-40b3-b62d-e44d986ac2da";
-        this.Languages="";
-        this.Description="";
+        ProfilePicture="https://firebasestorage.googleapis.com/v0/b/whodo-2f534.appspot.com/o/WHODO-IMAGES%2FPROFILE-PICTURE%2F"+ defaultProfilePicture_CloudFile +"?alt=media&token=a7f64bef-77ed-40b3-b62d-e44d986ac2da";
+        Languages="";
+        Description="";
+        Wallet="";
     }
 
 
@@ -57,114 +55,117 @@ public class User  {
     public String getUid() {
         return Uid;
     }
-    public void setUid(String Uid){
-        this.Uid=Uid;
+    public void setUid(String pUid){
+        Uid=pUid;
     }
 
    // @PropertyName("Name")
     public String getName() {
         return Name;
     }
-    public void setName(String Name){
-        this.Name=Name;
+    public void setName(String pName){
+        Name=pName;
     }
 
    // @PropertyName("Birthday")
     public long getBirthday() {
         return Birthday;
     }
-    public void setBirthday(long Birthday){
-        this.Birthday=Birthday;
+    public void setBirthday(long pBirthday){
+        Birthday=pBirthday;
     }
 
    // @PropertyName("Email")
     public String getEmail() {
         return Email;
     }
-    public void setEmail(String Email){this.Email=Email;}
+    public void setEmail(String pEmail){Email=pEmail;}
 
     //@PropertyName("Password")
     public String getPassword() {
         return Password;
     }
-    public void setPassword(String Password){
-        this.Password=Password;
+    public void setPassword(String pPassword){
+        Password=pPassword;
     }
 
     //@PropertyName("Address")
     public String getAddress() {
         return Address;
     }
-    public void setAddress(String Address){
-        this.Address=Address;
+    public void setAddress(String pAddress){
+        Address=pAddress;
     }
 
    // @PropertyName("Latitude")
     public double getLatitude() {
         return Latitude;
     }
-    public void setLatitude(double Latitude){
-        this.Latitude=Latitude;
+    public void setLatitude(double pLatitude){
+        Latitude=pLatitude;
     }
 
     //@PropertyName("Longitude")
     public double getLongitude() {
         return Longitude;
     }
-    public void setLongitude(double Longitude){
-        this.Longitude=Longitude;
+    public void setLongitude(double pLongitude){
+        Longitude=pLongitude;
     }
 
    // @PropertyName("Phone")
     public String getPhone() {
         return Phone;
     }
-    public void setPhone(String Phone){
-        this.Phone=Phone;
+    public void setPhone(String pPhone){
+        Phone=pPhone;
     }
 
     public String getPhone_ccn() {return Phone_ccn;}
-    public void setPhone_ccn(String Phone_ccn){
-        this.Phone_ccn=Phone_ccn;
+    public void setPhone_ccn(String pPhone_ccn){
+        Phone_ccn=pPhone_ccn;
     }
 
     public String getType() {return Type;}
-    public void setType(String Type){
-        this.Type=Type;
+    public void setType(String pType){
+        Type=pType;
     }
 
     public long getCreateDate() {return CreateDate;}
-    public void setCreateDate(long CreateDate){
-        this.CreateDate=CreateDate;
+    public void setCreateDate(long pCreateDate){
+        CreateDate=pCreateDate;
     }
 
     public long getDeleteDate() {return DeleteDate;}
-    public void setDeleteDate(long DeleteDate){
-        this.DeleteDate=DeleteDate;
+    public void setDeleteDate(long pDeleteDate){
+        DeleteDate=pDeleteDate;
     }
 
     public Integer getState() {return State;}
-    public void setState(Integer State){
-        this.State=State;
+    public void setState(Integer pState){
+        State=pState;
     }
 
     public Integer getIsValidated() {return isValidated;}
-    public void setIsValidated(Integer isValidated){
-        this.isValidated=isValidated;
+    public void setIsValidated(Integer pisValidated){
+        isValidated=pisValidated;
     }
 
     public String getProfilePicture() {return ProfilePicture;}
-    public void setProfilePicture(String profilePicture){
-        this.ProfilePicture=profilePicture;
-    }
+    public void setProfilePicture(String pProfilePicture){ ProfilePicture=pProfilePicture; }
 
     public String getLanguages() {return Languages;}
-    public void setLanguages(String Languages){
-        this.Languages=Languages;
+    public void setLanguages(String pLanguages){
+        Languages=pLanguages;
     }
     public String getDescription() {return Description;}
-    public void setDescription(String Description){
-        this.Description=Description;
+    public void setDescription(String pDescription){
+        Description=pDescription;
+    }
+
+    public String getWallet() {return Wallet;}
+    public void setWallet(String pWallet){
+        Wallet=pWallet;
     }
 
     //The best way of storing double values in SharedPreferences without losing precision is:

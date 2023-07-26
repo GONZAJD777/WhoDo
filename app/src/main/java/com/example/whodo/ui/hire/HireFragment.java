@@ -4,11 +4,14 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -16,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.whodo.MainActivity;
 import com.example.whodo.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,6 +33,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.util.ArrayList;
+
 
 public class HireFragment extends Fragment implements OnMapReadyCallback {
     boolean mLocationPermissionsGranted = false;
@@ -40,6 +46,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
     private GoogleMap mMap;
 
+    private LinearLayout vServicesLinearLayout;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
 
 
@@ -55,6 +62,8 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         getLocationPermission();
 
         LinearLayout bottomSheet = root.findViewById(R.id.ll_bottom_sheet);
+        vServicesLinearLayout=root.findViewById(R.id.LYV);
+
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
 
@@ -94,10 +103,28 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
+        loadServices();
 
         return root;
     }
 
+
+    private void loadServices(){
+        ArrayList<String> vServices = MainActivity.getServices();
+        vServicesLinearLayout.removeAllViews();
+        Log.i("CheckBoxPicked", "vServices.size: " + MainActivity.getServices().size());
+        for(int i = 0; i< vServices.size(); i++) {
+            CheckBox checkBox = new CheckBox(getContext());
+            checkBox.setText(vServices.get(i));
+            Log.i("CheckBoxPicked", "Servicio elegido: " + vServices.get(i));
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Log.i("CheckBoxPicked", "Servicio elegido: " + compoundButton.toString() );
+                }
+            });
+            vServicesLinearLayout.addView(checkBox);
+    }}
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -161,11 +188,6 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-
-
-        //hideSoftKeyboard();
-
-
     public void addMarkers(GoogleMap googleMap){
         //float zoomLevel = 13;      // el nivel del zoom con el cual inicia el mapa
         //googleMap.setMinZoomPreference(zoomLevel);
@@ -188,7 +210,6 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
        // googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Marker, zoomLevel));  // para mostrar el mapa con zoom, en este caso nivel 13
     }
 
-
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
@@ -205,7 +226,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                         Location currentLocation = (Location) task.getResult();
                         if (currentLocation != null) {
                             LatLng mLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                            moveCamera(mLatLng, DEFAULT_ZOOM);
+                            moveCamera(mLatLng);
                         }
 
                     }else{
@@ -219,9 +240,9 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom){
+    private void moveCamera(LatLng latLng){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, HireFragment.DEFAULT_ZOOM));
 
        /* if(!title.equals("My Location")){
             MarkerOptions options = new MarkerOptions()

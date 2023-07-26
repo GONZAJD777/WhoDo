@@ -32,6 +32,7 @@ import com.example.whodo.CustomDatePicker;
 import com.example.whodo.LoginActivity;
 import com.example.whodo.MainActivity;
 import com.example.whodo.R;
+import com.example.whodo.SingletonUser;
 import com.example.whodo.crud.CRUD;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -48,7 +49,6 @@ import java.util.Date;
 import java.util.Objects;
 
 public class PersonalInfoFragment extends Fragment {
-
     private String LoggedUserName;
     private String LoggedUserPhoneNumber;
     private String LoggedUserCCN;
@@ -67,24 +67,22 @@ public class PersonalInfoFragment extends Fragment {
     private BottomSheetBehavior<LinearLayout> EmailBottomSheetBehavior;
     Spinner countryCodeSpinner;
     private CustomDatePicker BirthdayCalendar;
-
-
     private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
     private final FirebaseUser currentUser=mAuth.getCurrentUser();
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_profile_frag_personal_info, container, false);
-
+        // TODO modificar comportamiento para evitar que las ventanas emergentes pierdan el foco
         //TODO agregar selector de fechas para la fecha de nacimiento - DONE
 
 
         UserNameSimpleEditText = root.findViewById(R.id.UserNameSimpleEditText);
         PhoneNumberSimpleEditText = root.findViewById(R.id.PhoneNumberSimpleEditText);
-        CredentialsEmailSimpleEditText = root.findViewById(R.id.CredentialsEmailSimpleEditText);
+        CredentialsEmailSimpleEditText = root.findViewById(R.id.EmailSimpleEditText);
         CredentialsPassSimpleEditText = root.findViewById(R.id.CredentialsPassSimpleEditText);
-        EmailSimpleEditText = root.findViewById(R.id.EmailSimpleEditText);
-        EmailSimpleEditText = root.findViewById(R.id.EmailSimpleEditText);
+        EmailSimpleEditText = root.findViewById(R.id.CredentialsEmailSimpleEditText);
+
         countryCodeSpinner = root.findViewById(R.id.CountryCodeSpinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),R.array.CountryCodeArray, R.layout.support_simple_spinner_dropdown_item);
@@ -93,6 +91,9 @@ public class PersonalInfoFragment extends Fragment {
         // Apply the adapter to the spinner
         countryCodeSpinner.setAdapter(adapter);
         countryCodeSpinner.setSelection(0);
+
+
+
 
         TextView ReadyLabelButtonUserName = root.findViewById(R.id.ReadyLabelButtonUserName);
         TextView ReadyLabelButtonEmail = root.findViewById(R.id.ReadyLabelButtonEmail);
@@ -117,7 +118,6 @@ public class PersonalInfoFragment extends Fragment {
         UserNameBottomSheetBehavior.setDraggable(false);
         PhoneBottomSheetBehavior.setDraggable(false);
         EmailBottomSheetBehavior.setDraggable(false);
-
         //UserNameBottomSheetBehavior.setExpandedOffset(500);
         //PhoneBottomSheetBehavior.setExpandedOffset(500);
         //EmailBottomSheetBehavior.setExpandedOffset(500);
@@ -125,7 +125,7 @@ public class PersonalInfoFragment extends Fragment {
         BlackBackgroundBottomSheetBehavior.setState(STATE_EXPANDED);
         BlackBackgroundBottomSheetBehavior.setDraggable(false);
         BlackBackground_bottom_sheet.setClickable(false);
-
+        BlackBackground_bottom_sheet.setFocusable(false);
         //----------------------------------------------------------
         //USERNAME
         TextView label_UserName = new TextView(getContext());
@@ -134,7 +134,7 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         item_UserName = new ProfileItem(getContext());
         item_UserName.setText(getString(R.string.PersonalInfoFrag_UserName));
-        item_UserName.setImage(R.drawable.ic_activity_black);
+        item_UserName.setImage(R.drawable.lapiz_24);
         item_UserName.setOnClickListener(v -> {
             setBottomSheetBehavior(UserNameBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -153,26 +153,23 @@ public class PersonalInfoFragment extends Fragment {
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case STATE_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_EXPANDED");
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.i("BottomSheetBehavior", "STATE_DRAGGING");
+                        //Log.i("BottomSheetBehavior", "STATE_DRAGGING");
                         break;
                     case STATE_COLLAPSED:
-                        Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserNameText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
-                        setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
-                        break;
                     case STATE_HIDDEN:
-                        Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
                         setUserNameText(UserNameSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
                         setBottomSheetBehavior(UserNameBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
-                        Log.i("BottomSheetBehavior", "STATE_SETTLING");
+                        //Log.i("BottomSheetBehavior", "STATE_SETTLING");
                         break;
                     case STATE_HALF_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
                         break;
                 }
             }
@@ -206,26 +203,23 @@ public class PersonalInfoFragment extends Fragment {
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case STATE_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_EXPANDED");
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.i("BottomSheetBehavior", "STATE_DRAGGING");
+                        //Log.i("BottomSheetBehavior", "STATE_DRAGGING");
                         break;
                     case STATE_COLLAPSED:
-                        Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setUserPhoneNumber(PhoneNumberSimpleEditText.getText().toString(),countryCodeSpinner.getSelectedItem().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
-                        setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
-                        break;
                     case STATE_HIDDEN:
-                        Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
                         setUserPhoneNumber(PhoneNumberSimpleEditText.getText().toString(),countryCodeSpinner.getSelectedItem().toString(),getString(R.string.PersonalInfoFrag_PhoneNumber1),item_PhoneNumber);
                         setBottomSheetBehavior(PhoneBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
-                        Log.i("BottomSheetBehavior", "STATE_SETTLING");
+                        //Log.i("BottomSheetBehavior", "STATE_SETTLING");
                         break;
                     case STATE_HALF_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
                         break;
                 }
             }
@@ -253,7 +247,6 @@ public class PersonalInfoFragment extends Fragment {
                     setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                 }
             });
-
             Toast.makeText(getContext(), "Presionaste: " + getString(R.string.PersonalInfoFrag_Location), Toast.LENGTH_LONG).show();
         });
         EmailBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -261,28 +254,24 @@ public class PersonalInfoFragment extends Fragment {
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case STATE_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_EXPANDED");
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.i("BottomSheetBehavior", "STATE_DRAGGING");
+                        //Log.i("BottomSheetBehavior", "STATE_DRAGGING");
                         break;
                     case STATE_COLLAPSED:
-                        Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        //setUserEmailText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
-                        EmailSimpleEditText.setText(LoggedUserEmail);
-                        setBottomSheetBehavior(EmailBottomSheetBehavior,1);
-                        break;
                     case STATE_HIDDEN:
-                        Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
                         //setUserEmailText(EmailSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Email1),item_Email);
                         EmailSimpleEditText.setText(LoggedUserEmail);
                         setBottomSheetBehavior(EmailBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
-                        Log.i("BottomSheetBehavior", "STATE_SETTLING");
+                        //Log.i("BottomSheetBehavior", "STATE_SETTLING");
                         break;
                     case STATE_HALF_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
                         break;
                 }
             }
@@ -290,7 +279,6 @@ public class PersonalInfoFragment extends Fragment {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
-
         //----------------------------------------------------------
         //BIRTHDAY
         TextView label_Birthday = new TextView(getContext());
@@ -299,7 +287,6 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         BirthdayCalendar = new CustomDatePicker(getContext());
         BirthdayCalendar.setPadding(85, 85, 85, 85);
-
         //----------------------------------------------------------
 
         linearLayout.addView(label_UserName);
@@ -359,7 +346,6 @@ public class PersonalInfoFragment extends Fragment {
                 break;
         }
         }
-
     private void reAuthenticate (){
         if (!CredentialsEmailSimpleEditText.getText().toString().equals(EmailSimpleEditText.getText().toString())){
                 if ((CredentialsEmailSimpleEditText!=null && CredentialsPassSimpleEditText!=null) && (!CredentialsEmailSimpleEditText.getText().toString().equals("") && !CredentialsPassSimpleEditText.getText().toString().equals(""))){
@@ -393,7 +379,6 @@ public class PersonalInfoFragment extends Fragment {
                     Log.d("WHODO_LOG", "User email address updated.");
                     //desconectar al usuario
                     sendVerificationEmail();
-
                 } else {
                     Toast.makeText(requireContext(), "We found a problem trying to update the email, please check your data and try again",Toast.LENGTH_SHORT).show();
 
@@ -403,14 +388,12 @@ public class PersonalInfoFragment extends Fragment {
         });
     }
     private void sendVerificationEmail(){
-
         assert currentUser != null;
         currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(requireContext(), "Email Update Success. Please verify your Email",Toast.LENGTH_SHORT).show();
-
                 }
                 else
                 {
@@ -421,58 +404,51 @@ public class PersonalInfoFragment extends Fragment {
         });
     }
 
-
     private void loadUserData () {
-        //TODO Verificar conexion para evitar errores en esta ventana
-            setUserNameText(MainActivity.getLoggedUser().getName(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
-            UserNameSimpleEditText.setText(MainActivity.getLoggedUser().getName());
-            setUserPhoneNumber(MainActivity.getLoggedUser().getPhone(), MainActivity.getLoggedUser().getPhone_ccn(), getString(R.string.PersonalInfoFrag_PhoneNumber1), item_PhoneNumber);
-            PhoneNumberSimpleEditText.setText(MainActivity.getLoggedUser().getPhone());
+        //TODO Verificar conexion para evitar errores en esta ventana -- DONE
+            setUserNameText(SingletonUser.getInstance().getName(),getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
+            UserNameSimpleEditText.setText(SingletonUser.getInstance().getName());
+            setUserPhoneNumber(SingletonUser.getInstance().getPhone(), SingletonUser.getInstance().getPhone_ccn(), getString(R.string.PersonalInfoFrag_PhoneNumber1), item_PhoneNumber);
+            PhoneNumberSimpleEditText.setText(SingletonUser.getInstance().getPhone());
             countryCodeSpinner.setSelection(setCCNIndex());
-            setUserEmailText(MainActivity.getLoggedUser().getEmail(), getString(R.string.PersonalInfoFrag_Email1), item_Email);
-            EmailSimpleEditText.setText(MainActivity.getLoggedUser().getEmail());
-            String YEAR=String.valueOf(MainActivity.getLoggedUser().getBirthday()).substring(0,4);
-            String MONTH=String.valueOf(MainActivity.getLoggedUser().getBirthday()).substring(4,6);
-            String DAY=String.valueOf(MainActivity.getLoggedUser().getBirthday()).substring(6,8);
+            setUserEmailText(SingletonUser.getInstance().getEmail(), getString(R.string.PersonalInfoFrag_Email1), item_Email);
+            EmailSimpleEditText.setText(SingletonUser.getInstance().getEmail());
+            String YEAR=String.valueOf(SingletonUser.getInstance().getBirthday()).substring(0,4);
+            String MONTH=String.valueOf(SingletonUser.getInstance().getBirthday()).substring(4,6);
+            String DAY=String.valueOf(SingletonUser.getInstance().getBirthday()).substring(6,8);
             BirthdayCalendar.updateDate(Integer.parseInt(YEAR), Integer.parseInt(MONTH)-1, Integer.parseInt(DAY));
     }
     private void saveUserData (){
-        MainActivity.getLoggedUser().setName(LoggedUserName);
-        MainActivity.getLoggedUser().setPhone(LoggedUserPhoneNumber);
-        MainActivity.getLoggedUser().setPhone_ccn(LoggedUserCCN);
-        MainActivity.getLoggedUser().setEmail(LoggedUserEmail);
-        MainActivity.getLoggedUser().setBirthday(Long.parseLong(SetBirthday()));
+        SingletonUser.getInstance().setName(LoggedUserName);
+        SingletonUser.getInstance().setPhone(LoggedUserPhoneNumber);
+        SingletonUser.getInstance().setPhone_ccn(LoggedUserCCN);
+        SingletonUser.getInstance().setEmail(LoggedUserEmail);
+        SingletonUser.getInstance().setBirthday(Long.parseLong(SetBirthday()));
         requireActivity().finish();
     }
     private String SetBirthday (){
         String CustomDate;
         String MONTH;
         String DAY;
-
         if (BirthdayCalendar.getDayOfMonth() <10){
             DAY = "0"+BirthdayCalendar.getDayOfMonth();
         } else {
             DAY = BirthdayCalendar.getDayOfMonth()+"";
         }
-
         if ((BirthdayCalendar.getMonth() + 1) <10) {
             MONTH = "0"+(BirthdayCalendar.getMonth()+1);
         } else {
             MONTH = (BirthdayCalendar.getMonth()+1)+"";
         }
-
         CustomDate = BirthdayCalendar.getYear() + MONTH + DAY + "";
-
         Log.i("CustomDate", "CustomDate: " + CustomDate);
         return CustomDate;
     }
     private int setCCNIndex(){
         int index=0;
         for(int i = 0; i< countryCodeSpinner.getCount(); i++) {
-
           if (countryCodeSpinner.getItemAtPosition(i).toString().equals(LoggedUserCCN))
           {index=i;}
-
         }
         return index;
     }
@@ -483,24 +459,21 @@ public class PersonalInfoFragment extends Fragment {
         }
         else
         {
-                LoggedUserName = MainActivity.getLoggedUser().getEmail();
+                LoggedUserName = SingletonUser.getInstance().getEmail();
                 UserNameSimpleEditText.setText(LoggedUserName);
                 ProfileItem1.setText(LoggedUserName);
-
         }
     }
     private void setUserEmailText(String Email,String EmptyString, ProfileItem ProfileItem1){
         if ( Email.trim().length() != 0  ) {
             LoggedUserEmail = Email;
             //Actualizar el email implica desconectar, por lo que nunca se reemplaza si cierra la ventana
-
             ProfileItem1.setText(LoggedUserEmail);
         }
         else
         {
-                LoggedUserEmail = MainActivity.getLoggedUser().getEmail();
+                LoggedUserEmail = SingletonUser.getInstance().getEmail();
                 ProfileItem1.setText(LoggedUserEmail);
-
         }
     }
     private void setUserPhoneNumber(String NIM,String CCN,String EmptyString, ProfileItem MenuItem){
@@ -522,17 +495,13 @@ public class PersonalInfoFragment extends Fragment {
             mBottomSheetBehavior.setState(STATE_EXPANDED);
             BlackBackground_bottom_sheet.setClickable(true);
             BlackBackground_bottom_sheet.setAlpha(0.25F);
-
-
         } else {
             hideKeyboard(requireActivity());
             mBottomSheetBehavior.setHideable(true);
             mBottomSheetBehavior.setState(STATE_HIDDEN);
             BlackBackground_bottom_sheet.setClickable(false);
             BlackBackground_bottom_sheet.setAlpha(0);
-
         }
     }
-
 
 }

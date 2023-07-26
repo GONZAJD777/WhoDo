@@ -21,9 +21,8 @@
     <string name="profileFrag_image_View">USER PICTURE</string>
 
 
-
     <string name="profileFrag_ItemText_PersonalInfo">Información Personal</string>
-    <string name="profileFrag_ItemText_SesionSecurity">Seguridad</string>
+    <string name="profileFrag_ItemText_SesionSecurity">Billeteras y Seguridad</string>
     <string name="profileFrag_ItemText_Payment">Pagos</string>
     <string name="profileFrag_ItemText_ProviderSettings">Configuracion Modo Proveedor</string>
     <string name="profileFrag_ItemText_HowItWorks">Como funciona WhoDo?</string>
@@ -56,10 +55,43 @@
     <string name="PersonalInfoFrag_Label_UserName">Escribe el nombre por el que quieres que otros usuarios te conozcan</string>
     <string name="PersonalInfoFrag_Label_PhoneNumber">Este numero sera utilizado para validar tu cuenta</string>
     <string name="PersonalInfoFrag_Label_Email">Esta direccion de correo esta asociada directamente a tu cuenta, se utiliza para logear y validar tu cuenta</string>
-
-    <string name="PersonalInfoFrag_ReadyLabelButton">Listo!</string>
-
+    <string name="ReadyLabelButton">Listo!</string>
     <string name="PersonalInfoFrag_UpdEmailDialog">Para actualizar tu correo electronico sera necesario desconectarte y se te enviara un correo para que valides la nueva direccion, deseas continuar?</string>
+    <string name="PersonalInfoFrag_Hint_Email">Correo Electronico</string>
+    <string name="PersonalInfoFrag_Hint_Password">Password</string>
+    <string name="PersonalInfoFrag_Hint_NewEmail">Nuevo Correo Electronico</string>
+
+    <string name="HireFragment_Label_ServiceFilter">Filtrar Proveedores de Servicios</string>
+    <string name="HireFragment_Label_ServiceFilter1">Selecciona los servicios que deseas visibilidad y la distancia maxima a tu ubicación (ubicacion registrada en la aplicacion)</string>
+    <string name="HireFragment_Label_ServiceFilter2">Distancia Maxima</string>
+    <string name="HireFragment_Label_ServiceFilter3">Servicios</string>
+
+    <string name="SecurityFrag_Password_ItemLabel_Title">Cambiar Password</string>
+    <string name="SecurityFrag_Password_Label_Title">Password</string>
+    <string name="SecurityFrag_Password_Label_TextHint">Para cambiar tu password requerimos que ingreses tus credenciales, luego ingreses el nuevo password cumpliendo los criterios</string>
+    <string name="SecurityFrag_Password_Hint_Email">Correo Electronico</string>
+    <string name="SecurityFrag_Password_Hint_Password">Old Password</string>
+    <string name="SecurityFrag_Password_Hint_NewPass1">New Password</string>
+    <string name="SecurityFrag_Password_Hint_NewPass2">New Password Again</string>
+
+    <string name="SecurityFrag_WalletAddress_Label_Title">Retirar Fondos</string>
+    <string name="SecurityFrag_WalletAddress_Label_Title1">Retirar Fondos</string>
+    <string name="SecurityFrag_WalletAddress_Label_Amount">100.000.000</string>
+    <string name="SecurityFrag_WalletAddress_Label_Unit">SAT</string>
+    <string name="SecurityFrag_WalletAddress_Label_DollarValue">~$30298</string>
+    <string name="SecurityFrag_WalletAddress_Label_TextHint">Desde aquipo podras extraer los pagos que hayas recibido por tus servicios o reintegros. Ingresa tus credenciales y luego el Invoice generado por la billetera Lightning Network de tu eleccion.</string>
+    <string name="SecurityFrag_WalletAddress_Hint_Email">Correo Electronico</string>
+    <string name="SecurityFrag_WalletAddress_Hint_Password">Password</string>
+    <string name="SecurityFrag_WalletAddress_Hint_Address">Wallet Address</string>
+    <string name="SecurityFrag_WithdrawButton">Retirar Fondos</string>
+
+    <string name="PasswordConditions_CheckButton1">Debe tener entre 8 y 12 caracteres</string>
+    <string name="PasswordConditions_CheckButton2">Deben incluir mayúsculas y minúsculas</string>
+    <string name="PasswordConditions_CheckButton3">Debe incluir al menos 1 numero y caracter especial</string>
+
+    <string name="PersonalInfoFrag_UpdPasswordDialog">Confirmas que deseas actualizar el password de tu cuenta?</string>
+    <string name="PersonalInfoFrag_UpdWalletAddressDialog">Estas por actualizar la direccion de tu Billetera, recuerda que si tienes pagos o devoluciones pendientes esto podria causar perdida de tu dinero, deseas continuar?</string>
+
 
     <string-array name="ServicesArray">
         <item>Plomero</item>

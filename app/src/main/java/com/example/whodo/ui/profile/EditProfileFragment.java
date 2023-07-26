@@ -1,6 +1,6 @@
 package com.example.whodo.ui.profile;
 
-import static com.example.whodo.MainActivity.getLoggedUser;
+import static com.example.whodo.MainActivity.getLanguages;
 import static com.example.whodo.ui.profile.ProfileActivity.hideKeyboard;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
@@ -37,6 +37,7 @@ import androidx.fragment.app.Fragment;
 import com.example.whodo.CustomMapView;
 import com.example.whodo.MainActivity;
 import com.example.whodo.R;
+import com.example.whodo.SingletonUser;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -61,7 +62,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class EditProfileFragment extends Fragment implements OnMapReadyCallback {
-
     boolean mLocationPermissionsGranted = false;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -73,12 +73,12 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private ImageView imagePicker;
     private LatLng mLatLng;
-    private String LoggedUserImage;
-    private String LoggedUserLanguages="";
-    private String LoggedUserDescription="";
-    private String LoggedUserAddress="";
-    private double LoggedUserLocationLat;
-    private double LoggedUserLocationLon;
+    private static String LoggedUserImage;
+    private static String LoggedUserLanguages;
+    private static String LoggedUserDescription;
+    private static String LoggedUserAddress;
+    private static double LoggedUserLocationLat;
+    private static double LoggedUserLocationLon;
     private ProfileItem item_Description;
     private ProfileItem item_Location;
     private ProfileItem item_Languages;
@@ -153,26 +153,23 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case STATE_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_EXPANDED");
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.i("BottomSheetBehavior", "STATE_DRAGGING");
+                        //Log.i("BottomSheetBehavior", "STATE_DRAGGING");
                         break;
                     case STATE_COLLAPSED:
-                        Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
-                        setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
-                        break;
                     case STATE_HIDDEN:
-                        Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
                         setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
                         setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
-                        Log.i("BottomSheetBehavior", "STATE_SETTLING");
+                        //Log.i("BottomSheetBehavior", "STATE_SETTLING");
                         break;
                     case STATE_HALF_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
                         break;
                 }
             }
@@ -206,26 +203,23 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case STATE_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_EXPANDED");
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.i("BottomSheetBehavior", "STATE_DRAGGING");
+                        //Log.i("BottomSheetBehavior", "STATE_DRAGGING");
                         break;
                     case STATE_COLLAPSED:
-                        Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setLocationText(LocationSimpleEditText.getText().toString(),mLatLng,getString(R.string.PersonalInfoFrag_Location1),item_Location);
-                        setBottomSheetBehavior(LocationBottomSheetBehavior,1);
-                        break;
                     case STATE_HIDDEN:
-                        Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
                         setLocationText(LocationSimpleEditText.getText().toString(),mLatLng,getString(R.string.PersonalInfoFrag_Location1),item_Location);
                         setBottomSheetBehavior(LocationBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
-                        Log.i("BottomSheetBehavior", "STATE_SETTLING");
+                        //Log.i("BottomSheetBehavior", "STATE_SETTLING");
                         break;
                     case STATE_HALF_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
                         break;
                 }
             }
@@ -247,8 +241,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                 @Override
                 public void onClick(View view) {
                     setLanguagesText(LoggedUserLanguages,getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
-                    setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);
- }
+                    setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);}
             });
 
             Toast.makeText(getContext(), "Presionaste: " + getString(R.string.PersonalInfoFrag_Location), Toast.LENGTH_LONG).show();
@@ -258,26 +251,23 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case STATE_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_EXPANDED");
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.i("BottomSheetBehavior", "STATE_DRAGGING");
+                        //Log.i("BottomSheetBehavior", "STATE_DRAGGING");
                         break;
                     case STATE_COLLAPSED:
-                        Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setLanguagesText(LoggedUserLanguages,getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
-                        setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);
-                        break;
                     case STATE_HIDDEN:
-                        Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
+                        //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
                         setLanguagesText(LoggedUserLanguages,getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
                         setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
-                        Log.i("BottomSheetBehavior", "STATE_SETTLING");
+                        //Log.i("BottomSheetBehavior", "STATE_SETTLING");
                         break;
                     case STATE_HALF_EXPANDED:
-                        Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
+                        //Log.i("BottomSheetBehavior", "STATE_HALF_EXPANDED");
                         break;
                 }
             }
@@ -372,24 +362,24 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     }
 
     private void loadUserData () {
-        Picasso.get().load(getLoggedUser().getProfilePicture()).into(imagePicker);
-        LoggedUserImage=getLoggedUser().getProfilePicture();
-        setDescriptionText(MainActivity.getLoggedUser().getDescription(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
-        DescriptionSimpleEditText.setText(MainActivity.getLoggedUser().getDescription());
-        setLocationText(MainActivity.getLoggedUser().getAddress(),new LatLng(MainActivity.getLoggedUser().getLatitude(),MainActivity.getLoggedUser().getLongitude()),getString(R.string.PersonalInfoFrag_Location1),item_Location);
-        LocationSimpleEditText.setText(MainActivity.getLoggedUser().getAddress());
+        Picasso.get().load(SingletonUser.getInstance().getProfilePicture()).into(imagePicker);
+        LoggedUserImage= SingletonUser.getInstance().getProfilePicture();
+        setDescriptionText(SingletonUser.getInstance().getDescription(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
+        DescriptionSimpleEditText.setText(SingletonUser.getInstance().getDescription());
+        setLocationText(SingletonUser.getInstance().getAddress(),new LatLng(SingletonUser.getInstance().getLatitude(),SingletonUser.getInstance().getLongitude()),getString(R.string.PersonalInfoFrag_Location1),item_Location);
+        LocationSimpleEditText.setText(SingletonUser.getInstance().getAddress());
         //el pin se coloca en el metodo OnMapReady
-        ArrayList<String> languages = MainActivity.getLanguages();
-        LoggedUserLanguages=MainActivity.getLoggedUser().getLanguages();
-        setLanguagesText(MainActivity.getLoggedUser().getLanguages(),getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
+        ArrayList<String> languages = getLanguages();
+        LoggedUserLanguages=SingletonUser.getInstance().getLanguages();
+        setLanguagesText(SingletonUser.getInstance().getLanguages(),getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
 
         for(int i = 0; i< languages.size(); i++) {
 
             CheckBox checkBox = new CheckBox(getContext());
             checkBox.setText(languages.get(i));
-            if ( MainActivity.getLoggedUser().getLanguages().toUpperCase().contains(languages.get(i).toUpperCase()))
+            if ( SingletonUser.getInstance().getLanguages().toUpperCase().contains(languages.get(i).toUpperCase()))
             {
-                Log.i("CheckBox", "EL SIGUIENTE IDIOMA ESTA EN LA LISTA" + MainActivity.getLoggedUser().getLanguages() );
+                Log.i("CheckBox", "EL SIGUIENTE IDIOMA ESTA EN LA LISTA" + SingletonUser.getInstance().getLanguages() );
                 checkBox.setChecked(true);
             }
             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -405,17 +395,30 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                 }
             });
             LanguagesLinearLayout.addView(checkBox);
-
         }
     }
     private void saveUserData (){
-        MainActivity.getLoggedUser().setDescription(LoggedUserDescription);
-        MainActivity.getLoggedUser().setAddress(LoggedUserAddress);
-        MainActivity.getLoggedUser().setLatitude(LoggedUserLocationLat);
-        MainActivity.getLoggedUser().setLongitude(LoggedUserLocationLon);
-        MainActivity.getLoggedUser().setLanguages(LoggedUserLanguages);
-        MainActivity.getLoggedUser().setProfilePicture(LoggedUserImage);
+        SingletonUser.getInstance().setDescription(LoggedUserDescription);
+        SingletonUser.getInstance().setAddress(LoggedUserAddress);
+        SingletonUser.getInstance().setLatitude(LoggedUserLocationLat);
+        SingletonUser.getInstance().setLongitude(LoggedUserLocationLon);
+        SingletonUser.getInstance().setLanguages(LoggedUserLanguages);
+        SingletonUser.getInstance().setProfilePicture(LoggedUserImage);
+
+        Log.d("EDIT PROFILE SAVE ", "ACTUALIZAR PROFILE");
+        Log.d("EDIT PROFILE SAVE ", "************************************************");
+        Log.d("EDIT PROFILE SAVE ", "DESCRIPTION LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getDescription());
+        Log.d("EDIT PROFILE SAVE ", "ADDRESS LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getAddress());
+        Log.d("EDIT PROFILE SAVE ", "LATITUDE LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getLatitude());
+        Log.d("EDIT PROFILE SAVE ", "LONGITUDE LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getLongitude());
+        Log.d("EDIT PROFILE SAVE ", "LANGUAJES LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getLanguages());
+        Log.d("EDIT PROFILE SAVE ", "PHOTO LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getProfilePicture());
+        Log.d("EDIT PROFILE SAVE ", "************************************************");
         requireActivity().finish();
+
+        //TODO DE ALGUNA PUTA MANERA, LAS VARIABLES QUEDAN BLOQUEADAS Y NO SE ACTUALIZAN HASTA Q SE CIERRA LA VENTANA - DONE
+        //TODO ADEMAS, AL GUARDAR LAS VARIABLES NUEVAS, SI HABIA OTRO CAMBIO EN CURSO TAMPOCO SE ACTUALIZAN CON LOS NUEVOS VALORES - DONE
+
     }
     private void setDescriptionText(String text1,String text2,ProfileItem ProfileItem1){
         if (text1.trim().length() != 0 ) {
@@ -536,7 +539,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        addMarkers(mMap,new LatLng(MainActivity.getLoggedUser().getLatitude(),MainActivity.getLoggedUser().getLongitude()));
+        addMarkers(mMap,new LatLng(SingletonUser.getInstance().getLatitude(),SingletonUser.getInstance().getLongitude()));
         googleMap.setOnMapClickListener(latLng -> addMarkers(mMap,latLng));
         if (mLocationPermissionsGranted) {
             if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)

@@ -3,15 +3,11 @@ package com.example.whodo.ui.profile;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.whodo.R;
 import com.example.whodo.adapters.Profile_ViewPagerAdapter;
@@ -19,11 +15,12 @@ import com.example.whodo.adapters.Profile_ViewPagerAdapter;
 public class ProfileActivity extends AppCompatActivity {
 
 
-    @SuppressLint({"RestrictedApi", "LongLogTag"})
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_profile);
+
+
 
         //recover the FragmentId that activity will contain sent on bundle
         int FragmentId =getIntent().getExtras().getInt("FragmentId") ;

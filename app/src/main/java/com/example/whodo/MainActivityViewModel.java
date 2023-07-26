@@ -29,6 +29,7 @@ public class MainActivityViewModel extends ViewModel {
 
 
     private MutableLiveData<User> MutableLiveDataLoggedUser;
+    private MutableLiveData<User> MutableLiveDataLoggedUserOnce;
     private MutableLiveData<ArrayList<String>> MutableLiveDataLanguages;
     private MutableLiveData<ArrayList<String>> MutableLiveDataServices;
     private final User LoggedUser=new User();
@@ -61,6 +62,19 @@ public class MainActivityViewModel extends ViewModel {
         }
 
         return MutableLiveDataLoggedUser;
+    }
+    public LiveData<User> getLoggedUserOnce() {
+        if (MutableLiveDataLoggedUserOnce == null) {
+
+
+            MutableLiveDataLoggedUserOnce = new MutableLiveData<>(new User());
+            if(currentUser != null) {
+                loadUserOnce( currentUser.getUid()); ;
+            }
+
+        }
+
+        return MutableLiveDataLoggedUserOnce;
     }
 
     public LiveData<ArrayList<String>> getServices() {
@@ -95,6 +109,7 @@ public class MainActivityViewModel extends ViewModel {
 
                     User UserSS = ds.getValue(User.class);
                     assert UserSS != null;
+
                     LoggedUser.setUid(UserSS.getUid());
                     LoggedUser.setName(UserSS.getName());
                     LoggedUser.setBirthday(UserSS.getBirthday());
@@ -113,9 +128,64 @@ public class MainActivityViewModel extends ViewModel {
                     LoggedUser.setProfilePicture(UserSS.getProfilePicture());
                     LoggedUser.setLanguages(UserSS.getLanguages());
                     LoggedUser.setDescription(UserSS.getDescription());
-                    Log.i("Operacion MainActivityViewModel.onDataChange() -->> URI:",UserSS.getProfilePicture());
+                    LoggedUser.setWallet(UserSS.getWallet());
 
-                    MutableLiveDataLoggedUser.setValue(LoggedUser);
+                    //Log.i("Operacion MainActivityViewModel.onDataChange() -->> URI:",UserSS.getProfilePicture());
+
+                    MutableLiveDataLoggedUser.postValue(LoggedUser);
+                    Log.i("Operacion MainActivityViewModel.onDataChange()",  "La informacion del usuario a cambiado");
+
+                }
+            }
+
+            @SuppressLint("LongLogTag")
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+                Log.i("Operacion MainActivityViewModel.loadUser",  "ERROR CONECTAnDO A LA BASE");
+
+
+            }
+        });
+
+
+    }
+
+    @SuppressLint("LongLogTag")
+    private void loadUserOnce(String uid) {
+        Log.i("Operacion MainActivityViewModel.loadUser()",  "String recibido como parametro " + uid);
+        FirebaseDatabase mDatabase=FirebaseDatabase.getInstance();
+        DatabaseReference DBRef= mDatabase.getReference("USERS");
+        DBRef.orderByChild("uid").equalTo(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+
+                    User UserS = ds.getValue(User.class);
+                    assert UserS != null;
+
+                    LoggedUser.setUid(UserS.getUid());
+                    LoggedUser.setName(UserS.getName());
+                    LoggedUser.setBirthday(UserS.getBirthday());
+                    LoggedUser.setEmail(UserS.getEmail());
+                    LoggedUser.setAddress(UserS.getAddress());
+                    LoggedUser.setLatitude(UserS.getLatitude());
+                    LoggedUser.setLongitude(UserS.getLongitude());
+                    LoggedUser.setPhone(UserS.getPhone());
+                    LoggedUser.setPhone_ccn(UserS.getPhone_ccn());
+                    LoggedUser.setType(UserS.getType());
+                    LoggedUser.setPassword(UserS.getPassword());
+                    LoggedUser.setCreateDate(UserS.getCreateDate());
+                    LoggedUser.setDeleteDate(UserS.getDeleteDate());
+                    LoggedUser.setState(UserS.getState());
+                    LoggedUser.setIsValidated(UserS.getIsValidated());
+                    LoggedUser.setProfilePicture(UserS.getProfilePicture());
+                    LoggedUser.setLanguages(UserS.getLanguages());
+                    LoggedUser.setDescription(UserS.getDescription());
+                    LoggedUser.setWallet(UserS.getWallet());
+                    //Log.i("Operacion MainActivityViewModel.onDataChange() -->> URI:",UserSS.getProfilePicture());
+
+                    MutableLiveDataLoggedUserOnce.postValue(LoggedUser);
                     Log.i("Operacion MainActivityViewModel.onDataChange()",  "La informacion del usuario a cambiado");
 
                 }
@@ -184,7 +254,6 @@ public class MainActivityViewModel extends ViewModel {
             }
         });
     }
-
 
 
 

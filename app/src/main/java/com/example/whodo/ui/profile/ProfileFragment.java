@@ -1,7 +1,5 @@
 package com.example.whodo.ui.profile;
 
-import static com.example.whodo.MainActivity.getLoggedUser;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -21,7 +19,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.whodo.LoginActivity;
+import com.example.whodo.MainActivity;
 import com.example.whodo.R;
+import com.example.whodo.SingletonUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
@@ -52,9 +52,9 @@ public class ProfileFragment extends Fragment {
 
         Profile_Picture=root.findViewById(R.id.ProfilePicture);
         label_UserName = root.findViewById(R.id.text_profile1);
-        label_UserName.setText(getLoggedUser().getName());
+        label_UserName.setText(SingletonUser.getInstance().getName());
 
-        Picasso.get().load(getLoggedUser().getProfilePicture()).into(Profile_Picture);
+        Picasso.get().load(SingletonUser.getInstance().getProfilePicture()).into(Profile_Picture);
         LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
 
         TextView label_AccountConfig = new TextView(getContext());
@@ -63,14 +63,14 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_PersonalInfo = new ProfileItem(getContext());
         item_Profile_PersonalInfo.setText(getString(R.string.profileFrag_ItemText_PersonalInfo));
-        item_Profile_PersonalInfo.setImage(R.drawable.ic_activity_black);
+        item_Profile_PersonalInfo.setImage(R.drawable.usuario_de_archivo_24_grueso);
         item_Profile_PersonalInfo.setOnClickListener(v -> {
             profileActivityIntent(1,getString(R.string.profileFrag_ItemText_PersonalInfo));
         });
         //----------------------------------------------------------
         ProfileItem item_Profile_SesionSecurity = new ProfileItem(getContext());
         item_Profile_SesionSecurity.setText(getString(R.string.profileFrag_ItemText_SesionSecurity));
-        //item_Profile_SesionSecurity.setImage(R.drawable.);
+        item_Profile_SesionSecurity.setImage(R.drawable.monedas_24);
         item_Profile_SesionSecurity.setOnClickListener(v -> {
             profileActivityIntent(2,getString(R.string.profileFrag_ItemText_SesionSecurity));
         });
@@ -89,7 +89,7 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_ProviderSettings = new ProfileItem(getContext());
         item_Profile_ProviderSettings.setText(getString(R.string.profileFrag_ItemText_ProviderSettings));
-        //item_Profile_ProviderSettings.setImage(R.drawable.);
+        item_Profile_ProviderSettings.setImage(R.drawable.actualizar_24);
         item_Profile_ProviderSettings.setOnClickListener(v -> {
             profileActivityIntent(4,getString(R.string.profileFrag_ItemText_ProviderSettings));
         });
@@ -101,7 +101,7 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_HowItWorks = new ProfileItem(getContext());
         item_Profile_HowItWorks.setText(getString(R.string.profileFrag_ItemText_HowItWorks));
-        //item_Profile_HowItWorks.setImage(R.drawable.);
+        item_Profile_HowItWorks.setImage(R.drawable.interrogatorio_24);
         item_Profile_HowItWorks.setOnClickListener(v -> {
             profileActivityIntent(5,getString(R.string.profileFrag_ItemText_HowItWorks));
         });
@@ -109,7 +109,7 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_Recomendations = new ProfileItem(getContext());
         item_Profile_Recomendations.setText(getString(R.string.profileFrag_ItemText_Recomendations));
-        //item_Profile_Recomendations.setImage(R.drawable.);
+        item_Profile_Recomendations.setImage(R.drawable.exclamacion_24);
         item_Profile_Recomendations.setOnClickListener(v -> {
             profileActivityIntent(6,getString(R.string.profileFrag_ItemText_Recomendations));
         });
@@ -117,7 +117,7 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_Support = new ProfileItem(getContext());
         item_Profile_Support.setText(getString(R.string.profileFrag_ItemText_Support));
-        //item_Profile_Support.setImage(R.drawable.);
+        item_Profile_Support.setImage(R.drawable.auriculares_24);
         item_Profile_Support.setOnClickListener(v -> {
             profileActivityIntent(7,getString(R.string.profileFrag_ItemText_Support));
         });
@@ -125,7 +125,7 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_Comments = new ProfileItem(getContext());
         item_Profile_Comments.setText(getString(R.string.profileFrag_ItemText_Comments));
-        //item_Profile_Comments.setImage(R.drawable.);
+        item_Profile_Comments.setImage(R.drawable.sobre_24);
         item_Profile_Comments.setOnClickListener(v -> {
             profileActivityIntent(8,getString(R.string.profileFrag_ItemText_Comments));
         });
@@ -137,7 +137,7 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_LegalTerms = new ProfileItem(getContext());
         item_Profile_LegalTerms.setText(getString(R.string.profileFrag_ItemText_LegalTerms));
-        //item_Profile_LegalTerms.setImage(R.drawable.);
+        item_Profile_LegalTerms.setImage(R.drawable.diploma_24);
         item_Profile_LegalTerms.setOnClickListener(v -> {
             profileActivityIntent(9,getString(R.string.profileFrag_ItemText_LegalTerms));
         });
@@ -145,7 +145,7 @@ public class ProfileFragment extends Fragment {
         //----------------------------------------------------------
         ProfileItem item_Profile_PrivacyPolitics = new ProfileItem(getContext());
         item_Profile_PrivacyPolitics.setText(getString(R.string.profileFrag_ItemText_PrivacyPolitics));
-        //item_Profile_PrivacyPolitics.setImage(R.drawable.);
+        item_Profile_PrivacyPolitics.setImage(R.drawable.banco_24);
         item_Profile_PrivacyPolitics.setOnClickListener(v -> {
             profileActivityIntent(10,getString(R.string.profileFrag_ItemText_PrivacyPolitics));
         });
@@ -166,7 +166,7 @@ public class ProfileFragment extends Fragment {
         linearLayout.addView(label_AccountConfig);
         linearLayout.addView(item_Profile_PersonalInfo);
         linearLayout.addView(item_Profile_SesionSecurity);
-        linearLayout.addView(item_Profile_Payment);
+        //linearLayout.addView(item_Profile_Payment);
         linearLayout.addView(label_UserType);
         linearLayout.addView(item_Profile_ProviderSettings);
         linearLayout.addView(label_Asistency);
@@ -190,13 +190,13 @@ public class ProfileFragment extends Fragment {
     @SuppressLint("LongLogTag")
     public void onResume() {
         super.onResume();
-        label_UserName.setText(getLoggedUser().getName());
-        Picasso.get().load(getLoggedUser().getProfilePicture()).into(Profile_Picture);
+        label_UserName.setText(SingletonUser.getInstance().getName());
+        Picasso.get().load(SingletonUser.getInstance().getProfilePicture()).into(Profile_Picture);
         Log.i("Operacion ProfileFragment.onResume()", "La informacion del usuario a cambiado");
     }
 
     public void profileActivityIntent(int p_fragmentId, String p_fragmentTitle) {
-        if (getLoggedUser().getName() == null) {
+        if (SingletonUser.getInstance().getName() == null) {
             Toast.makeText(getContext(), "We could not recover user information, you might have conection problem" , Toast.LENGTH_LONG).show();
         } else{
             Intent intent = new Intent(requireActivity(), ProfileActivity.class);

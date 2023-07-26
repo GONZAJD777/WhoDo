@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import com.example.whodo.BusinessClasses.User;
 import com.example.whodo.MainActivity;
+import com.example.whodo.SingletonUser;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -24,79 +25,86 @@ public class CRUD {
         mDatabaseReference.child(p_User.getUid()).setValue(p_User);
     }
     @SuppressLint("LongLogTag")
-    public void UpdateUser(User p_User){
+    public void UpdateUser(User pUser,User pUserSnapshot){
 
-        Log.i("WhoDo-Log",  "Operacion CRUD.UpdateUser() Se actualizara el usuario:" + "USERS/"+p_User.getUid() );
+        Log.i("WhoDo-Log",  "Operacion CRUD.UpdateUser() Se actualizara el usuario:" + "USERS/"+pUser.getUid() );
 
-        if (!Objects.equals(p_User.getAddress(), MainActivity.getLoggedUserSnapshot().getAddress())) {
-            mDatabaseReference.child(p_User.getUid()).child("address").setValue(p_User.getAddress());
-            Log.i("WhoDo-Log","UpdateUser DIRECCION ANTIGUA: " + MainActivity.getLoggedUserSnapshot().getAddress() );
-            Log.i("WhoDo-Log","UpdateUser DIRECCION NUEVA: "+ p_User.getAddress()  );
+        if (!Objects.equals(pUser.getAddress(), pUserSnapshot.getAddress())) {
+            mDatabaseReference.child(pUser.getUid()).child("address").setValue(pUser.getAddress());
+            Log.i("WhoDo-Log","UpdateUser DIRECCION ANTIGUA: " + pUserSnapshot.getAddress() );
+            Log.i("WhoDo-Log","UpdateUser DIRECCION NUEVA: "+ pUser.getAddress()  );
         }
-        if (!Objects.equals(p_User.getBirthday(), MainActivity.getLoggedUserSnapshot().getBirthday())) {
-            mDatabaseReference.child(p_User.getUid()).child("birthday").setValue(p_User.getBirthday());
-            Log.i("WhoDo-Log","UpdateUser CUMPLEAÑOS ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getBirthday() );
-            Log.i("WhoDo-Log","UpdateUser CUMPLEAÑOS NUEVA: "+ p_User.getBirthday());
+
+        if (!Objects.equals(pUser.getBirthday(), pUserSnapshot.getBirthday())) {
+            mDatabaseReference.child(pUser.getUid()).child("birthday").setValue(pUser.getBirthday());
+            Log.i("WhoDo-Log","UpdateUser CUMPLEAÑOS ANTIGUA: "+pUserSnapshot.getBirthday() );
+            Log.i("WhoDo-Log","UpdateUser CUMPLEAÑOS NUEVA: "+ pUser.getBirthday());
         }
-        if (!Objects.equals(p_User.getDescription(), MainActivity.getLoggedUserSnapshot().getDescription())) {
-            mDatabaseReference.child(p_User.getUid()).child("description").setValue(p_User.getDescription());
-            Log.i("WhoDo-Log","UpdateUser DESCRIPCION ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getDescription() );
-            Log.i("WhoDo-Log","UpdateUser DESCRIPCION NUEVA: "+ p_User.getDescription());
+
+        if (!Objects.equals(pUser.getDescription(), pUserSnapshot.getDescription())) {
+            mDatabaseReference.child(pUser.getUid()).child("description").setValue(pUser.getDescription());
+            Log.i("WhoDo-Log","UpdateUser DESCRIPCION ANTIGUA: "+pUserSnapshot.getDescription() );
+            Log.i("WhoDo-Log","UpdateUser DESCRIPCION NUEVA: "+ pUser.getDescription());
         }
-        if (!Objects.equals(p_User.getEmail(), MainActivity.getLoggedUserSnapshot().getEmail())) {
-            mDatabaseReference.child(p_User.getUid()).child("email").setValue(p_User.getEmail());
-            Log.i("WhoDo-Log","UpdateUser CORREO ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getEmail() );
-            Log.i("WhoDo-Log","UpdateUser CORREO NUEVA: "+ p_User.getEmail());
+        if (!Objects.equals(pUser.getEmail(), pUserSnapshot.getEmail())) {
+            mDatabaseReference.child(pUser.getUid()).child("email").setValue(pUser.getEmail());
+            Log.i("WhoDo-Log","UpdateUser CORREO ANTIGUA: "+pUserSnapshot.getEmail() );
+            Log.i("WhoDo-Log","UpdateUser CORREO NUEVA: "+ pUser.getEmail());
         }
-        if (!Objects.equals(p_User.getIsValidated(), MainActivity.getLoggedUserSnapshot().getIsValidated())) {
-            mDatabaseReference.child(p_User.getUid()).child("isValidated").setValue(p_User.getIsValidated());
-            Log.i("WhoDo-Log","UpdateUser iSVALIDATED ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getIsValidated() );
-            Log.i("WhoDo-Log","UpdateUser iSVALIDATED NUEVA: "+ p_User.getIsValidated());
+        if (!Objects.equals(pUser.getIsValidated(), pUserSnapshot.getIsValidated())) {
+            mDatabaseReference.child(pUser.getUid()).child("isValidated").setValue(pUser.getIsValidated());
+            Log.i("WhoDo-Log","UpdateUser iSVALIDATED ANTIGUA: "+pUserSnapshot.getIsValidated() );
+            Log.i("WhoDo-Log","UpdateUser iSVALIDATED NUEVA: "+ pUser.getIsValidated());
         }
-        if (!Objects.equals(p_User.getLanguages(), MainActivity.getLoggedUserSnapshot().getLanguages())) {
-            mDatabaseReference.child(p_User.getUid()).child("languages").setValue(p_User.getLanguages());
-            Log.i("WhoDo-Log","UpdateUser IDIOMAS ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getLanguages() );
-            Log.i("WhoDo-Log","UpdateUser IDIOMAS NUEVA: "+ p_User.getLanguages());
+        if (!Objects.equals(pUser.getLanguages(), pUserSnapshot.getLanguages())) {
+            mDatabaseReference.child(pUser.getUid()).child("languages").setValue(pUser.getLanguages());
+            Log.i("WhoDo-Log","UpdateUser IDIOMAS ANTIGUA: "+pUserSnapshot.getLanguages() );
+            Log.i("WhoDo-Log","UpdateUser IDIOMAS NUEVA: "+ pUser.getLanguages());
         }
-        if (!Objects.equals(p_User.getLatitude(), MainActivity.getLoggedUserSnapshot().getLatitude())) {
-            mDatabaseReference.child(p_User.getUid()).child("latitude").setValue(p_User.getLatitude());
-            Log.i("WhoDo-Log","UpdateUser LATITUD ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getLatitude() );
-            Log.i("WhoDo-Log","UpdateUser LATITUD NUEVA: "+ p_User.getLatitude());
+        if (!Objects.equals(pUser.getLatitude(), pUserSnapshot.getLatitude())) {
+            mDatabaseReference.child(pUser.getUid()).child("latitude").setValue(pUser.getLatitude());
+            Log.i("WhoDo-Log","UpdateUser LATITUD ANTIGUA: "+pUserSnapshot.getLatitude() );
+            Log.i("WhoDo-Log","UpdateUser LATITUD NUEVA: "+ pUser.getLatitude());
         }
-        if (!Objects.equals(p_User.getLongitude(), MainActivity.getLoggedUserSnapshot().getLongitude())) {
-            mDatabaseReference.child(p_User.getUid()).child("longitude").setValue(p_User.getLongitude());
-            Log.i("WhoDo-Log","UpdateUser LONGITUD ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getLongitude() );
-            Log.i("WhoDo-Log","UpdateUser LONGITUD NUEVA: "+ p_User.getLongitude());
+        if (!Objects.equals(pUser.getLongitude(), pUserSnapshot.getLongitude())) {
+            mDatabaseReference.child(pUser.getUid()).child("longitude").setValue(pUser.getLongitude());
+            Log.i("WhoDo-Log","UpdateUser LONGITUD ANTIGUA: "+pUserSnapshot.getLongitude() );
+            Log.i("WhoDo-Log","UpdateUser LONGITUD NUEVA: "+ pUser.getLongitude());
         }
-        if (!Objects.equals(p_User.getName(), MainActivity.getLoggedUserSnapshot().getName())) {
-            mDatabaseReference.child(p_User.getUid()).child("name").setValue(p_User.getName());
-            Log.i("WhoDo-Log","UpdateUser NOMBRE ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getName() );
-            Log.i("WhoDo-Log","UpdateUser NOMBRE NUEVA: "+ p_User.getName());
+        if (!Objects.equals(pUser.getName(), pUserSnapshot.getName())) {
+            mDatabaseReference.child(pUser.getUid()).child("name").setValue(pUser.getName());
+            Log.i("WhoDo-Log","UpdateUser NOMBRE ANTIGUA: "+pUserSnapshot.getName() );
+            Log.i("WhoDo-Log","UpdateUser NOMBRE NUEVA: "+ pUser.getName());
         }
-        if (!Objects.equals(p_User.getPassword(), MainActivity.getLoggedUserSnapshot().getPassword())) {
-            mDatabaseReference.child(p_User.getUid()).child("password").setValue(p_User.getPassword());
-            Log.i("WhoDo-Log","UpdateUser PASSWORD ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getPassword() );
-            Log.i("WhoDo-Log","UpdateUser PASSWORD NUEVA: "+ p_User.getPassword());
+        if (!Objects.equals(pUser.getPassword(), pUserSnapshot.getPassword())) {
+            mDatabaseReference.child(pUser.getUid()).child("password").setValue(pUser.getPassword());
+            Log.i("WhoDo-Log","UpdateUser PASSWORD ANTIGUA: "+pUserSnapshot.getPassword() );
+            Log.i("WhoDo-Log","UpdateUser PASSWORD NUEVA: "+ pUser.getPassword());
         }
-        if (!Objects.equals(p_User.getPhone(), MainActivity.getLoggedUserSnapshot().getPhone())) {
-            mDatabaseReference.child(p_User.getUid()).child("phone").setValue(p_User.getPhone());
-            Log.i("WhoDo-Log","UpdateUser TELEFONO ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getPhone() );
-            Log.i("WhoDo-Log","UpdateUser TELEFONO NUEVA: "+ p_User.getPhone());
+        if (!Objects.equals(pUser.getPhone(), pUserSnapshot.getPhone())) {
+            mDatabaseReference.child(pUser.getUid()).child("phone").setValue(pUser.getPhone());
+            Log.i("WhoDo-Log","UpdateUser TELEFONO ANTIGUA: "+pUserSnapshot.getPhone() );
+            Log.i("WhoDo-Log","UpdateUser TELEFONO NUEVA: "+ pUser.getPhone());
         }
-        if (!Objects.equals(p_User.getPhone_ccn(), MainActivity.getLoggedUserSnapshot().getPhone_ccn())) {
-            mDatabaseReference.child(p_User.getUid()).child("phone_ccn").setValue(p_User.getPhone_ccn());
-            Log.i("WhoDo-Log","UpdateUser CCN ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getPhone_ccn() );
-            Log.i("WhoDo-Log","UpdateUser CCN NUEVA: "+ p_User.getPhone_ccn());
+        if (!Objects.equals(pUser.getPhone_ccn(), pUserSnapshot.getPhone_ccn())) {
+            mDatabaseReference.child(pUser.getUid()).child("phone_ccn").setValue(pUser.getPhone_ccn());
+            Log.i("WhoDo-Log","UpdateUser CCN ANTIGUA: "+pUserSnapshot.getPhone_ccn() );
+            Log.i("WhoDo-Log","UpdateUser CCN NUEVA: "+ pUser.getPhone_ccn());
         }
-        if (!Objects.equals(p_User.getProfilePicture(), MainActivity.getLoggedUserSnapshot().getProfilePicture())) {
-            uploadProfileImage(p_User.getProfilePicture(),p_User.getUid());
-            Log.i("WhoDo-Log","UpdateUser IMAGEN ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getProfilePicture() );
-            Log.i("WhoDo-Log","UpdateUser IMAGEN NUEVA: "+ p_User.getProfilePicture());
+        if (!Objects.equals(pUser.getProfilePicture(), pUserSnapshot.getProfilePicture())) {
+            uploadProfileImage(pUser.getProfilePicture(),pUser.getUid());
+            Log.i("WhoDo-Log","UpdateUser IMAGEN ANTIGUA: "+pUserSnapshot.getProfilePicture() );
+            Log.i("WhoDo-Log","UpdateUser IMAGEN NUEVA: "+ pUser.getProfilePicture());
         }
-        if (!Objects.equals(p_User.getType(), MainActivity.getLoggedUserSnapshot().getType())) {
-            mDatabaseReference.child(p_User.getUid()).child("type").setValue(p_User.getType());
-            Log.i("WhoDo-Log ", "UpdateUser TIPO ANTIGUA: "+MainActivity.getLoggedUserSnapshot().getType() );
-            Log.i("WhoDo-Log","UpdateUser TIPO NUEVA: "+ p_User.getType());
+        if (!Objects.equals(pUser.getType(), pUserSnapshot.getType())) {
+            mDatabaseReference.child(pUser.getUid()).child("type").setValue(pUser.getType());
+            Log.i("WhoDo-Log ", "UpdateUser TIPO ANTIGUA: "+pUserSnapshot.getType() );
+            Log.i("WhoDo-Log","UpdateUser TIPO NUEVA: "+ pUser.getType());
+        }
+        if (!Objects.equals(pUser.getWallet(), pUserSnapshot.getWallet())) {
+            mDatabaseReference.child(pUser.getUid()).child("wallet").setValue(pUser.getWallet());
+            Log.i("WhoDo-Log ", "UpdateUser BILLETERA ANTIGUA: "+pUserSnapshot.getWallet() );
+            Log.i("WhoDo-Log","UpdateUser BILLETERA NUEVA: "+ pUser.getWallet());
         }
 
     }
@@ -137,6 +145,8 @@ public class CRUD {
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'users/me/profile.png'
                 mDatabaseReference.child(p_User).child("profilePicture").setValue(uri.toString());
+                //luego de actualizar la base y el SnapshotLoggedUser, se actualizan las variable del LoggedUser
+                SingletonUser.getInstance().setProfilePicture(uri.toString());
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
