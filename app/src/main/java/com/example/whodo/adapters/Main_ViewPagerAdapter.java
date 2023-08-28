@@ -1,5 +1,7 @@
 package com.example.whodo.adapters;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -11,8 +13,7 @@ import com.example.whodo.ui.hire.HireFragment;
 import com.example.whodo.ui.messages.MessagesFragment;
 import com.example.whodo.ui.profile.ProfileFragment;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 

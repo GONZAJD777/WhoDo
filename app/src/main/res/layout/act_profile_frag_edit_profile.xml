@@ -302,13 +302,13 @@
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.example.whodo.CustomMapView
+            <com.example.whodo.UiClasses.CustomMapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:ignore="SpeakableTextPresentCheck">
 
-            </com.example.whodo.CustomMapView>
+            </com.example.whodo.UiClasses.CustomMapView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
@@ -320,19 +320,20 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:orientation="vertical"
-        app:behavior_fitToContents="false"
         android:paddingTop="10dp"
+        app:behavior_fitToContents="true"
         app:behavior_halfExpandedRatio="0.6"
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
-    <View
-        android:id="@+id/Languages_bottom_sheet_notch"
-        android:layout_width="40dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center"
-        android:background="?attr/actionBarDivider"
-        android:backgroundTint="#535353"
-        android:backgroundTintMode="add" />
+
+        <View
+            android:id="@+id/Languages_bottom_sheet_notch"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center"
+            android:background="?attr/actionBarDivider"
+            android:backgroundTint="#535353"
+            android:backgroundTintMode="add" />
 
         <TextView
             android:id="@+id/ReadyLabelButtonLanguages"
@@ -346,27 +347,27 @@
             android:text="@string/ReadyLabelButton"
             android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/LanguagesTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingTop="14dp"
-        android:text="@string/PersonalInfoFrag_Languages"
-        android:textSize="20sp" />
+        <TextView
+            android:id="@+id/LanguagesTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="14dp"
+            android:text="@string/PersonalInfoFrag_Languages"
+            android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/LanguagesTextViewMultiline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:ems="10"
-        android:gravity="start|top"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:text="@string/PersonalInfoFrag_Label_Languages" />
+        <TextView
+            android:id="@+id/LanguagesTextViewMultiline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:text="@string/PersonalInfoFrag_Label_Languages" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

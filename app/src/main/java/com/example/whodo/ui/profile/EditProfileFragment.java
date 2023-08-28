@@ -1,6 +1,5 @@
 package com.example.whodo.ui.profile;
 
-import static com.example.whodo.MainActivity.getLanguages;
 import static com.example.whodo.ui.profile.ProfileActivity.hideKeyboard;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
@@ -34,10 +33,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.whodo.CustomMapView;
+import com.example.whodo.UiClasses.CustomMapView;
 import com.example.whodo.MainActivity;
 import com.example.whodo.R;
 import com.example.whodo.SingletonUser;
+import com.example.whodo.UiClasses.ProfileItem;
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -89,46 +91,73 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private BottomSheetBehavior<LinearLayout> DescriptionBottomSheetBehavior;
     private BottomSheetBehavior<LinearLayout> LocationBottomSheetBehavior;
     private BottomSheetBehavior<LinearLayout> LanguagesBottomSheetBehavior;
-
+    private BottomSheetBehavior<LinearLayout> BlackBackgroundBottomSheetBehavior;
+    private FloatingActionButton SaveChangesButton;
+    private TextView ReadyLabelButtonDescription;
+    private TextView ReadyLabelButtonLocation;
+    private TextView ReadyLabelButtonLanguages;
+    private FloatingActionButton PickImageButton;
+    private LinearLayout ItemsLinearLayout;
+    private LinearLayout Description_bottom_sheet;
+    private LinearLayout Location_bottom_sheet;
+    private LinearLayout Languages_bottom_sheet;
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
-
         View root = inflater.inflate(R.layout.act_profile_frag_edit_profile, container, false);
-
         mapView = root.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         getLocationPermission();
-
-        TextView ReadyLabelButtonDescription = root.findViewById(R.id.ReadyLabelButtonDescription);
-        TextView ReadyLabelButtonLocation = root.findViewById(R.id.ReadyLabelButtonLocation);
-        TextView ReadyLabelButtonLanguages = root.findViewById(R.id.ReadyLabelButtonLanguages);
-
+        //*********************************************************************************
+        //BUTTONS
+        ReadyLabelButtonDescription = root.findViewById(R.id.ReadyLabelButtonDescription);
+        ReadyLabelButtonLocation = root.findViewById(R.id.ReadyLabelButtonLocation);
+        ReadyLabelButtonLanguages = root.findViewById(R.id.ReadyLabelButtonLanguages);
+        PickImageButton = root.findViewById(R.id.PickImageButton);
+        SaveChangesButton = root.findViewById(R.id.SaveChangesButton);
+        //BUTTONS.LISTENERS
         ReadyLabelButtonDescription.setOnClickListener(this::onClick);
         ReadyLabelButtonLocation.setOnClickListener(this::onClick);
         ReadyLabelButtonLanguages.setOnClickListener(this::onClick);
-
-        DescriptionSimpleEditText = root.findViewById(R.id.DescriptionSimpleEditText);
+        SaveChangesButton.setOnClickListener(this::onClick);
+        PickImageButton.setOnClickListener(this::onClick);
+        //*********************************************************************************
+        //EDITTEXT
         LocationSimpleEditText = root.findViewById(R.id.LocationSimpleEditText);
-        LanguagesLinearLayout= root.findViewById(R.id.LanguagesLinearLayout);;
-        LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
-        LinearLayout Description_bottom_sheet = root.findViewById(R.id.Description_bottom_sheet);
-        LinearLayout Location_bottom_sheet = root.findViewById(R.id.Location_bottom_sheet);
-        LinearLayout Languages_bottom_sheet = root.findViewById(R.id.Languages_bottom_sheet);
+        DescriptionSimpleEditText = root.findViewById(R.id.DescriptionSimpleEditText);
+        //listener para evitar que el contenedor scrollee cuando se necesita scrollear el EditText
+        DescriptionSimpleEditText.setOnTouchListener((view, motionEvent) -> {
+            view.getParent().requestDisallowInterceptTouchEvent(true);
+            if ((motionEvent.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                view.getParent().requestDisallowInterceptTouchEvent(false);
+            }
+            return false;
+        });
+        //*********************************************************************************
+        //                              ==LINEARLAYOUTS==
+        ItemsLinearLayout = root.findViewById(R.id.linearLayout);
+        //*********************************************************************************
+        //BACKGROUD BOTTOMSHEET
         BlackBackground_bottom_sheet = root.findViewById(R.id.BlackBackground_bottom_sheet);
-        DescriptionBottomSheetBehavior = BottomSheetBehavior.from(Description_bottom_sheet);
-        LocationBottomSheetBehavior = BottomSheetBehavior.from(Location_bottom_sheet);
-        LanguagesBottomSheetBehavior = BottomSheetBehavior.from(Languages_bottom_sheet);
-        BottomSheetBehavior<LinearLayout> BlackBackgroundBottomSheetBehavior = BottomSheetBehavior.from(BlackBackground_bottom_sheet);
-        //DescriptionBottomSheetBehavior.setFitToContents(true);
-        //DescriptionBottomSheetBehavior.setExpandedOffset(500);
-        DescriptionBottomSheetBehavior.setDraggable(false);
-        LanguagesBottomSheetBehavior.setFitToContents(true);
+        BlackBackgroundBottomSheetBehavior = BottomSheetBehavior.from(BlackBackground_bottom_sheet);
         BlackBackgroundBottomSheetBehavior.setState(STATE_EXPANDED);
         BlackBackgroundBottomSheetBehavior.setDraggable(false);
-        BlackBackground_bottom_sheet.setClickable(false);
-
-        //----------------------------------------------------------
+        //*********************************************************************************
+        //DESCRIPTION BOTTOMSHEET
+        Description_bottom_sheet = root.findViewById(R.id.Description_bottom_sheet);
+        DescriptionBottomSheetBehavior = BottomSheetBehavior.from(Description_bottom_sheet);
+        DescriptionBottomSheetBehavior.setDraggable(false);
+        //*********************************************************************************
+        //LOCATION BOTTOMSHEET
+        Location_bottom_sheet = root.findViewById(R.id.Location_bottom_sheet);
+        LocationBottomSheetBehavior = BottomSheetBehavior.from(Location_bottom_sheet);
+        //*********************************************************************************
+        //LANGUAGES BOTTOMSHEET
+        LanguagesLinearLayout= root.findViewById(R.id.LanguagesLinearLayout);
+        Languages_bottom_sheet = root.findViewById(R.id.Languages_bottom_sheet);
+        LanguagesBottomSheetBehavior = BottomSheetBehavior.from(Languages_bottom_sheet);
+        //*********************************************************************************
+        //                              ==PROFILE ITEMS==
         //DESCRIPTION
         TextView label_Description = new TextView(getContext());
         label_Description.setText(getString(R.string.PersonalInfoFrag_Description));
@@ -136,7 +165,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         //----------------------------------------------------------
         item_Description = new ProfileItem(getContext());
         item_Description.setText(getString(R.string.PersonalInfoFrag_Description1));
-        item_Description.setImage(R.drawable.lapiz_24);
+        item_Description.setImage(R.drawable.id_insignia_24);
         item_Description.setOnClickListener(v -> {
             setBottomSheetBehavior(DescriptionBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -177,7 +206,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
-        //----------------------------------------------------------
+        //*********************************************************************************
         //LOCATION
         TextView label_Location = new TextView(getContext());
         label_Location.setText(getString(R.string.PersonalInfoFrag_Location));
@@ -227,14 +256,15 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
-        //----------------------------------------------------------
+        //*********************************************************************************
+        //LANGUAGES
         TextView label_Languages = new TextView(getContext());
         label_Languages.setText(getString(R.string.PersonalInfoFrag_Languages));
         label_Languages.setPadding(85, 85, 0, 0);
         //----------------------------------------------------------
         item_Languages = new ProfileItem(getContext());
         item_Languages.setText(getString(R.string.PersonalInfoFrag_Languages));
-        item_Languages.setImage(R.drawable.lapiz_24);
+        item_Languages.setImage(R.drawable.subtitulos_24);
         item_Languages.setOnClickListener(v -> {
             setBottomSheetBehavior(LanguagesBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -275,30 +305,16 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
-
         //----------------------------------------------------------
-        linearLayout.addView(label_Description);
-        linearLayout.addView(item_Description);
-        linearLayout.addView(label_Location);
-        linearLayout.addView(item_Location);
-        linearLayout.addView(label_Languages);
-        linearLayout.addView(item_Languages);
-
-        DescriptionSimpleEditText.setOnTouchListener((view, motionEvent) -> {
-            view.getParent().requestDisallowInterceptTouchEvent(true);
-            if ((motionEvent.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
-                view.getParent().requestDisallowInterceptTouchEvent(false);
-            }
-            return false;
-        });
-
+        ItemsLinearLayout.addView(label_Description);
+        ItemsLinearLayout.addView(item_Description);
+        ItemsLinearLayout.addView(label_Location);
+        ItemsLinearLayout.addView(item_Location);
+        ItemsLinearLayout.addView(label_Languages);
+        ItemsLinearLayout.addView(item_Languages);
+        //*********************************************************************************
+        //                              ==PROFILE IMAGE PICKER==
         imagePicker = root.findViewById(R.id.imagePicker);
-
-        FloatingActionButton PickImageButton = root.findViewById(R.id.PickImageButton);
-        PickImageButton.setOnClickListener(v -> {
-            //Toast.makeText(getContext(), "Remplazar por tu codigo", Toast.LENGTH_LONG).show();
-            SelectImage();
-        });
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             // Callback is invoked after the user selects a media item or closes the
             // photo picker.
@@ -311,22 +327,17 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                 Log.d("PhotoPicker", "No media selected");
             }
         });
+        //*********************************************************************************
 
-        FloatingActionButton SaveChangesButton = root.findViewById(R.id.SaveChangesButton);
-        SaveChangesButton.setOnClickListener(v -> {
-            //Toast.makeText(getContext(), "Remplazar por tu codigo", Toast.LENGTH_LONG).show();
-            saveUserData();
-        });
+
         // Llamado PlacesAutocomplete que sugiere y ubica al usuario
         // servicio pago por lo que se deja para cuando haya ingresos.lel
         /*LocationSimpleEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
             @Override
             public void afterTextChanged(Editable editable) {
@@ -348,19 +359,19 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             case R.id.ReadyLabelButtonLocation:
                 setLocationText(LocationSimpleEditText.getText().toString(),mLatLng,getString(R.string.PersonalInfoFrag_Location1),item_Location);
                 setBottomSheetBehavior(LocationBottomSheetBehavior,1);
-
                 break;
             case R.id.ReadyLabelButtonLanguages:
                 setLanguagesText(LoggedUserLanguages,getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
                 setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);
-
                 break;
-
+            case R.id.SaveChangesButton:
+                saveUserData();
+                break;
+            case R.id.PickImageButton:
+                SelectImage();
+                break;
         }
-
-
     }
-
     private void loadUserData () {
         Picasso.get().load(SingletonUser.getInstance().getProfilePicture()).into(imagePicker);
         LoggedUserImage= SingletonUser.getInstance().getProfilePicture();
@@ -369,7 +380,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         setLocationText(SingletonUser.getInstance().getAddress(),new LatLng(SingletonUser.getInstance().getLatitude(),SingletonUser.getInstance().getLongitude()),getString(R.string.PersonalInfoFrag_Location1),item_Location);
         LocationSimpleEditText.setText(SingletonUser.getInstance().getAddress());
         //el pin se coloca en el metodo OnMapReady
-        ArrayList<String> languages = getLanguages();
+        ArrayList<String> languages = MainActivity.getLanguages();
         LoggedUserLanguages=SingletonUser.getInstance().getLanguages();
         setLanguagesText(SingletonUser.getInstance().getLanguages(),getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
 
@@ -404,21 +415,9 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         SingletonUser.getInstance().setLongitude(LoggedUserLocationLon);
         SingletonUser.getInstance().setLanguages(LoggedUserLanguages);
         SingletonUser.getInstance().setProfilePicture(LoggedUserImage);
-
-        Log.d("EDIT PROFILE SAVE ", "ACTUALIZAR PROFILE");
-        Log.d("EDIT PROFILE SAVE ", "************************************************");
-        Log.d("EDIT PROFILE SAVE ", "DESCRIPTION LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getDescription());
-        Log.d("EDIT PROFILE SAVE ", "ADDRESS LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getAddress());
-        Log.d("EDIT PROFILE SAVE ", "LATITUDE LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getLatitude());
-        Log.d("EDIT PROFILE SAVE ", "LONGITUDE LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getLongitude());
-        Log.d("EDIT PROFILE SAVE ", "LANGUAJES LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getLanguages());
-        Log.d("EDIT PROFILE SAVE ", "PHOTO LOGGEDUSER NUEVA: "+SingletonUser.getInstance().getProfilePicture());
-        Log.d("EDIT PROFILE SAVE ", "************************************************");
+        String LoggedUserGeoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(LoggedUserLocationLat,LoggedUserLocationLon));
+        SingletonUser.getInstance().setGeohash(LoggedUserGeoHash);
         requireActivity().finish();
-
-        //TODO DE ALGUNA PUTA MANERA, LAS VARIABLES QUEDAN BLOQUEADAS Y NO SE ACTUALIZAN HASTA Q SE CIERRA LA VENTANA - DONE
-        //TODO ADEMAS, AL GUARDAR LAS VARIABLES NUEVAS, SI HABIA OTRO CAMBIO EN CURSO TAMPOCO SE ACTUALIZAN CON LOS NUEVOS VALORES - DONE
-
     }
     private void setDescriptionText(String text1,String text2,ProfileItem ProfileItem1){
         if (text1.trim().length() != 0 ) {
@@ -481,55 +480,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         //googleMap.addMarker(new MarkerOptions().position(Marker).title("PLOMERO/ Ricado Fleitas").icon(BitmapDescriptorFactory.defaultMarker()));
 
     }
-    private void PlacesAutocomplete (String query){
-        // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
-        // and once again when the user makes a selection (for example when calling fetchPlace()).
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-
-        // Create a RectangularBounds object.
-        //RectangularBounds bounds = RectangularBounds.newInstance(
-        //        new LatLng(-33.880490, 151.184363),
-        //        new LatLng(-33.8749937,151.2041382)
-        //        new LatLng(-33.858754, 151.229596));
-        RectangularBounds bounds = RectangularBounds.newInstance(
-                new LatLng(mLatLng.latitude-1, mLatLng.longitude-1),
-                new LatLng(mLatLng.latitude+1, mLatLng.longitude+1));
-        // Use the builder to create a FindAutocompletePredictionsRequest.
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setLocationRestriction(bounds)
-                //.setOrigin(new LatLng(-33.8749937,151.2041382))
-                .setOrigin(mLatLng)
-                .setTypeFilter(TypeFilter.ADDRESS)
-                .setSessionToken(token)
-                .setQuery(query)
-                .build();
-                // Call either setLocationBias() OR setLocationRestriction().
-                //.setLocationBias(bounds)
-                //.setLocationRestriction(bounds)
-                //.setOrigin(new LatLng(-33.8749937,151.2041382))
-                //.setCountries("AU", "NZ")
-                //.setTypesFilter(Arrays.asList(TypeFilter.ADDRESS.toString()))
-
-        if (!Places.isInitialized()) {
-            Places.initialize(this.requireActivity(), "AIzaSyD6fudFVcF1t0szms6jQTw_S6P_IYi8NFY");
-        }
-        PlacesClient placesClient = Places.createClient(this.requireContext());
-        //assert false;
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                Log.i(TAG, prediction.getPlaceId());
-                Log.i(TAG, prediction.getPrimaryText(null).toString());
-            }
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-            }
-        });
-
-    }
     // Select Image method
-
     private void SelectImage() {
         ActivityResultContracts.PickVisualMedia.ImageOnly VisualMediaType = ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE;
         pickMedia.launch(new PickVisualMediaRequest.Builder().setMediaType(VisualMediaType).build());
@@ -577,9 +528,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     }
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
-
         FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireActivity());
-
         try{
             if(mLocationPermissionsGranted){
 
@@ -590,7 +539,6 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                         Location currentLocation = (Location) task.getResult();
                         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                         moveCamera(currentLatLng);
-
                     }else{
                         Log.d(TAG, "onComplete: current location is null");
                     }
@@ -603,15 +551,6 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private void moveCamera(LatLng latLng){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, EditProfileFragment.DEFAULT_ZOOM));
-
-       /* if(!title.equals("My Location")){
-            MarkerOptions options = new MarkerOptions()
-                    .position(latLng)
-                    .title(title);
-            mMap.addMarker(options);
-       }*/
-
-
     }
     @Override
     public void onResume() {
@@ -633,7 +572,53 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         super.onLowMemory();
         mapView.onLowMemory();
     }
+    private void PlacesAutocomplete (String query){
+        // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
+        // and once again when the user makes a selection (for example when calling fetchPlace()).
+        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
 
+        // Create a RectangularBounds object.
+        //RectangularBounds bounds = RectangularBounds.newInstance(
+        //        new LatLng(-33.880490, 151.184363),
+        //        new LatLng(-33.8749937,151.2041382)
+        //        new LatLng(-33.858754, 151.229596));
+        RectangularBounds bounds = RectangularBounds.newInstance(
+                new LatLng(mLatLng.latitude-1, mLatLng.longitude-1),
+                new LatLng(mLatLng.latitude+1, mLatLng.longitude+1));
+        // Use the builder to create a FindAutocompletePredictionsRequest.
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setLocationRestriction(bounds)
+                //.setOrigin(new LatLng(-33.8749937,151.2041382))
+                .setOrigin(mLatLng)
+                .setTypeFilter(TypeFilter.ADDRESS)
+                .setSessionToken(token)
+                .setQuery(query)
+                .build();
+        // Call either setLocationBias() OR setLocationRestriction().
+        //.setLocationBias(bounds)
+        //.setLocationRestriction(bounds)
+        //.setOrigin(new LatLng(-33.8749937,151.2041382))
+        //.setCountries("AU", "NZ")
+        //.setTypesFilter(Arrays.asList(TypeFilter.ADDRESS.toString()))
+
+        if (!Places.isInitialized()) {
+            Places.initialize(this.requireActivity(), "AIzaSyD6fudFVcF1t0szms6jQTw_S6P_IYi8NFY");
+        }
+        PlacesClient placesClient = Places.createClient(this.requireContext());
+        //assert false;
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                Log.i(TAG, prediction.getPlaceId());
+                Log.i(TAG, prediction.getPrimaryText(null).toString());
+            }
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                Log.e(TAG, "Place not found: " + apiException.getStatusCode());
+            }
+        });
+
+    }
 
 
 }

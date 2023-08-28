@@ -1,7 +1,11 @@
 package com.example.whodo.BusinessClasses;
 
+import com.google.firebase.database.PropertyName;
+import com.google.firebase.encoders.annotations.Encodable;
 
-import android.net.Uri;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User  {
 
@@ -12,9 +16,10 @@ public class User  {
     private String Address;         // Phisical address registered for customer and providers
     private double Latitude;        // Latitude of User Address, no current Location used to pin in the map
     private double Longitude;       // Longitude of User Address, no current Location used to pin in the map
+    private String Geohash;
     private String Phone;           // Phone Number asociated with the account
     private String Phone_ccn;           // CCN Phone Number asociated with the account
-    private String Type;            // Customer or Provider
+    private String Type;            // Customer=1 or Provider=2
     private String Password;        // Account Password registered in the Account
     private long CreateDate;         // Account Creation Date
     private long DeleteDate;         // Account Logic Deletion Date
@@ -23,9 +28,24 @@ public class User  {
     private String ProfilePicture;
     private String Languages;
     private String Description;
+    private String Specialization; // just apllies and is shown to those user who change their type to PROVIDERS
+    //***********************************************************************************************************************
+    //This atributes have no need to be update, this will just be consumed to show customers a preview of prividers skills
 
-    private String Wallet;
-    public User (){}
+    private UserSpecRating UserScore;
+
+    /**private String AppereanceScore;
+    private String CleanlinessScore;
+    private String SpeedScore;
+    private String QualityScore;
+    private String AvgTariff;
+    private String AvgCompletionTime;
+    private String OverallScore;**/
+
+   public User(){
+
+   }
+
    public User(String pUid,String pName,String pEmail,String pPassword) {
 
         Uid=pUid;
@@ -35,9 +55,10 @@ public class User  {
         Address="";
         Latitude=0.0;
         Longitude=0.0;
+        Geohash="";
         Phone="";
         Phone_ccn="-";
-        Type="CUSTOMER";
+        Type="1";
         Password=pPassword;
         CreateDate=19700101;
         DeleteDate=20991231;
@@ -47,9 +68,23 @@ public class User  {
         ProfilePicture="https://firebasestorage.googleapis.com/v0/b/whodo-2f534.appspot.com/o/WHODO-IMAGES%2FPROFILE-PICTURE%2F"+ defaultProfilePicture_CloudFile +"?alt=media&token=a7f64bef-77ed-40b3-b62d-e44d986ac2da";
         Languages="";
         Description="";
-        Wallet="";
+        Specialization="";
+        UserScore=new UserSpecRating();
+        /**AppereanceScore="";
+        CleanlinessScore="";
+        SpeedScore="";
+        QualityScore="";
+        AvgTariff="";
+        AvgCompletionTime="";
+        OverallScore="";**/
     }
 
+    @Encodable.Ignore
+    public UserSpecRating getUserScore() {
+        return UserScore;
+    }
+    @Encodable.Ignore
+    public void setUserScore(UserSpecRating pUserSpecRating){ UserScore=pUserSpecRating; }
 
     // @PropertyName("Uid")
     public String getUid() {
@@ -113,6 +148,12 @@ public class User  {
         Longitude=pLongitude;
     }
 
+    // @PropertyName("GeoHash")
+    public String getGeohash() { return Geohash; }
+    public void setGeohash(String pGeoHash){
+        Geohash=pGeoHash;
+    }
+
    // @PropertyName("Phone")
     public String getPhone() {
         return Phone;
@@ -158,15 +199,51 @@ public class User  {
     public void setLanguages(String pLanguages){
         Languages=pLanguages;
     }
+
     public String getDescription() {return Description;}
     public void setDescription(String pDescription){
         Description=pDescription;
     }
 
-    public String getWallet() {return Wallet;}
-    public void setWallet(String pWallet){
-        Wallet=pWallet;
+    public String getSpecialization() {return Specialization;}
+    public void setSpecialization(String pSpecialization){
+        Specialization=pSpecialization;
     }
+
+   /** public String getAppereanceScore() {
+        return AppereanceScore;
+    }
+    public void setAppereanceScore(String pAppereanceScore){ AppereanceScore=pAppereanceScore; }
+
+    public String getCleanlinessScore() {
+        return CleanlinessScore;
+    }
+    public void setCleanlinessScore(String pCleanlinessScore){ CleanlinessScore=pCleanlinessScore; }
+
+    public String getSpeedScore() {
+        return SpeedScore;
+    }
+    public void setSpeedScore(String pSpeedScore){ SpeedScore=pSpeedScore; }
+
+    public String getQualityScore() {
+        return QualityScore;
+    }
+    public void setQualityScore(String pQualityScore){ QualityScore=pQualityScore; }
+
+    public String getAvgTariff() {
+        return AvgTariff;
+    }
+    public void setAvgTariff(String pAvgTariff){ AvgTariff=pAvgTariff; }
+
+    public String getAvgCompletionTime() {
+        return AvgCompletionTime;
+    }
+    public void setAvgCompletionTime(String pAvgCompletionTime){ AvgCompletionTime=pAvgCompletionTime; }
+
+    public String getOverallScore() {
+        return OverallScore;
+    }
+    public void setOverallScore(String pOverallScore){ OverallScore=pOverallScore; }*/
 
     //The best way of storing double values in SharedPreferences without losing precision is:
 

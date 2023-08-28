@@ -18,9 +18,7 @@ import com.example.whodo.crud.CRUD;
 
 public class ViewPagerFragment extends Fragment {
 
-
-    private static final String TAG = "TAG-1";
-    private  Integer FragType=0;
+    private Integer FragType=0;
 
     private LinearLayout LinearLayoutItems;
     private View ItemMessage;
@@ -38,7 +36,7 @@ public class ViewPagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_viewpager, container, false);
-        Log.d(TAG, "MessViewPagerFragment agregando message_list");
+        Log.d("onCreateView", "MessViewPagerFragment agregando message_list");
         LinearLayoutItems = root.findViewById(R.id.viewPager_linearLayout);
 
 
@@ -69,7 +67,7 @@ public class ViewPagerFragment extends Fragment {
         TextView textView_PricePercent = ItemFavoritesItem.findViewById(R.id.textView_PricePercent);
         TextView textView_Speed = ItemFavoritesItem.findViewById(R.id.textView_Speed);
         TextView textView_Spec = ItemFavoritesItem.findViewById(R.id.textView_Spec);
-        Log.d(TAG, "MessageItem agregar item");
+        Log.d("addFavoritesItem", "MessageItem agregar item");
         textView_Name.setText("Ricardo Fleitas");
         textView_Reviews.setText("4.3 (135)");
         textView_PricePercent.setText("1500 (4%)");
@@ -97,13 +95,14 @@ public class ViewPagerFragment extends Fragment {
         TextView textView_Date = ItemMessage.findViewById(R.id.textView_Date);
         TextView textView_Message = ItemMessage.findViewById(R.id.textView_Message);
         TextView textView_Status = ItemMessage.findViewById(R.id.textView_Status);
-        Log.d(TAG, "MessageItem agregar item");
+        Log.d("addMessageItem", "MessageItem agregar item");
         textView_Name.setText("Fernanda");
         textView_Message.setText("Cagaste fuego, ya esta ocupada campeon pero tengo esta entre las piernas donde podes entrar");
         textView_Date.setText("1 de Junio de 2021");
         textView_Status.setText("No disponible, 1 de Junio 2021 - 10 de Junio 2021");
         LinearLayoutItems.addView(ItemMessage);
     }
+
 
     @SuppressLint("SetTextI18n")
     private void addNotificationItem (){
@@ -112,7 +111,7 @@ public class ViewPagerFragment extends Fragment {
         TextView textView_DayMonthYear = ItemNotificactions.findViewById(R.id.textView_DayMonthYear);
         TextView textView_Notification = ItemNotificactions.findViewById(R.id.textView_Notification);
         TextView textView_Hour = ItemNotificactions.findViewById(R.id.textView_Hour);
-        Log.d(TAG, "MessageItem agregar item");
+        Log.d("addNotificationItem", "MessageItem agregar item");
         textView_Label.setText("Notificacion");
         textView_DayDate.setText("07");
         textView_DayMonthYear.setText("Oct 2021");

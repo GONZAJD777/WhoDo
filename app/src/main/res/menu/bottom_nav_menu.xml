@@ -6,23 +6,23 @@
     <item
         android:id="@+id/navigation_hire"
         android:icon="@drawable/ic_hire_black"
-        android:title="@string/title_hire" />
+        android:title="@string/MainAct_tab_title_hire" />
 
     <item
         android:id="@+id/navigation_favorites"
         android:icon="@drawable/ic_favorites_black"
-        android:title="@string/title_favorites" />
+        android:title="@string/MainAct_tab_title_favorites" />
     <item
         android:id="@+id/navigation_activity"
         android:icon="@drawable/ic_activity_black"
-        android:title="@string/title_activity" />
+        android:title="@string/MainAct_tab_title_activity" />
     <item
         android:id="@+id/navigation_messages"
         android:icon="@drawable/ic_message_black"
-        android:title="@string/title_messages" />
+        android:title="@string/MainAct_tab_title_messages" />
 
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile_black"
-        android:title="@string/title_profile" />
+        android:title="@string/MainAct_tab_title_profile" />
 </menu>

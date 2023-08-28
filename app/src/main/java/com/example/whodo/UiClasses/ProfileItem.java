@@ -1,9 +1,7 @@
-package com.example.whodo.ui.profile;
+package com.example.whodo.UiClasses;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-
 import com.example.whodo.R;
 
 public class ProfileItem extends RelativeLayout {
@@ -34,8 +29,6 @@ public class ProfileItem extends RelativeLayout {
         button.setOnClickListener(onClickListener);
         
     }
-
-
 
 
     public void setText (String Text)

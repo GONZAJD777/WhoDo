@@ -284,7 +284,8 @@
         app:behavior_expandedOffset="32dp"
         app:behavior_fitToContents="true"
         app:behavior_peekHeight="0dp"
-        app:layout_behavior="@string/bottom_sheet_behavior">
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        >
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -342,7 +343,6 @@
                         android:layout_marginStart="20dp"
                         android:fontFamily="sans-serif-condensed"
                         android:gravity="center"
-                        android:paddingTop="14dp"
                         android:text="@string/SecurityFrag_WalletAddress_Label_Amount"
                         android:textColor="#3F51B5"
                         android:textSize="60sp"
@@ -355,30 +355,74 @@
                         android:id="@+id/walletAddressTextView2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="38dp"
                         android:fontFamily="sans-serif-light"
                         android:gravity="center"
-                        android:paddingTop="14dp"
                         android:text="@string/SecurityFrag_WalletAddress_Label_Unit"
                         android:textColor="#3F51B5"
                         android:textSize="24sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/walletAddressTextView"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/walletAddressTextView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="60dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="60dp"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center"
+                        android:text="@string/SecurityFrag_WalletAddress_WithdrawLabel_Message"
+                        android:textColor="#F44336"
+                        android:textSize="24sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/walletAddressTextView4" />
+
+                    <TextView
+                        android:id="@+id/walletAddressTextView6"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center"
+                        android:text="@string/SecurityFrag_WalletAddress_Label_Unit"
+                        android:textColor="#F44336"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/walletAddressTextView3"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.321" />
+                        app:layout_constraintVertical_bias="0.983" />
 
                     <TextView
                         android:id="@+id/walletAddressTextView4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
                         android:fontFamily="sans-serif-light"
                         android:gravity="center"
-                        android:paddingTop="14dp"
                         android:text="@string/SecurityFrag_WalletAddress_Label_DollarValue"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="@+id/walletAddressTextView2"
+                        app:layout_constraintHorizontal_bias="0.462"
                         app:layout_constraintStart_toStartOf="@+id/walletAddressTextView"
-                        app:layout_constraintTop_toBottomOf="@+id/walletAddressTextView2" />
+                        app:layout_constraintTop_toTopOf="@+id/walletAddressTextView2" />
+
+                    <TextView
+                        android:id="@+id/walletAddressTextView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:text="@string/SecurityFrag_WalletAddress_WithdrawLabel_Amount"
+                        android:textColor="#F44336"
+                        android:textSize="34sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/walletAddressTextView2"
+                        app:layout_constraintStart_toStartOf="@+id/walletAddressTextView"
+                        app:layout_constraintTop_toTopOf="@+id/walletAddressTextView5" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <com.google.android.material.textfield.TextInputLayout

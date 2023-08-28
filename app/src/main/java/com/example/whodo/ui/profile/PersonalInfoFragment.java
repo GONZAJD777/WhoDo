@@ -1,6 +1,5 @@
 package com.example.whodo.ui.profile;
 
-import static android.content.ContentValues.TAG;
 import static com.example.whodo.ui.profile.ProfileActivity.hideKeyboard;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
@@ -10,7 +9,6 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,13 +25,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.whodo.BusinessClasses.User;
-import com.example.whodo.CustomDatePicker;
-import com.example.whodo.LoginActivity;
-import com.example.whodo.MainActivity;
+import com.example.whodo.UiClasses.CustomDatePicker;
 import com.example.whodo.R;
 import com.example.whodo.SingletonUser;
-import com.example.whodo.crud.CRUD;
+import com.example.whodo.UiClasses.ProfileItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -43,9 +38,6 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
 
 public class PersonalInfoFragment extends Fragment {
@@ -65,7 +57,7 @@ public class PersonalInfoFragment extends Fragment {
     private BottomSheetBehavior<LinearLayout> UserNameBottomSheetBehavior ;
     private BottomSheetBehavior<LinearLayout> PhoneBottomSheetBehavior;
     private BottomSheetBehavior<LinearLayout> EmailBottomSheetBehavior;
-    Spinner countryCodeSpinner;
+    private Spinner countryCodeSpinner;
     private CustomDatePicker BirthdayCalendar;
     private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
     private final FirebaseUser currentUser=mAuth.getCurrentUser();

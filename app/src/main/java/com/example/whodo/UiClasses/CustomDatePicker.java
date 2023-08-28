@@ -1,4 +1,4 @@
-package com.example.whodo;
+package com.example.whodo.UiClasses;
 
 import android.content.Context;
 import android.util.AttributeSet;

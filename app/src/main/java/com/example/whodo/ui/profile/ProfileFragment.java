@@ -19,13 +19,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.whodo.LoginActivity;
-import com.example.whodo.MainActivity;
 import com.example.whodo.R;
 import com.example.whodo.SingletonUser;
+import com.example.whodo.UiClasses.ProfileItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
-
-import java.util.Objects;
 
 
 public class ProfileFragment extends Fragment {
@@ -54,7 +52,7 @@ public class ProfileFragment extends Fragment {
         label_UserName = root.findViewById(R.id.text_profile1);
         label_UserName.setText(SingletonUser.getInstance().getName());
 
-        Picasso.get().load(SingletonUser.getInstance().getProfilePicture()).into(Profile_Picture);
+        Picasso.get().load(SingletonUser.getInstance().getProfilePicture()).resize(20,20).into(Profile_Picture);
         LinearLayout linearLayout = root.findViewById(R.id.linearLayout);
 
         TextView label_AccountConfig = new TextView(getContext());

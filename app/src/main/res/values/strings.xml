@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">WhoDo</string>
-    <string name="title_hire">Contratar</string>
-    <string name="title_favorites">Favoritos</string>
-    <string name="title_messages">Mensajes</string>
-    <string name="title_activity">Actividad</string>
-    <string name="title_profile">Perfil</string>
+    <string name="MainAct_tab_title_hire">Contratar</string>
+    <string name="MainAct_tab_title_favorites">Favoritos</string>
+    <string name="MainAct_tab_title_messages">Mensajes</string>
+    <string name="MainAct_tab_title_activity">Actividad</string>
+    <string name="MainAct_tab_title_profile">Perfil</string>
 
     <string name="title_registration_data">Registrar Usuario</string>
     <string name="title_login">Login</string>
@@ -65,6 +65,11 @@
     <string name="HireFragment_Label_ServiceFilter1">Selecciona los servicios que deseas visibilidad y la distancia maxima a tu ubicación (ubicacion registrada en la aplicacion)</string>
     <string name="HireFragment_Label_ServiceFilter2">Distancia Maxima</string>
     <string name="HireFragment_Label_ServiceFilter3">Servicios</string>
+    <string name="HireFragment_RadioButton_AllServiceFilter">Todos los Servicios</string>
+    <string name="HireFragment_MapMarkerSnipets_AvgTariff">Tarifa Promedio: </string>
+    <string name="HireFragment_MapMarkerSnipets_AvgCompletionTime">Tiempo Promedio: </string>
+    <string name="HireFragment_MapMarkerSnipets_OverallScore">Puntaje General: </string>
+
 
     <string name="SecurityFrag_Password_ItemLabel_Title">Cambiar Password</string>
     <string name="SecurityFrag_Password_Label_Title">Password</string>
@@ -79,10 +84,12 @@
     <string name="SecurityFrag_WalletAddress_Label_Amount">100.000.000</string>
     <string name="SecurityFrag_WalletAddress_Label_Unit">SAT</string>
     <string name="SecurityFrag_WalletAddress_Label_DollarValue">~$30298</string>
+    <string name="SecurityFrag_WalletAddress_WithdrawLabel_Amount">202500</string>
+    <string name="SecurityFrag_WalletAddress_WithdrawLabel_Message">Estas a punto de extraer:</string>
     <string name="SecurityFrag_WalletAddress_Label_TextHint">Desde aquipo podras extraer los pagos que hayas recibido por tus servicios o reintegros. Ingresa tus credenciales y luego el Invoice generado por la billetera Lightning Network de tu eleccion.</string>
     <string name="SecurityFrag_WalletAddress_Hint_Email">Correo Electronico</string>
     <string name="SecurityFrag_WalletAddress_Hint_Password">Password</string>
-    <string name="SecurityFrag_WalletAddress_Hint_Address">Wallet Address</string>
+    <string name="SecurityFrag_WalletAddress_Hint_Address">Invoice</string>
     <string name="SecurityFrag_WithdrawButton">Retirar Fondos</string>
 
     <string name="PasswordConditions_CheckButton1">Debe tener entre 8 y 12 caracteres</string>
@@ -92,6 +99,13 @@
     <string name="PersonalInfoFrag_UpdPasswordDialog">Confirmas que deseas actualizar el password de tu cuenta?</string>
     <string name="PersonalInfoFrag_UpdWalletAddressDialog">Estas por actualizar la direccion de tu Billetera, recuerda que si tienes pagos o devoluciones pendientes esto podria causar perdida de tu dinero, deseas continuar?</string>
 
+    <string name="ProviderModeFrag_SwitchCustomerModeTitle">Modo Proveedor</string>
+    <string name="ProviderModeFrag_SwitchCustomerModeDesc">Activando el modo proveedor otros usuarios te veran en el mapa para contratarte por tus servicios, ademas podras configurar especializaciones entre otras opcioens</string>
+    <string name="ProviderModeFrag_SwitchCustomerModeText_Off">Desactivar Modo Proveedor</string>
+    <string name="ProviderModeFrag_SwitchCustomerModeText_On">Activar Modo Proveedor</string>
+    <string name="ProviderModeFrag_Specialization_ItemLabel">Especializacion</string>
+    <string name="ProviderModeFrag_Specialization_Tittle">Editar Especializacion</string>
+    <string name="ProviderModeFrag_Specialization_Text">Marca los campos en los que puedes proveer servicios.</string>
 
     <string-array name="ServicesArray">
         <item>Plomero</item>
