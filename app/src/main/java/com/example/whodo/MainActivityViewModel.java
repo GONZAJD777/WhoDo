@@ -111,11 +111,8 @@ public class MainActivityViewModel extends ViewModel {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    User UserSS = ds.getValue(User.class);
-                    assert UserSS != null;
-                    UserSpecRating USR = ds.child("userScore").child(UserSS.getSpecialization().replaceAll(",$", "")).getValue(UserSpecRating.class);
-                    UserSS.setUserScore(USR);
-                    MutableLiveDataLoggedUser.setValue(UserSS);
+                        User UserSS = ds.getValue(User.class);
+                        MutableLiveDataLoggedUser.setValue(UserSS);
                 }
             }
             @SuppressLint("LongLogTag")
@@ -134,11 +131,8 @@ public class MainActivityViewModel extends ViewModel {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    User UserS = ds.getValue(User.class);
-                    assert UserS != null;
-                    UserSpecRating USR = ds.child("userScore").child(UserS.getSpecialization().replaceAll(",$", "")).getValue(UserSpecRating.class);
-                    UserS.setUserScore(USR);
-                    MutableLiveDataLoggedUserOnce.setValue(UserS);
+                        User UserS = ds.getValue(User.class);
+                        MutableLiveDataLoggedUserOnce.setValue(UserS);
                 }
             }
             @SuppressLint("LongLogTag")
@@ -200,7 +194,7 @@ public class MainActivityViewModel extends ViewModel {
         tasks.clear();
         DatabaseReference DBRef= mDatabase.getReference("USERS");
         center = new GeoLocation(Lat, Lon);
-        radiusInM = 150 * 1000;
+        radiusInM = 100 * 1000;
         bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInM);
 
         for (GeoQueryBounds b : bounds) {
@@ -228,12 +222,11 @@ public class MainActivityViewModel extends ViewModel {
                             double distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center);
                             if (distanceInM <= radiusInM && Objects.equals(Objects.requireNonNull(doc.getValue(User.class)).getType(), "2") && !Objects.equals(Objects.requireNonNull(doc.getValue(User.class)).getUid(), SingletonUser.getInstance().getUid())) {
                                 Providers.add(doc.getValue(User.class));
-                                    Providers.get(Providers.size()-1).setUserScore(doc.child("userScore").child(Providers.get(Providers.size()-1).getSpecialization().replaceAll(",$", "")).getValue(UserSpecRating.class));
-
-
+                                    //Providers.get(Providers.size()-1).setUserScore(doc.child("userScore").child(Providers.get(Providers.size()-1).getSpecialization().replaceAll(",$", "")).getValue(UserSpecRating.class));
                                 Log.i(TAG1,  "GEOHASHE: " +Providers.get(Providers.size()-1).getGeohash());
                             }
                         }
+
                     }
                 }
                 MutableLiveDataProviders.setValue(Providers);

@@ -59,14 +59,15 @@
                     android:autoSizeMinTextSize="24sp"
                     android:autoSizeStepGranularity="2sp"
                     android:autoSizeTextType="uniform"
-                    android:background="#3F51B5"
+                    android:background="@drawable/rounded_corner_16dp"
                     android:gravity="center_vertical"
                     android:lines="2"
+                    android:maxLength="50"
                     android:maxLines="2"
                     android:text="Ricardo Freitas"
                     android:textAlignment="center"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#3F51B5" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -77,7 +78,7 @@
                         android:id="@+id/imageView6"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="32dp"
                         android:layout_marginTop="4dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -99,7 +100,7 @@
                         android:id="@+id/imageView7"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="32dp"
                         android:layout_marginTop="8dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imageView6"
@@ -121,7 +122,7 @@
                         android:id="@+id/imageView8"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="32dp"
                         android:layout_marginTop="8dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imageView7"
@@ -140,38 +141,35 @@
                         app:layout_constraintTop_toTopOf="@+id/imageView7" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/textView_Spec"
+                <LinearLayout
+                    android:id="@+id/LinearLayout_Specs"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center|center_vertical"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#3F51B5"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:textAlignment="inherit"
-                    android:textColor="#FFFFFF"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/rounded_corner_16dp"
+                    android:orientation="horizontal" />
 
             </LinearLayout>
 
             <Button
                 android:id="@+id/button_ItemHire"
-                style="@android:style/Widget.Material.Button.Borderless"
+                style="@style/Widget.MaterialComponents.TimePicker.Button"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center_horizontal"
-                android:textAlignment="gravity"
+                android:elevation="0dp"
+                app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
+                app:strokeColor="#4D000000"
+                app:strokeWidth="1dp"
                 tools:ignore="SpeakableTextPresentCheck" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

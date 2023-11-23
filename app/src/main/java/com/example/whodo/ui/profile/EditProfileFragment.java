@@ -572,7 +572,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         super.onLowMemory();
         mapView.onLowMemory();
     }
-    private void PlacesAutocomplete (String query){
+    /**private void PlacesAutocomplete (String query){
         // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
         // and once again when the user makes a selection (for example when calling fetchPlace()).
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
@@ -618,7 +618,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             }
         });
 
-    }
+    }*/
 
 
 }

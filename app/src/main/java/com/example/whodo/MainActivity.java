@@ -1,33 +1,21 @@
 package com.example.whodo;
 
-
-
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.example.whodo.BusinessClasses.User;
 import com.example.whodo.adapters.Main_ViewPagerAdapter;
 import com.example.whodo.crud.CRUD;
-import com.example.whodo.ui.hire.HireFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
-
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity  {
     private final String[] Titles = new String[5];
@@ -42,8 +30,7 @@ public class MainActivity extends AppCompatActivity  {
     private static ArrayList<User> Providers;
     private static ArrayList<String> Services=new ArrayList<>();
     private static ArrayList<String> Languages=new ArrayList<>();
-    private boolean ProvidersAdded;
-    private boolean ServicesAdded;
+
     private ViewPager2 viewPager2;
     private Main_ViewPagerAdapter main_ViewPagerAdapter;
 
@@ -52,8 +39,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
 
-        ProvidersAdded=false;
-        ServicesAdded=false;
+
         model = new ViewModelProvider(this).get(MainActivityViewModel.class);
         model.getLoggedUserOnce().observe(this, this::UpdateLoggedUserOnce);
         model.getLoggedUser().observe(this, this::UpdateLoggedUserSnapshot);
@@ -176,7 +162,6 @@ public class MainActivity extends AppCompatActivity  {
             LoggedUserSnapshot.setLanguages(p_user.getLanguages());
             LoggedUserSnapshot.setDescription(p_user.getDescription());
             LoggedUserSnapshot.setSpecialization(p_user.getSpecialization());
-
     }
     private void UpdateLoggedUserOnce(User p_user) {
         if (currentUser != null) {
@@ -207,14 +192,6 @@ public class MainActivity extends AppCompatActivity  {
         LoggedUser.setDescription(p_user.getDescription());
         LoggedUser.setSpecialization(p_user.getSpecialization());
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-
 
 }
 

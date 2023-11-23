@@ -31,16 +31,9 @@ public class User  {
     private String Specialization; // just apllies and is shown to those user who change their type to PROVIDERS
     //***********************************************************************************************************************
     //This atributes have no need to be update, this will just be consumed to show customers a preview of prividers skills
-
     private UserSpecRating UserScore;
 
-    /**private String AppereanceScore;
-    private String CleanlinessScore;
-    private String SpeedScore;
-    private String QualityScore;
-    private String AvgTariff;
-    private String AvgCompletionTime;
-    private String OverallScore;**/
+
 
    public User(){
 
@@ -70,13 +63,6 @@ public class User  {
         Description="";
         Specialization="";
         UserScore=new UserSpecRating();
-        /**AppereanceScore="";
-        CleanlinessScore="";
-        SpeedScore="";
-        QualityScore="";
-        AvgTariff="";
-        AvgCompletionTime="";
-        OverallScore="";**/
     }
 
     @Encodable.Ignore

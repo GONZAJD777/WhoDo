@@ -5,7 +5,6 @@ import com.google.firebase.database.PropertyName;
 import com.google.gson.annotations.JsonAdapter;
 @IgnoreExtraProperties
 public class UserSpecRating {
-    private String RatingSpec;
     private String AppereanceScore;
     private String CleanlinessScore;
     private String SpeedScore;
@@ -16,22 +15,15 @@ public class UserSpecRating {
 
 
 
-
     public UserSpecRating () {
-        RatingSpec = "";
-        AppereanceScore = "";
-        CleanlinessScore = "";
-        SpeedScore = "";
-        QualityScore = "";
-        AvgTariff = "";
-        AvgCompletionTime = "";
-        OverallScore = "";
+        AvgTariff = "0sat";
+        AvgCompletionTime = "0hs";
+        OverallScore = "0.0 (0)";
+        AppereanceScore = "0.0";
+        CleanlinessScore = "0.0";
+        SpeedScore = "0.0";
+        QualityScore = "0.0";
     }
-    @PropertyName("ratingSpec")
-    public String getRatingSpec() {
-        return RatingSpec;
-    }
-    public void setRatingSpec(String pRatingSpec){ RatingSpec=pRatingSpec; }
 
     public String getAppereanceScore() {
         return AppereanceScore;

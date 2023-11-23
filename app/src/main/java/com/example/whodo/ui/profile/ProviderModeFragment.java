@@ -8,6 +8,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class ProviderModeFragment extends Fragment {
     private FloatingActionButton SaveChangesButton;
     private ProfileSwitchItem mProfileSwitchItem;
     private MainActivityViewModel model;
+    private String TAG="PROVIDER-MODE-FRAGMENT";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -83,7 +85,7 @@ public class ProviderModeFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setSpecializationText(LoggedUserSpecialization,getString(R.string.ProviderModeFrag_Specialization_Tittle),item_Specialization);
+                    setSpecializationText(LoggedUserSpecialization.toString(),getString(R.string.ProviderModeFrag_Specialization_Tittle),item_Specialization);
                     setBottomSheetBehavior(SpecializationBottomSheetBehavior, 1);
                 }
             });
@@ -97,7 +99,7 @@ public class ProviderModeFragment extends Fragment {
         ItemsLinearLayout.addView(item_Specialization);
 
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-        model.getServices().observe(requireActivity(),this::loadServices);
+        model.getServices().observe(requireActivity(),this::loadServicesCheckBox);
 
         loadUserData ();
         return root;
@@ -107,12 +109,45 @@ public class ProviderModeFragment extends Fragment {
     private void loadUserData () {
 
         mProfileSwitchItem.setSwitchState(!Objects.equals(SingletonUser.getInstance().getType(), "1"));
-        LoggedUserSpecialization=SingletonUser.getInstance().getSpecialization();
+        LoggedUserSpecialization= SingletonUser.getInstance().getSpecialization();
         setSpecializationText(SingletonUser.getInstance().getSpecialization(),getString(R.string.ProviderModeFrag_Specialization_Tittle),item_Specialization);
 
     }
 
-    public void loadServices(ArrayList<String> pServices){
+    public void loadServicesCheckBox(@NonNull ArrayList<String> pServices){
+        clearLinearLayout(SpecializationLinearLayout);
+        //*//******************************************************************************
+        //*//Se comienza a recorrer la lista con los servicio para agregar los botones
+        for(int i = 0; i< pServices.size(); i++) {
+            CheckBox ServiceCheckBox = new CheckBox(getContext());
+            ServiceCheckBox.setText(pServices.get(i));
+            //*//Se valida cuales estan checkeados por el usuario para filtrar
+            if ( LoggedUserSpecialization.toUpperCase().contains(pServices.get(i).toUpperCase()))      {
+                ServiceCheckBox.setChecked(true);
+                Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio esta tildado " + pServices.get(i) );
+            }
+            //Se configuran los listeners de cambio de estado antes de agregar los Checkbox
+            ServiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b){//Si se tilda el checkbox -->
+                        LoggedUserSpecialization=LoggedUserSpecialization+compoundButton.getText()+",";
+                        Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue tildado " + compoundButton.getText().toString() );
+                    } else {
+
+                        LoggedUserSpecialization=LoggedUserSpecialization.replace(compoundButton.getText()+",","" );
+                        Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue destildado " + compoundButton.getText().toString() );
+                    }
+                    Log.i(TAG, "loadServicesCheckBox --> Servicios Tildados: " + LoggedUserSpecialization);
+
+                }
+            });
+            //Se agrega el checkbox al LinearLayout
+            SpecializationLinearLayout.addView(ServiceCheckBox);
+        }
+    }
+
+    public void loadServicesRadioButton(ArrayList<String> pServices){
         clearLinearLayout(SpecializationLinearLayout);
         RadioGroup RadioGroupFilter = new RadioGroup(requireContext());
         SpecializationLinearLayout.addView(RadioGroupFilter);
@@ -141,6 +176,7 @@ public class ProviderModeFragment extends Fragment {
         }
 
     }
+
     public void clearLinearLayout(LinearLayout LL){
         try {
             if (LL.getChildCount() > 0) {
