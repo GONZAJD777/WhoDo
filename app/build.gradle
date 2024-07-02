@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
+
 def localPropertiesFile = rootProject.file("local.properties")
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(localPropertiesFile))

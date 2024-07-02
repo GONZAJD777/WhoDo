@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"  />
 
 
     <application
@@ -20,12 +20,13 @@
         >
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="apiKey"
+            android:value="AIzaSyD6fudFVcF1t0szms6jQTw_S6P_IYi8NFY"
             />
 
 
 
-        <activity android:name=".LoginActivity"
+
+        <activity android:name=".features.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,12 +35,12 @@
         </activity>
 
         <activity
-            android:name=".MainActivity">
+            android:name=".aplication.MainActivity">
+        </activity>
+        <activity
+            android:name=".features.profile.ProfileHolderActivity">
         </activity>
 
-        <activity
-            android:name=".ui.profile.ProfileActivity">
-        </activity>
 
     </application>
 
