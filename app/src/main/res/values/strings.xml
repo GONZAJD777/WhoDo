@@ -107,6 +107,18 @@
     <string name="ProviderModeFrag_Specialization_Tittle">Editar Especializacion</string>
     <string name="ProviderModeFrag_Specialization_Text">Marca los campos en los que puedes proveer servicios.</string>
 
+    <string name="WorkOrderLifeCycleFrag_HeaderLabel">Orden de Trabajo</string>
+    <string name="WorkOrderLifeCycleFrag_OrderIdLabel">Orden ID: No Definido</string>
+    <string name="WorkOrderLifeCycleFrag_OpenStateLabel">ABIERTA</string>
+    <string name="WorkOrderLifeCycleFrag_OnEvaluationStateLabel">EN EVALUACION</string>
+    <string name="WorkOrderLifeCycleFrag_PlannedStateLabel">PLANIFICADA</string>
+    <string name="WorkOrderLifeCycleFrag_ConfirmedStateLabel">CONFIRMADA</string>
+    <string name="WorkOrderLifeCycleFrag_DiagnosedStateLabel">DIAGNOSTICADA</string>
+    <string name="WorkOrderLifeCycleFrag_OnProgressStateLabel">EN PROGRESO</string>
+    <string name="WorkOrderLifeCycleFrag_DoneStateLabel">FINALIZADA</string>
+    <string name="WorkOrderLifeCycleFrag_ClosedStateLabel">CERRADA</string>
+
+
     <string-array name="ServicesArray">
         <item>Plomero</item>
         <item>Electricista</item>

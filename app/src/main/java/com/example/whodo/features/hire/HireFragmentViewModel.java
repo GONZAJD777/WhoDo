@@ -4,141 +4,163 @@ package com.example.whodo.features.hire;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.example.whodo.aplication.Callback;
 import com.example.whodo.domain.user.User;
+import com.example.whodo.domain.user.UserDTO;
+import com.example.whodo.domain.user.dao.FirebaseUserDAO;
+import com.example.whodo.domain.user.dao.UserDao;
+import com.example.whodo.domain.workOrder.WorkOrder;
+import com.example.whodo.domain.workOrder.WorkOrderDTO;
+import com.example.whodo.domain.workOrder.WorkOrderMapper;
+import com.example.whodo.domain.workOrder.dao.FirebaseWorkOrderDAO;
+import com.example.whodo.domain.workOrder.dao.WorkOrderDao;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class HireFragmentViewModel extends ViewModel {
-
+    private final Double DIST_MULT=0.009009009009009;
     private User mUser = new User();
     private List<User> mProviders = new ArrayList<>();
-    private final MutableLiveData <List<User>> mProvidersLiveData = new MutableLiveData<>();
     private List<String> mServices = new ArrayList<>();
+    private final MutableLiveData <User> mPickedProviders = new MutableLiveData<>();
 
-    private final MutableLiveData<Integer> ServiceDistanceFilter= new MutableLiveData<>();
+    private final MutableLiveData <List<User>> mProvidersLiveData = new MutableLiveData<>();
+    //private final MutableLiveData <WorkOrder> mPickedWorkOrder = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> mServiceFilter= new MutableLiveData<>();
+    private final MutableLiveData<Double> mDistanceFilter= new MutableLiveData<>();
+    private int mDistanceFilterPoint;
     private double LatUpperLimit;
     private double LatLowerLimit;
     private double LonRigthLimit;
     private double LonLetfLimit;
+    //private final WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
+
 
     public HireFragmentViewModel() {
-        ServiceDistanceFilter.setValue(10);
+        //mWorkOrderDao = new FirebaseWorkOrderDAO();
+        mDistanceFilter.setValue(10*DIST_MULT);
+        mDistanceFilterPoint=3;
     }
 
     public void setUser(User pUser){ this.mUser=pUser; }
-    private User getUser() { return this.mUser; }
     public void setProviders (List<User> pProviders) {
-        if(mProvidersLiveData!=null){mProvidersLiveData.setValue(pProviders);}
-        mProviders=pProviders; }
-    private List<User> getProviders() { return this.mProviders; }
+        if(mProvidersLiveData.getValue()==null)
+            mProvidersLiveData.setValue(pProviders);
+        mProviders=pProviders;
+    }
     public void setServices(List<String> pServices) { mServices=pServices; }
+    public void setPickedProvider(User mPick) {mPickedProviders.setValue(mPick);}
+    public LiveData<User> getPickedProvider () {return mPickedProviders;}
+    private User getUser() { return this.mUser; }
+    private List<User> getProviders() { return this.mProviders; }
     private List<String> getServices() { return this.mServices; }
     //**************************************************************************//
-
-    public void SetDistanceFilter (int pDistanceFilterPoint) {
+    public void setServiceFilter(List<String> pServiceFilter) {
+        mServiceFilter.setValue(pServiceFilter);
+        this.setProvidersLiveData(this.getProviders(),this.getDistanceFilter().getValue(),this.getServiceFilter().getValue());
+    }
+    public void setDistanceFilter (int pDistanceFilterPoint) {
         switch (pDistanceFilterPoint){
             case 0:
-                ServiceDistanceFilter.setValue(1);
+                mDistanceFilter.setValue(1*DIST_MULT);
                 break;
             case 1:
-                ServiceDistanceFilter.setValue(2);
+                mDistanceFilter.setValue(2*DIST_MULT);
                 break;
             case 2:
-                ServiceDistanceFilter.setValue(5);
+                mDistanceFilter.setValue(5*DIST_MULT);
                 break;
             case 3:
-                ServiceDistanceFilter.setValue(10);
+                mDistanceFilter.setValue(10*DIST_MULT);
                 break;
             case 4:
-                ServiceDistanceFilter.setValue(15);
+                mDistanceFilter.setValue(15*DIST_MULT);
                 break;
             case 5:
-                ServiceDistanceFilter.setValue(20);
+                mDistanceFilter.setValue(20*DIST_MULT);
                 break;
             case 6:
-                ServiceDistanceFilter.setValue(25);
+                mDistanceFilter.setValue(25*DIST_MULT);
                 break;
             case 7:
-                ServiceDistanceFilter.setValue(30);
+                mDistanceFilter.setValue(30*DIST_MULT);
                 break;
             case 8:
-                ServiceDistanceFilter.setValue(35);
+                mDistanceFilter.setValue(35*DIST_MULT);
                 break;
             case 9:
-                ServiceDistanceFilter.setValue(40);
+                mDistanceFilter.setValue(40*DIST_MULT);
                 break;
             case 10:
-                ServiceDistanceFilter.setValue(45);
+                mDistanceFilter.setValue(45*DIST_MULT);
                 break;
             case 11:
-                ServiceDistanceFilter.setValue(50);
+                mDistanceFilter.setValue(50*DIST_MULT);
                 break;
             case 12:
-                ServiceDistanceFilter.setValue(55);
+                mDistanceFilter.setValue(55*DIST_MULT);
                 break;
             case 13:
-                ServiceDistanceFilter.setValue(60);
+                mDistanceFilter.setValue(60*DIST_MULT);
                 break;
             case 14:
-                ServiceDistanceFilter.setValue(65);
+                mDistanceFilter.setValue(65*DIST_MULT);
                 break;
             case 15:
-                ServiceDistanceFilter.setValue(70);
+                mDistanceFilter.setValue(70*DIST_MULT);
                 break;
             case 16:
-                ServiceDistanceFilter.setValue(75);
+                mDistanceFilter.setValue(75*DIST_MULT);
                 break;
             case 17:
-                ServiceDistanceFilter.setValue(80);
+                mDistanceFilter.setValue(80*DIST_MULT);
                 break;
             case 18:
-                ServiceDistanceFilter.setValue(85);
+                mDistanceFilter.setValue(85*DIST_MULT);
                 break;
             case 19:
-                ServiceDistanceFilter.setValue(90);
+                mDistanceFilter.setValue(90*DIST_MULT);
                 break;
             case 20:
-                ServiceDistanceFilter.setValue(100);
+                mDistanceFilter.setValue(100*DIST_MULT);
                 break;
         }
-        this.setProvidersLiveData(Objects.requireNonNull(mProvidersLiveData.getValue()),ServiceDistanceFilter.getValue(),mServices);
-
+        mDistanceFilterPoint=pDistanceFilterPoint;
+        this.setProvidersLiveData(this.getProviders(),this.getDistanceFilter().getValue(),this.getServiceFilter().getValue());
     }
-    public LiveData<Integer> getDistanceFilter() { return ServiceDistanceFilter; }
-    public LiveData<List<User>> getProvidersLiveData(){ return mProvidersLiveData; }
-    private void setProvidersLiveData (List<User> pProviders, int pDistanceFilter , List<String> pServiceFilter) {
-            List<User> ProvidersList = new ArrayList<>();
-            LatUpperLimit=mUser.getLatitude()+pDistanceFilter;
-            LatLowerLimit=mUser.getLatitude()-pDistanceFilter;
-            LonRigthLimit=mUser.getLongitude()+pDistanceFilter;
-            LonLetfLimit=mUser.getLongitude()-pDistanceFilter;
+    private void setProvidersLiveData (List<User> pProviders, Double pDistanceFilter , List<String> pServiceFilter) {
+        List<User> ProvidersList = new ArrayList<>();
+        LatUpperLimit=mUser.getLatitude()+pDistanceFilter;
+        LatLowerLimit=mUser.getLatitude()-pDistanceFilter;
+        LonRigthLimit=mUser.getLongitude()+pDistanceFilter;
+        LonLetfLimit=mUser.getLongitude()-pDistanceFilter;
 
         if (!pProviders.isEmpty())
         {
             for(int i = 0; i< pProviders.size(); i++) {
-                if (CheckRange(pProviders.get(i))) {
-                    if (!pServiceFilter.isEmpty()) {
-                        for (int j = 0; j < pServiceFilter.size(); j++) {
-                            if (pProviders.get(i).getSpecialization().contains(pServiceFilter.get(j))) {
-                                if (!ProvidersList.contains(pProviders.get(i))){
-                                    ProvidersList.add(pProviders.get(i));
-                                    //addMarkers(mMap, pProviders.get(i));
-                                    //addHireItem(pProviders.get(i));//Agrego el item al reel
+                if (Objects.equals(pProviders.get(i).getUid(), this.getUser().getUid())) {
+                    ProvidersList.add(pProviders.get(i));
+                } else {
+                    if (CheckRange(pProviders.get(i))) {
+                        if (!pServiceFilter.isEmpty()) {
+                            for (int j = 0; j < pServiceFilter.size(); j++) {
+                                if (pProviders.get(i).getSpecialization().contains(pServiceFilter.get(j))) {
+                                    if (!ProvidersList.contains(pProviders.get(i))) {
+                                        ProvidersList.add(pProviders.get(i));
+                                    }
                                 }
                             }
+                        } else {
+                            ProvidersList.add(pProviders.get(i));
                         }
-                    } else {
-                        ProvidersList.add(pProviders.get(i));
                     }
                 }
             }
             mProvidersLiveData.setValue(ProvidersList);
         }
-
-
-
     }
     private boolean CheckRange (User pProvider) {
         return pProvider.getLatitude() < LatUpperLimit &&
@@ -146,4 +168,10 @@ public class HireFragmentViewModel extends ViewModel {
                 pProvider.getLongitude() > LonLetfLimit &&
                 pProvider.getLongitude() < LonRigthLimit;
     }
+    public LiveData<List<String>> getServiceFilter(){ return mServiceFilter; }
+    public LiveData<Double> getDistanceFilter() { return mDistanceFilter; }
+    public int getDistanceFilterPoint() { return mDistanceFilterPoint; }
+    public LiveData<List<User>> getProvidersLiveData(){ return mProvidersLiveData; }
+    //**************************************************************************//
+
 }

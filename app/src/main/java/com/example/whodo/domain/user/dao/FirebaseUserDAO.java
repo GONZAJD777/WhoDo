@@ -89,7 +89,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
                 System.out.println("Error al establecer el valor: " + task.getException());
                 callback.onError(task.getException());
             }
-        });;
+        });
     }
     @Override
     public void update(UserDTO pUserDTO) {

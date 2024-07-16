@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <TableLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/limitDate_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="Limite de Tiempo" />
+
+            <TextView
+                android:id="@+id/limitDate_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="numberSigned"
+                android:text="01/01/1970 23:59"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/meetDate_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha de Cita" />
+
+            <TextView
+                android:id="@+id/meetDate_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="dd/mm/yyyy"
+                android:inputType="date"
+                android:textSize="14sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/meetTime_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hora de Cita" />
+
+            <TextView
+                android:id="@+id/meetTime_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="24HH:MM"
+                android:inputType="time"
+                android:textSize="14sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/meetTariff_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tarifa de Visita" />
+
+            <TextView
+                android:id="@+id/meetTariff_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="1000sat"
+                android:inputType="number"
+                android:textSize="14sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/paymentOrder_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Orden de Pago" />
+
+            <TextView
+                android:id="@+id/paymentOrder_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="128fdhasjhfagg12345" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/invoice_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Invoice de pago" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:text="Copiar invoice" />
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/description_value3"
+                style="@style/CustomShapeAppearanceFrameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
+                android:lines="5"
+                android:maxLength="200" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/acceptWorkOrder_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="aceptar" />
+
+            <Space
+                android:layout_width="5dp"
+                android:layout_height="match_parent" />
+
+
+            <Button
+                android:id="@+id/rejectWorkOrder_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="rechazar" />
+        </LinearLayout>
+    </TableLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

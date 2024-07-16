@@ -18,7 +18,6 @@ public class UserMapper {
         user.setAddress(userDTO.getAddress());
         user.setLatitude(userDTO.getLatitude());
         user.setLongitude(userDTO.getLongitude());
-        //user.setGeohash(userDTO.getGeohash());
         user.setPhone(userDTO.getPhone());
         user.setPhone_ccn(userDTO.getPhone_ccn());
         user.setType(userDTO.getType());

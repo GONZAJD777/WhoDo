@@ -4,24 +4,24 @@ public class WorkOrder {
 
     private String OrderId;
     private String CustomerId;
-    private String CustomerName;
     private String ProviderId;
-    private String Specialization;
-    private String Description;
-    private String Detail;
-    private String CreationDate;
+    private String Specialization; //Categoria del trabajo demandado
+    private String Description;// Descripcion del trabajo a realizar por el cliente
+    private String Detail; // Bitacora de tareas y comentarios del proveedor
+    private Long CreationDate; //Fecha y hora de creacion de la orden en formato YYYYMMDD24HHMMSS
+    private Long TimeLimit; // Fecha y hora que hasta la cual la orden estara disponible para ser tomada por un proveedor
     private String State; //esta variable ira marcando el ciclo de vida de la orden, desde q se crea hasta q es cerrada el cambio de estado requerira acciones de Customer y provider.
-    private String StateChangeDate;
+    private Long StateChangeDate; //Fecha y hora del ultimo cambio de estado en formato YYYYMMDD24HHMMSS
     //INSPECTION INFO
-    private String InspectionDate;
-    private String InspectionCharges;
-    private String InspectionPaymentOrder;
+    private Long InspectionDate; //Fecha y hora de cita de inspeccion en formato YYYYMMDD24HHMMSS
+    private String InspectionCharges; //Cargo por la visita para inspeccion, es opcional
+    private String InspectionPaymentOrder; // ID de la orden de pago generada como registro del pago de la inspeccion
     //WORK INFO
-    private String WorkStartDate;
-    private String WorkEndDate;
+    private Long WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
+    private Long WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
     private String WorkCost;
     private String WorkPaymentOrder;
-    private String WorkWarrantyEndDate;
+    private Long WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
     //SCORES
     private String Impressions;
     private String AppereanceScore;
@@ -31,65 +31,61 @@ public class WorkOrder {
 
     public WorkOrder() {}
 
-    public WorkOrder(String pCustomerId,String pCustomerName,String pProviderId,String pSpecialization,String pDetail,String pDescription){
-        OrderId="";
-        CustomerId=pCustomerId;
-        CustomerName=pCustomerName;
-        ProviderId=pProviderId;
-        Specialization=pSpecialization;
-        Detail=pDetail;
-        Description=pDescription;
-        CreationDate="";
-        State="EVALUATING";
-        StateChangeDate="";
-        //INSPECTION INFO
-        InspectionDate="";
-        InspectionCharges="";
-        InspectionPaymentOrder="";
-        //WORK INFO
-        WorkStartDate="";
-        WorkEndDate="";
-        WorkCost="";
-        WorkPaymentOrder="";
-        WorkWarrantyEndDate="";
-        //SCORES
-        Impressions="";
-        AppereanceScore="";
-        CleanlinessScore="";
-        SpeedScore="";
-        QualityScore="";
-
+    // assigned OPEN WORK ORDER Constructor setted ONEVALUATION State
+    public WorkOrder(String customerId, String providerId, String specialization,
+                     String description, Long creationDate, Long timeLimit, Long stateChangeDate) {
+        //this.OrderId = "orderId";
+        this.CustomerId = customerId;
+        this.ProviderId = providerId;
+        this.Specialization = specialization;
+        this.Description = description;
+        //this.Detail = detail;
+        this.CreationDate = creationDate;
+        this.TimeLimit = timeLimit;
+        this.State = "ONEVALUATION";
+        this.StateChangeDate = stateChangeDate;
+        //this.InspectionDate = inspectionDate;
+        //this.InspectionCharges = inspectionCharges;
+        //this.InspectionPaymentOrder = inspectionPaymentOrder;
+        //this.WorkStartDate = workStartDate;
+        //this.WorkEndDate = workEndDate;
+        //this.WorkCost = workCost;
+        //this.WorkPaymentOrder = workPaymentOrder;
+        //this.WorkWarrantyEndDate = workWarrantyEndDate;
+        //this.Impressions = impressions;
+        //this.AppereanceScore = appereanceScore;
+        //this.CleanlinessScore = cleanlinessScore;
+        //this.SpeedScore = speedScore;
+        //this.QualityScore = qualityScore;
+    }
+    // not assigned OPEN WORK ORDER Constructor
+    public WorkOrder(String customerId, String specialization,
+                     String description, Long creationDate, Long timeLimit, Long stateChangeDate) {
+        //this.OrderId = "orderId";
+        this.CustomerId = customerId;
+        //this.ProviderId = providerId;
+        this.Specialization = specialization;
+        this.Description = description;
+        //this.Detail = detail;
+        this.CreationDate = creationDate;
+        this.TimeLimit = timeLimit;
+        this.State = "OPEN";
+        this.StateChangeDate = stateChangeDate;
+        //this.InspectionDate = inspectionDate;
+        //this.InspectionCharges = inspectionCharges;
+        //this.InspectionPaymentOrder = inspectionPaymentOrder;
+        //this.WorkStartDate = workStartDate;
+        //this.WorkEndDate = workEndDate;
+        //this.WorkCost = workCost;
+        //this.WorkPaymentOrder = workPaymentOrder;
+        //this.WorkWarrantyEndDate = workWarrantyEndDate;
+        //this.Impressions = impressions;
+        //this.AppereanceScore = appereanceScore;
+        //this.CleanlinessScore = cleanlinessScore;
+        //this.SpeedScore = speedScore;
+        //this.QualityScore = qualityScore;
     }
 
-    public WorkOrder(String pCustomerId,String pCustomerName,String pSpecialization,String pDetail,String pDescription){
-        OrderId="";
-        CustomerId=pCustomerId;
-        CustomerName=pCustomerName;
-        ProviderId="";
-        Specialization=pSpecialization;
-        Detail=pDetail;
-        Description=pDescription;
-        CreationDate="";
-        State="OPEN";
-        StateChangeDate="";
-        //INSPECTION INFO
-        InspectionDate="";
-        InspectionCharges="";
-        InspectionPaymentOrder="";
-        //WORK INFO
-        WorkStartDate="";
-        WorkEndDate="";
-        WorkCost="";
-        WorkPaymentOrder="";
-        WorkWarrantyEndDate="";
-        //SCORES
-        Impressions="";
-        AppereanceScore="";
-        CleanlinessScore="";
-        SpeedScore="";
-        QualityScore="";
-
-    }
 
 
     public String getOrderId() {
@@ -104,13 +100,6 @@ public class WorkOrder {
     }
     public void setCustomerId(String pCustomerId){
         CustomerId=pCustomerId;
-    }
-
-    public String getCustomerName() {
-        return CustomerName;
-    }
-    public void setCustomerName(String pCustomerName){
-        CustomerName=pCustomerName;
     }
 
     public String getProviderId() {
@@ -141,11 +130,18 @@ public class WorkOrder {
         Detail=pDetail;
     }
 
-    public String getCreationDate() {
+    public Long getCreationDate() {
         return CreationDate;
     }
-    public void setCreationDate(String pCreationDate){
+    public void setCreationDate(Long pCreationDate){
         CreationDate=pCreationDate;
+    }
+
+    public Long getTimeLimit() {
+        return TimeLimit;
+    }
+    public void setTimeLimit(Long pTimeLimit){
+        TimeLimit=pTimeLimit;
     }
 
     public String getState() {
@@ -155,19 +151,19 @@ public class WorkOrder {
         State=pState;
     }
 
-    public String getStateChangeDate() {
+    public Long getStateChangeDate() {
         return StateChangeDate;
     }
-    public void setStateChangeDate(String pStateChangeDate){
+    public void setStateChangeDate(Long pStateChangeDate){
         StateChangeDate=pStateChangeDate;
     }
 
     //INSPECTION INFO
-    public String getInspectionDate() {
+    public Long getInspectionDate() {
         return InspectionDate;
     }
-    public void setInspectionDate(String pInspectionDate){
-        State=pInspectionDate;
+    public void setInspectionDate(Long pInspectionDate){
+        InspectionDate=pInspectionDate;
     }
 
     public String getInspectionCharges() {
@@ -181,15 +177,15 @@ public class WorkOrder {
     public void setInspectionPaymentOrder(String pInspectionPaymentOrder){ InspectionPaymentOrder=pInspectionPaymentOrder; }
 
     //WORK INFO
-    public String getWorkStartDate() {
+    public Long getWorkStartDate() {
         return WorkStartDate;
     }
-    public void setWorkStartDate(String pWorkStartDate){ WorkStartDate=pWorkStartDate; }
+    public void setWorkStartDate(Long pWorkStartDate){ WorkStartDate=pWorkStartDate; }
 
-    public String getWorkEndDate() {
+    public Long getWorkEndDate() {
         return WorkEndDate;
     }
-    public void setWorkEndDate(String pWorkEndDate){ WorkEndDate=pWorkEndDate; }
+    public void setWorkEndDate(Long pWorkEndDate){ WorkEndDate=pWorkEndDate; }
 
     public String getWorkCost() {
         return WorkCost;
@@ -201,10 +197,10 @@ public class WorkOrder {
     }
     public void setWorkPaymentOrder(String pWorkPaymentOrder){ WorkPaymentOrder=pWorkPaymentOrder; }
 
-    public String getWorkWarrantyEndDate() {
+    public Long getWorkWarrantyEndDate() {
         return WorkWarrantyEndDate;
     }
-    public void setWorkWarrantyEndDate(String pWorkWarrantyEndDate){ WorkWarrantyEndDate=pWorkWarrantyEndDate; }
+    public void setWorkWarrantyEndDate(Long pWorkWarrantyEndDate){ WorkWarrantyEndDate=pWorkWarrantyEndDate; }
 
     //SCORES
     public String getImpressions() {

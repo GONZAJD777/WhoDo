@@ -348,12 +348,6 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         return root;
     }
 
-    public void onStart() {
-        super.onStart();
-        //model.getLoggedUser().observe(requireActivity(),this::loadUserData);
-    }
-
-
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {
         switch (view.getId()) {

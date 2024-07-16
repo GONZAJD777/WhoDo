@@ -23,13 +23,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.whodo.R;
+import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.aplication.SingletonUser;
 import com.example.whodo.uiClasses.ProfileItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,9 +42,8 @@ import java.util.Objects;
 
 public class SecurityFragment extends Fragment {
 
-    private String LoggedWalletAddress;
-     private String LoggedUserEmail;
-
+    private final String TAG1="SecurityFragment";
+    private String LoggedUserEmail;
     private ProfileItem item_Password;
     private ProfileItem item_Wallet;
     //----------------------------------------
@@ -59,14 +61,17 @@ public class SecurityFragment extends Fragment {
     private BottomSheetBehavior<LinearLayout> WalletAddressBottomSheetBehavior;
     //----------------------------------------
     private LinearLayout BlackBackground_bottom_sheet;
-    Spinner countryCodeSpinner;
+
 
     private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
     private final FirebaseUser currentUser=mAuth.getCurrentUser();
+    private MainActivityViewModel model;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_profile_frag_security, container, false);
+        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+
         // TODO modificar comportamiento para evitar que las ventanas emergentes pierdan el foco
         //TODO agregar selector de fechas para la fecha de nacimiento - DONE
 
@@ -88,6 +93,9 @@ public class SecurityFragment extends Fragment {
         ReadyLabelButtonWalletAddress.setOnClickListener(this::onClick);
         UpdatePasswordButton.setOnClickListener(this::onClick);
         UpdateWalletAddressButton.setOnClickListener(this::onClick);
+        FloatingActionButton saveChangesButton = root.findViewById(R.id.SaveChangesButton);
+        saveChangesButton.setOnClickListener(this::onClick);
+
 
         LinearLayout Items_LinearLayout = root.findViewById(R.id.Items_LinearLayout);
         LinearLayout PasswordChange_bottom_sheet = root.findViewById(R.id.PasswordChange_bottom_sheet);
@@ -231,6 +239,9 @@ public class SecurityFragment extends Fragment {
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {
         switch (view.getId()) {
+            case R.id.SaveChangesButton:
+                saveUserData();
+                break;
             case R.id.ReadyLabelButtonPassUpdate:
                 setBottomSheetBehavior(PasswordBottomSheetBehavior,1);
                 EmailSimpleEditText.setText(SingletonUser.getInstance().getEmail());
@@ -332,8 +343,10 @@ public class SecurityFragment extends Fragment {
             }
         });
     }
-    private void updateWalletAddress(String pWallet) {
-
+    private void updateWalletAddress(String pWallet) { }
+    private void saveUserData(){
+        model.setSelectedFragment(4,View.VISIBLE);
+        Log.d(TAG1, "Pressed Save Button");
     }
     private void loadUserData () {
         LoggedUserEmail=SingletonUser.getInstance().getEmail();

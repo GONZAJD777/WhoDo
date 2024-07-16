@@ -1,0 +1,457 @@
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/workorder_appbar"
+            app:elevation="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/workorder_collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:expandedTitleMarginStart="@dimen/activity_vertical_margin"
+                app:layout_scrollFlags="scroll"
+                app:statusBarScrim="@color/design_default_color_background">
+
+                <TextView
+                    android:id="@+id/messages_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/general_horizontal_margin"
+                    android:paddingTop="@dimen/activity_vertical_margin"
+                    android:paddingEnd="@dimen/general_horizontal_margin"
+                    android:paddingBottom="@dimen/activity_vertical_margin"
+                    android:text="@string/WorkOrderLifeCycleFrag_HeaderLabel"
+                    android:textColor="@color/design_default_color_on_secondary"
+                    android:textSize="20sp" />
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <TextView
+                android:id="@+id/orderId_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/WorkOrderLifeCycleFrag_OrderIdLabel"
+                android:textSize="16sp" />
+
+            <View
+                android:id="@+id/workorder_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/general_horizontal_margin"
+                android:layout_marginEnd="@dimen/general_horizontal_margin"
+                android:background="?android:attr/listDivider" />
+
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:id="@+id/workorderStates_LinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="20dp">
+
+                <LinearLayout
+                    android:id="@+id/openStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/openStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_1_32" />
+
+                    <TextView
+                        android:id="@+id/openStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_OpenStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/openStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/openStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/onEvalStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/onEvalStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_2_32" />
+
+                    <TextView
+                        android:id="@+id/onEvalStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_OnEvaluationStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/onEvalStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/onEvalStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/plannedStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/plannedStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_3_32" />
+
+                    <TextView
+                        android:id="@+id/plannedStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_PlannedStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/plannedStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/plannedStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/confStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/confStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_4_32" />
+
+                    <TextView
+                        android:id="@+id/confStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_ConfirmedStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/confStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/confStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/diagStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/diagStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_5_32" />
+
+                    <TextView
+                        android:id="@+id/diagStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_DiagnosedStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/diagStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/diagStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/onProgStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/onProgStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_6_32" />
+
+                    <TextView
+                        android:id="@+id/onProgStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_OnProgressStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/onProgStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/onProgStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/doneStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/doneStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_7_32" />
+
+                    <TextView
+                        android:id="@+id/doneStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_DoneStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/doneStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/doneStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/closedStateHeader_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/closedStateHeader_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/circulo_8_32" />
+
+                    <TextView
+                        android:id="@+id/closedStateHeader_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/WorkOrderLifeCycleFrag_ClosedStateLabel"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/closedStateDetail_LinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/closedStateDetail_VertLine"
+                        android:layout_width="2.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="@dimen/general_horizontal_margin"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#6D3F51B5"
+                        android:backgroundTintMode="add"
+                        android:minHeight="15dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+        <!-- Your scrollable content here -->
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/SaveChangesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:contentDescription="TODO"
+            android:focusable="true"
+            app:backgroundTint="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_menu_save" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

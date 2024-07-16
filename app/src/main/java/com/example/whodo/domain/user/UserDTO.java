@@ -32,9 +32,8 @@ public class UserDTO {
     }
 
 
-    public void User(String pUid, String pName, long pBirthday, String pEmail, String pAddress,
+    public UserDTO(String pUid, String pName, long pBirthday, String pEmail, String pAddress,
                      double pLatitude, double pLongitude,
-                     //String pGeohash,
                      String pPhone,
                      String pPhone_ccn, String pType, String pPassword, long pCreateDate, long pDeleteDate,
                      int pState, int pIsValidated, String pProfilePicture, String pLanguages, String pDescription, String pSpecialization) {
@@ -45,7 +44,6 @@ public class UserDTO {
         Address = pAddress;
         Latitude = pLatitude;
         Longitude = pLongitude;
-        //Geohash = pGeohash;
         Phone = pPhone;
         Phone_ccn = pPhone_ccn;
         Type = pType;
@@ -129,12 +127,6 @@ public class UserDTO {
     public void setLongitude(double pLongitude){
         Longitude=pLongitude;
     }
-
-    // @PropertyName("GeoHash")
-    //public String getGeohash() { return Geohash; }
-    //public void setGeohash(String pGeoHash){
-    //    Geohash=pGeoHash;
-    //}
 
     // @PropertyName("Phone")
     public String getPhone() {

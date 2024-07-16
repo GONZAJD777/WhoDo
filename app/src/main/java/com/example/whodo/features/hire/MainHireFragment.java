@@ -69,14 +69,8 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private SeekBar DistanceFilterSeekBar;
     private LatLng DeviceLocation;
-    private ArrayList<String> ServicePickerFilter= new ArrayList<>();
-    private ArrayList<User> ProvidersList= new ArrayList<>();
-    private double ServiceDistanceFilter=10*0.009009009009009;
     private TextView MaxDistanceFilterLabel;
-    private double LatUpperLimit;
-    private double LatLowerLimit;
-    private double LonRigthLimit;
-    private double LonLetfLimit;
+
     private LinearLayout ReelItemsLinearLayout;
     private LinearLayout vServicesLinearLayout ;
     private FloatingActionButton FiltersButton;
@@ -108,16 +102,12 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
     private RatingBar AppereanceScore;
     private RatingBar CleanlinessScore;
     private RatingBar OverallScore;
-    @SuppressLint("StaticFieldLeak")
-    private static Context context;
     private final String TAG="HIRE-FRAGMENT";
     private final String RegSeed = ",$";
     private User PickedUser;
 
     private HireFragmentViewModel mHireFragmentViewModel;
     private MainActivityViewModel model;
-    private List<User> mProviders;
-    private List<String> mServices;
     private User mLoggedUser;
 
     @SuppressLint("SetTextI18n")
@@ -187,7 +177,7 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
         getLocationPermission();
         MaxDistanceFilterLabel = root.findViewById(R.id.MaxDistanceFilterLabel);
-        MaxDistanceFilterLabel.setText("10km");
+        //MaxDistanceFilterLabel.setText("10km");
 
         FiltersBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -230,8 +220,7 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
         DistanceFilterSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                //distanceFilterActions(i);
-                mHireFragmentViewModel.SetDistanceFilter(i);
+                mHireFragmentViewModel.setDistanceFilter(i);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -243,7 +232,10 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
         model.getProviders().observe(getViewLifecycleOwner(),this::loadProviders);
         model.getServices().observe(getViewLifecycleOwner(),this::loadServices);
         mHireFragmentViewModel.getDistanceFilter().observe(getViewLifecycleOwner(),this::loadDistanceFilter);
+        //we will observe getProvidersLiveData
         mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(),this::setProviderMarkers);
+        //observe the picked provider and hold the information for further use
+        mHireFragmentViewModel.getPickedProvider().observe(getViewLifecycleOwner(),this::showProviderDetail);
 
         return root;
     }
@@ -258,36 +250,30 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
         mHireFragmentViewModel.setServices(pServices);
         loadServicesCheckBox(pServices);
     }
-    private void loadDistanceFilter(int pDistanceFilter){
-        ServiceDistanceFilter=pDistanceFilter*0.009009009009009;
-        String serviceDistanceFilterLabel = pDistanceFilter + "Km";
+    private void loadDistanceFilter(Double pDistanceFilter){
+        DistanceFilterSeekBar.setProgress(mHireFragmentViewModel.getDistanceFilterPoint());
+        String serviceDistanceFilterLabel = (pDistanceFilter/0.009009009009009) + "Km";
         MaxDistanceFilterLabel.setText(serviceDistanceFilterLabel);
-
-        //setProviderMarkers(mProviders);
-        //setBoundsProvDistFilter(mLoggedUser);
-
     }
-
-    @Override
-    public void onStart() {
-        Log.i(TAG1,  "INICIO - request getLoggedUser()");
-        super.onStart();
-        if(context==null) {
-            context = getActivity();
-        }
-        Log.i(TAG1,  "FIN - request getLoggedUser()");
+    private void openFragment(int pFragment){
+        model.setSelectedFragment(pFragment,View.GONE);
+        // model.TabLayoutVisibility(View.GONE);
     }
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         googleMap.getUiSettings().setMapToolbarEnabled(true);
+        //Once mas is ready, call get the providers to populate the map
+        if (mHireFragmentViewModel.getProvidersLiveData().getValue()!=null)
+            this.setProviderMarkers(mHireFragmentViewModel.getProvidersLiveData().getValue());
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(@NonNull Marker marker) {
                 PickedUser= (User) marker.getTag();
-                assert PickedUser != null;
-                showProviderDetail(PickedUser);
+                mHireFragmentViewModel.setPickedProvider(PickedUser);
+                //TODO esto debe modificar la variable mPickedUser en el viewModel para que esa informacion este disponible en los demas fragmentos
+
             }
         });
         googleMap.setOnMapClickListener(arg0 -> {
@@ -336,29 +322,8 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
             setMarkerSnippet();
             //once map is ready, we proceed to add de Markers
         }
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-        //clearReel(this.ReelLinearLayout);
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-        //clearReel(this.ReelLinearLayout);
-    }
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-        //clearReel(this.ReelLinearLayout);
+
+
     }
     @SuppressLint("NonConstantResourceId")
     private void onClick(@NonNull View view) {
@@ -377,15 +342,17 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
                 ProviderDetailBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 break;
             case R.id.Hire_Button:
-                openWorkOrder ();
+                model.setPickedWorkOrder(null);
+                openFragment (15);
                 break;
         }
     }
+    //***************************************************************************//
     private void loadServicesCheckBox(@NonNull List<String> pServices){
         clearLinearLayout(vServicesLinearLayout);
-        //*//******************************************************************************
-        //*//Se comienza a recorrer la lista con los servicio para agregar los botones
-        //*//y validar cuales estan checkeados por el usuario para filtrar
+        List<String> ServicePickerFilter = new ArrayList<>();
+        if(mHireFragmentViewModel.getServiceFilter().getValue()!=null)
+            ServicePickerFilter=mHireFragmentViewModel.getServiceFilter().getValue();
         for(int i = 0; i< pServices.size(); i++) {
             CheckBox ServiceCheckBox = new CheckBox(getContext());
             ServiceCheckBox.setText(pServices.get(i));
@@ -395,52 +362,35 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
                     Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio esta tildado " + ServicePickerFilter.get(j) );
                     ServiceCheckBox.setChecked(true);
                 }}
-            ServiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b){
-                        ServicePickerFilter.add(compoundButton.getText().toString());
-                        Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue tildado " + compoundButton.getText().toString() );
-                    }else {
-                        for(int j = 0; j< ServicePickerFilter.size(); j++){
-                            if ( ServicePickerFilter.get(j).equals(compoundButton.getText().toString()))
-                            {
-                                Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue destildado " + ServicePickerFilter.get(j) );
-                                ServicePickerFilter.remove(j);
-                            }
-                        }
-                    }
-                    Log.i(TAG, "loadServicesCheckBox --> Servicios tildados " + ServicePickerFilter );
-                    setProviderMarkers(mProviders);
-                }
-            });
+            addCheckBoxListener(ServiceCheckBox);
             vServicesLinearLayout.addView(ServiceCheckBox);
         }
     }
-    private void addMarkers(@NonNull GoogleMap googleMap, @NonNull User pProvider ){
-        String AvgTariff = context.getResources().getString(R.string.HireFragment_MapMarkerSnipets_AvgTariff);
-        String AvgCompletionTime = context.getResources().getString(R.string.HireFragment_MapMarkerSnipets_AvgCompletionTime);
-        String OverallScore = context.getResources().getString( R.string.HireFragment_MapMarkerSnipets_OverallScore);
-
-        LatLng UserLatLon = new LatLng(pProvider.getLatitude(), pProvider.getLongitude());
-
-        String SnippetText = pProvider.getSpecialization().replaceAll(RegSeed, "|") +
-                AvgTariff + " " + pProvider.getUserScore().getAvgTariff() + "\n" +
-                AvgCompletionTime + " " + pProvider.getUserScore().getAvgCompletionTime() + "\n" +
-                OverallScore + " " + pProvider.getUserScore().getOverallScore();
-
-        //Log.d("SNIPPET", SnippetText);
-
-        if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(pProvider.getType(), "1")) {
-            Objects.requireNonNull(mMap.addMarker(new MarkerOptions().position(UserLatLon).title("Tu Ubicacion Registrada").snippet(SnippetText).icon(BitmapDescriptorFactory.fromResource(R.drawable.myloc_cus)))).setTag(pProvider);
-        } else if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(pProvider.getType(), "2")) {
-            Objects.requireNonNull(mMap.addMarker(new MarkerOptions().position(UserLatLon).title("Tu Ubicacion Registrada").snippet(SnippetText).icon(BitmapDescriptorFactory.fromResource(R.drawable.myloc_prov)))).setTag(pProvider);
-        } else {
-            Objects.requireNonNull(googleMap.addMarker(new MarkerOptions().position(UserLatLon).title(pProvider.getName()).snippet(SnippetText).icon(BitmapDescriptorFactory.fromResource(getImageFromString(pProvider.getSpecialization().replaceAll(RegSeed, ""),24))))).setTag(pProvider);
-        }
+    private void addCheckBoxListener(CheckBox pCheckBox) {
+        pCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                List<String> ServicePickerFilter= new ArrayList<>() ;
+                if(mHireFragmentViewModel.getServiceFilter().getValue()!=null)
+                    ServicePickerFilter=mHireFragmentViewModel.getServiceFilter().getValue();
+                if (b){
+                    ServicePickerFilter.add(compoundButton.getText().toString());
+                    Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue tildado " + compoundButton.getText().toString() );
+                }else {
+                    for(int j = 0; j< ServicePickerFilter.size(); j++){
+                        if ( ServicePickerFilter.get(j).equals(compoundButton.getText().toString()))
+                        {
+                            Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue destildado " + ServicePickerFilter.get(j) );
+                            ServicePickerFilter.remove(j);
+                        }
+                    }
+                }
+                Log.i(TAG, "loadServicesCheckBox --> Servicios tildados " + ServicePickerFilter );
+                mHireFragmentViewModel.setServiceFilter(ServicePickerFilter);
+            }
+        });
     }
-
-
+    //***************************************************************************//
     private void setProviderMarkers(List<User> pProviders){
         clearLinearLayout(ReelItemsLinearLayout);
         if (mMap != null){
@@ -456,23 +406,26 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
             ReelBehavior();
         }
     }
-
-    private void setBoundsProvDistFilter(User pUser){
-        LatUpperLimit=pUser.getLatitude()+ServiceDistanceFilter;
-        LatLowerLimit=pUser.getLatitude()-ServiceDistanceFilter;
-        LonRigthLimit=pUser.getLongitude()+ServiceDistanceFilter;
-        LonLetfLimit=pUser.getLongitude()-ServiceDistanceFilter;
+    private void addMarkers(@NonNull GoogleMap googleMap, @NonNull User pProvider ){
+        String AvgTariff = this.getResources().getString(R.string.HireFragment_MapMarkerSnipets_AvgTariff);
+        String AvgCompletionTime = this.getResources().getString(R.string.HireFragment_MapMarkerSnipets_AvgCompletionTime);
+        String OverallScore = this.getResources().getString( R.string.HireFragment_MapMarkerSnipets_OverallScore);
+        LatLng UserLatLon = new LatLng(pProvider.getLatitude(), pProvider.getLongitude());
+        String SnippetText = pProvider.getSpecialization().replaceAll(RegSeed, "|") +
+                AvgTariff + " " + pProvider.getUserScore().getAvgTariff() + "\n" +
+                AvgCompletionTime + " " + pProvider.getUserScore().getAvgCompletionTime() + "\n" +
+                OverallScore + " " + pProvider.getUserScore().getOverallScore();
+        //Log.d("SNIPPET", SnippetText);
+        if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "1")) {
+            Objects.requireNonNull(mMap.addMarker(new MarkerOptions().position(UserLatLon).title("Tu Ubicacion Registrada").snippet(SnippetText).icon(BitmapDescriptorFactory.fromResource(R.drawable.myloc_cus)))).setTag(pProvider);
+        } else if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "2")) {
+            Objects.requireNonNull(mMap.addMarker(new MarkerOptions().position(UserLatLon).title("Tu Ubicacion Registrada").snippet(SnippetText).icon(BitmapDescriptorFactory.fromResource(R.drawable.myloc_prov)))).setTag(pProvider);
+        } else {
+            Objects.requireNonNull(googleMap.addMarker(new MarkerOptions().position(UserLatLon).title(pProvider.getName()).snippet(SnippetText).icon(BitmapDescriptorFactory.fromResource(getImageFromString(pProvider.getSpecialization().replaceAll(RegSeed, ""),24))))).setTag(pProvider);
+        }
     }
-    private boolean CheckRange (User pProvider) {
-        return pProvider.getLatitude() < LatUpperLimit &&
-                pProvider.getLatitude() > LatLowerLimit &&
-                pProvider.getLongitude() > LonLetfLimit &&
-                pProvider.getLongitude() < LonRigthLimit;
-    }
-
-    @SuppressLint("NonConstantResourceId")
     public void addHireItem(@NonNull User pProvider){
-        HireItem mHireItem = new HireItem(context);
+        HireItem mHireItem = new HireItem(this.requireContext());
         mHireItem.setProvider(pProvider);
         mHireItem.setName(pProvider.getName());
         mHireItem.PricePercent(pProvider.getUserScore().getAvgTariff()+"");
@@ -483,7 +436,7 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
         ArrayList<String> SpecArrayList = new ArrayList<>(Arrays.asList(SpecText.split(",")));
         for(int i = 0; i< SpecArrayList.size(); i++){
 
-            ImageView Spec = new ImageView(context);
+            ImageView Spec = new ImageView(this.requireContext());
             Spec.setImageResource(getImageFromString(SpecArrayList.get(i),16));
             LinearLayout.LayoutParams ImageViewLP=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
             ImageViewLP.gravity=Gravity.CENTER;
@@ -492,15 +445,18 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
 
             mHireItem.addSpecItem(Spec);
         }
-         mHireItem.setImage(pProvider.getProfilePicture());
-         mHireItem.setOnClickListener(view -> {
-             PickedUser=mHireItem.getProvider();
-             showProviderDetail(PickedUser);
-             //Log.d(TAG, "click"+view);
+        mHireItem.setImage(pProvider.getProfilePicture());
+        mHireItem.setOnClickListener(view -> {
+            PickedUser=mHireItem.getProvider();
+            mHireFragmentViewModel.setPickedProvider(PickedUser);
 
-         });
-         ReelItemsLinearLayout.addView(mHireItem);
+            //Log.d(TAG, "click"+view);
+
+        });
+        ReelItemsLinearLayout.addView(mHireItem);
     }
+    //***************************************************************************//
+    @SuppressLint("NonConstantResourceId")
     public void setMarkerSnippet(){
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Nullable
@@ -511,19 +467,19 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
             }
             @Override
             public View getInfoContents(@NonNull Marker marker) {
-                LinearLayout info = new LinearLayout(context);
-                LinearLayout SpecList = new LinearLayout(context);
+                LinearLayout info = new LinearLayout(requireContext());
+                LinearLayout SpecList = new LinearLayout(requireContext());
                 info.setOrientation(LinearLayout.VERTICAL);
                 SpecList.setOrientation(LinearLayout.HORIZONTAL);
                 SpecList.setGravity(Gravity.CENTER);
 
-                TextView title = new TextView(context);
+                TextView title = new TextView(requireContext());
                 title.setTextColor(Color.BLACK);
                 title.setGravity(Gravity.CENTER);
                 title.setTypeface(null, Typeface.BOLD);
                 title.setText(marker.getTitle());
 
-                TextView snippetSpec = new TextView(context);
+                TextView snippetSpec = new TextView(requireContext());
                 snippetSpec.setTextColor(Color.BLUE);
                 snippetSpec.setTypeface(null, Typeface.BOLD);
                 snippetSpec.setGravity(Gravity.CENTER);
@@ -535,7 +491,7 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
                 //Log.d("MAPMARKER SNIPPET", "INDEXEND " +indexEnd1);
                 snippetSpec.setText(Objects.requireNonNull(marker.getSnippet()).substring(indexStart1,indexEnd1));
 
-                TextView snippetInfo = new TextView(context);
+                TextView snippetInfo = new TextView(requireContext());
                 snippetInfo.setTextColor(Color.GRAY);
                 int indexStart = marker.getSnippet().indexOf("|")+1;
                 int indexEnd = marker.getSnippet().length();
@@ -726,7 +682,6 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
     private void moveCamera(LatLng latLng){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, (float) 11.75));
     }
-
     private void clearLinearLayout(LinearLayout LL){
         try {
             if (LL.getChildCount() > 0) {
@@ -737,13 +692,6 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
         {
             Log.i("ReelItemsLinearLayout", "Has no childs:" + e);
         }
-    }
-
-    private void openWorkOrder (){
-        DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference WorkOrderDBRef =  mDatabaseReference.child("WORK_ORDERS");
-        WorkOrder mWorkOrder = new WorkOrder(mLoggedUser.getUid(),mLoggedUser.getName(),PickedUser.getUid(),PickedUser.getSpecialization(),"Cableado","Cableado de Departamento 7 llaves, 11 tomas y 4 lamparas");
-        WorkOrderDBRef.push().setValue(mWorkOrder);
     }
     private void ReelBehavior(){
         if (!isCons2Active){
@@ -759,6 +707,29 @@ public class MainHireFragment extends Fragment implements OnMapReadyCallback {
             mConstraintSet1.applyTo(ButtonsConsLayout);
             isCons2Active=false;
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+        //clearReel(this.ReelLinearLayout);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+        //clearReel(this.ReelLinearLayout);
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+        //clearReel(this.ReelLinearLayout);
     }
 }
 

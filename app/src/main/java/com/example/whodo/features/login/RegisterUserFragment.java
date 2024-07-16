@@ -228,8 +228,6 @@ public class RegisterUserFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            //TODO buscar la fecha de creacion del usuario y enviarla como parametro en la creacion del objeto USER - DONE
-
 
                             String Name=MailSimpleEditText.getText().toString().toUpperCase();
                             String Email=MailSimpleEditText.getText().toString();
