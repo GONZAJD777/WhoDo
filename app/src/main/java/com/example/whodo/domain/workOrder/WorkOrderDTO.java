@@ -1,10 +1,25 @@
 package com.example.whodo.domain.workOrder;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class WorkOrderDTO {
 
     private String OrderId;
+
     private String CustomerId;
+    private String CustomerName;
+    private String CustomerAddress;
+    private double CustomerLat;
+    private double CustomerLng;
+    private String CustomerPhoneNumber;
+
     private String ProviderId;
+    private String ProviderName;
+    private String ProviderAddress;
+    private double ProviderLat;
+    private double ProviderLng;
+    private String ProviderPhoneNumber;
+
     private String Specialization; //Categoria del trabajo demandado
     private String Description;// Descripcion del trabajo a realizar por el cliente
     private String Detail; // Bitacora de tareas y comentarios del proveedor
@@ -14,7 +29,7 @@ public class WorkOrderDTO {
     private Long StateChangeDate; //Fecha y hora del ultimo cambio de estado en formato YYYYMMDD24HHMMSS
     //INSPECTION INFO
     private Long InspectionDate; //Fecha y hora de cita de inspeccion en formato YYYYMMDD24HHMMSS
-    private String InspectionCharges; //Cargo por la visita para inspeccion, es opcional
+    private Integer InspectionCharges; //Cargo por la visita para inspeccion, es opcional
     private String InspectionPaymentOrder; // ID de la orden de pago generada como registro del pago de la inspeccion
     //WORK INFO
     private Long WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
@@ -31,39 +46,6 @@ public class WorkOrderDTO {
 
     public WorkOrderDTO() {}
 
-    public WorkOrderDTO(String pOrderId, String pCustomerId, String pProviderId, String pSpecialization,
-                     String pDescription, String pDetail, Long pCreationDate, Long pTimeLimit,
-                     String pState, Long pStateChangeDate, Long pInspectionDate,
-                     String pInspectionCharges, String pInspectionPaymentOrder, Long pWorkStartDate,
-                     Long pWorkEndDate, String pWorkCost, String pWorkPaymentOrder,
-                     Long pWorkWarrantyEndDate, String pImpressions, String pAppereanceScore,
-                     String pCleanlinessScore, String pSpeedScore, String pQualityScore)  {
-        this.OrderId = pOrderId;
-        this.CustomerId = pCustomerId;
-        this.ProviderId = pProviderId;
-        this.Specialization = pSpecialization;
-        this.Description = pDescription;
-        this.Detail = pDetail;
-        this.CreationDate = pCreationDate;
-        this.TimeLimit = pTimeLimit;
-        this.State = pState;
-        this.StateChangeDate = pStateChangeDate;
-        this.InspectionDate = pInspectionDate;
-        this.InspectionCharges = pInspectionCharges;
-        this.InspectionPaymentOrder = pInspectionPaymentOrder;
-        this.WorkStartDate = pWorkStartDate;
-        this.WorkEndDate = pWorkEndDate;
-        this.WorkCost = pWorkCost;
-        this.WorkPaymentOrder = pWorkPaymentOrder;
-        this.WorkWarrantyEndDate = pWorkWarrantyEndDate;
-        this.Impressions = pImpressions;
-        this.AppereanceScore = pAppereanceScore;
-        this.CleanlinessScore = pCleanlinessScore;
-        this.SpeedScore = pSpeedScore;
-        this.QualityScore = pQualityScore;
-    }
-
-
     public String getOrderId() {
         return OrderId;
     }
@@ -71,6 +53,7 @@ public class WorkOrderDTO {
         OrderId=pOrderId;
     }
 
+    //******** CUSTOMER INFO METHODS ********//
     public String getCustomerId() {
         return CustomerId;
     }
@@ -78,12 +61,44 @@ public class WorkOrderDTO {
         CustomerId=pCustomerId;
     }
 
+    public String getCustomerName() { return CustomerName; }
+    public void setCustomerName(String pCustomerName) { this.CustomerName = pCustomerName; }
+
+    public String getCustomerAddress() { return CustomerAddress; }
+    public void setCustomerAddress(String pCustomerAddress) { this.CustomerAddress = pCustomerAddress; }
+
+    public double getCustomerLat() { return CustomerLat; }
+    public void setCustomerLat(double pCustomerLat) { this.CustomerLat = pCustomerLat; }
+
+    public double getCustomerLng() { return CustomerLng; }
+    public void setCustomerLng(double pCustomerLng) { this.CustomerLng = pCustomerLng; }
+
+    public String getCustomerPhoneNumber() {return CustomerPhoneNumber; }
+    public void setCustomerPhoneNumber(String pCustomerPhoneNumber) { this.CustomerPhoneNumber = pCustomerPhoneNumber; }
+
+    //******** PROVIDER INFO METHODS ********//
     public String getProviderId() {
         return ProviderId;
     }
     public void setProviderId(String pProviderId){
         ProviderId=pProviderId;
     }
+
+    public String getProviderName() { return ProviderName; }
+    public void setProviderName(String pProviderName) { this.ProviderName = pProviderName; }
+
+    public String getProviderAddress() { return ProviderAddress; }
+    public void setProviderAddress(String pProviderAddress) { this.ProviderAddress = pProviderAddress; }
+
+    public double getProviderLat() { return ProviderLat; }
+    public void setProviderLat(double pProviderLat) { this.ProviderLat = pProviderLat; }
+
+    public double getProviderLng() { return ProviderLng; }
+    public void setProviderLng(double pProviderLng) { this.ProviderLng = pProviderLng; }
+
+    public String getProviderPhoneNumber() { return ProviderPhoneNumber; }
+    public void setProviderPhoneNumber(String pProviderPhoneNumber) { this.ProviderPhoneNumber = pProviderPhoneNumber; }
+    //******** ******** ********//
 
     public String getSpecialization() {
         return Specialization;
@@ -142,10 +157,10 @@ public class WorkOrderDTO {
         InspectionDate=pInspectionDate;
     }
 
-    public String getInspectionCharges() {
+    public Integer getInspectionCharges() {
         return InspectionCharges;
     }
-    public void setInspectionCharges(String pInspectionCharges){ InspectionCharges=pInspectionCharges; }
+    public void setInspectionCharges(Integer pInspectionCharges){ InspectionCharges=pInspectionCharges; }
 
     public String getInspectionPaymentOrder() {
         return InspectionPaymentOrder;

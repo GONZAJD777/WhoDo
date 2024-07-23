@@ -48,7 +48,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
 
     public FirebaseUserDAO(){ }
     @Override
-    public LiveData<UserDTO> findOne(UserDTO pUserDTO) {
+    public LiveData<UserDTO> findUser(UserDTO pUserDTO) {
         MutableLiveData<UserDTO> mUser = new MutableLiveData<>();
 
         Log.i(TAG1,  "findUSer --> String recibido como parametro: " + pUserDTO);
@@ -61,7 +61,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
                         UserDTO auxUser=ds.getValue(UserDTO.class);
                         mUser.setValue(auxUser);
                         assert auxUser != null;
-                        Log.i(TAG1,  "findOne:onDataChange -->" + auxUser.getEmail());
+                        Log.i(TAG1,  "findUser:onDataChange -->" + auxUser.getEmail());
                     } catch (Exception e) {
                         Log.i(TAG1,  "Exception Mapping Snapshot to UserDTO: " + e);
                     }
@@ -71,7 +71,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
-                Log.w(TAG1, "findOne:onCancelled -->" + databaseError.toException());
+                Log.w(TAG1, "findUser:onCancelled -->" + databaseError.toException());
             }
         };
         UserDBRef.orderByChild("uid").equalTo(pUserDTO.getUid()).addValueEventListener(postListener);
@@ -91,6 +91,33 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
             }
         });
     }
+    @Override
+    public void findCustomer(UserDTO pUserDTO,Callback<UserDTO> callback) {
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    try {
+                        UserDTO auxUser=ds.getValue(UserDTO.class);
+                        assert auxUser != null;
+                        Log.i(TAG1,  "findCustomer:onDataChange -->" + auxUser.getEmail());
+                        callback.onSuccess(auxUser);
+                    } catch (Exception e) {
+                        Log.i(TAG1,  "Exception Mapping Snapshot to UserDTO: " + e);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i(TAG1,  "findCustomer:onCancelled -->" + error);
+            }
+        };
+
+        UserDBRef.orderByChild("uid").equalTo(pUserDTO.getUid()).addListenerForSingleValueEvent(postListener);
+
+    }
+
     @Override
     public void update(UserDTO pUserDTO) {
         Map<String, Object> updates = new HashMap<>();

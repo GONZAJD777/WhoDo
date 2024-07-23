@@ -13,6 +13,19 @@ public class Utils {
     private static final String TAG = "UTILS";
 
     @SuppressLint("SimpleDateFormat")
+    public static Date setStringToDate (String mString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm'hs'");
+        Date parsedDate = new Date();
+        try {
+            parsedDate = dateFormat.parse(mString);
+            // Usa parsedDate como necesites
+        } catch (ParseException e) {
+            Log.d(TAG, "setStringToDate : " + e);
+            // Maneja el error si la cadena no tiene el formato esperado
+        }
+        return parsedDate;
+    }
+    @SuppressLint("SimpleDateFormat")
     public static String setLongToDate(Long mLong) {
         // Define el formato de entrada (Long)
         SimpleDateFormat longDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");

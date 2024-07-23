@@ -46,6 +46,7 @@ public class MainActivityViewModel extends ViewModel {
     private User mSnapshotUser; // No es LiveData
     private final MutableLiveData<User> mUser = new MutableLiveData<>();
     private final MutableLiveData<List<User>> mProviders = new MutableLiveData<>();
+    private final MutableLiveData<User> mWorkOrdersCustomer = new MutableLiveData<>();
     private final MutableLiveData<List<WorkOrder>> mWorkOrders = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<String>> mServices = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<String>> mLanguages= new MutableLiveData<>();
@@ -62,7 +63,7 @@ public class MainActivityViewModel extends ViewModel {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         User currentUser = new User(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        mUserDao.findOne(UserMapper.toDTO(currentUser)).observeForever(userDto -> {
+        mUserDao.findUser(UserMapper.toDTO(currentUser)).observeForever(userDto -> {
             if (userDto != null) {
                 User user = UserMapper.toEntity(userDto);
                 mUser.setValue(user);
@@ -246,28 +247,51 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     //HANDLING WORKORDERS
-    public void setPickedWorkOrder(WorkOrder pPickedWorkOrder){ mPickedWorkOrder.setValue(pPickedWorkOrder); }
-    public LiveData<WorkOrder> getPickedWorkOrder(){ return mPickedWorkOrder; }
-    public void setWorkOrder (WorkOrder pWorkOrder) {
+    public void createWorkOrder(WorkOrder pWorkOrder) {
         mWorkOrderDao.create(WorkOrderMapper.toDto(pWorkOrder), new Callback<WorkOrderDTO>() {
             @Override
-            public void onSuccess(WorkOrderDTO workOrderDTO) {
-
-            }
-
+            public void onSuccess(WorkOrderDTO workOrderDTO) {}
             @Override
             public void onError(Exception e) {
-
             }
         });
     }
+    public void updateWorkOrder(WorkOrder pWorkOrder) {
+        mWorkOrderDao.update(WorkOrderMapper.toDto(pWorkOrder), new Callback<WorkOrderDTO>() {
+            @Override
+            public void onSuccess(WorkOrderDTO workOrderDTO) {}
+            @Override
+            public void onError(Exception e) {
+            }
+        });
+    }
+
     public LiveData<List<WorkOrder>> getWorkOrder () {return mWorkOrders;}
-    public User getCustomerWorkOrder (String pCustomerId){
-        User mProvider = new User();
-       for (User provider : Objects.requireNonNull(mProviders.getValue())) {
-           if (pCustomerId==provider.getUid()) mProvider=provider;
-       }
-       return mProvider;
+    public void setPickedWorkOrder(WorkOrder pPickedWorkOrder){ mPickedWorkOrder.setValue(pPickedWorkOrder); }
+    public LiveData<WorkOrder> getPickedWorkOrder(){ return mPickedWorkOrder; }
+
+
+    public LiveData<User> getCustomerWorkOrder (String pCustomerId){
+        if (mWorkOrdersCustomer.getValue()==null || !Objects.equals(pCustomerId, mWorkOrdersCustomer.getValue().getUid())){
+            for (User provider : Objects.requireNonNull(mProviders.getValue())) {
+                if (Objects.equals(pCustomerId, provider.getUid())) {
+                    mWorkOrdersCustomer.setValue(provider);
+                }
+            }
+        }
+        if (mWorkOrdersCustomer.getValue()==null || !Objects.equals(pCustomerId, mWorkOrdersCustomer.getValue().getUid())){
+            UserDTO mUserDTO = new UserDTO();
+            mUserDTO.setUid(pCustomerId);
+            mUserDao.findCustomer(mUserDTO, new Callback<UserDTO>() {
+                @Override
+                public void onSuccess(UserDTO pUserDTO) {
+                    mWorkOrdersCustomer.setValue(UserMapper.toEntity(pUserDTO));
+                }
+                @Override
+                public void onError(Exception e) { }
+            });
+        }
+       return mWorkOrdersCustomer;
     }
 
 }

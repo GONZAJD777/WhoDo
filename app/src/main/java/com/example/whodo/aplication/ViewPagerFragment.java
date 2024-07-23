@@ -109,8 +109,8 @@ public class ViewPagerFragment extends Fragment {
     private void addPendingItem (WorkOrder pWorkOrder){
         ActivityWorkOrderItem mActivityWorkOrderItem = new ActivityWorkOrderItem(requireContext());
         String mWorkOrderType;
-        String mCustomerStates = "OPEN,CONFIRMED,DIAGNOSED,DONE,CLOSED";
-        String mProviderStates = "ONEVALUATION,PLANNED,ONPROGRESS,CLOSED";
+        String mCustomerStates = "PLANNED,DIAGNOSED,DONE";
+        String mProviderStates = "ONEVALUATION,CONFIRMED,ONPROGRESS";
         if (Objects.equals(pWorkOrder.getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getUid()))
         {mWorkOrderType="CUSTOMER";}
         else {mWorkOrderType="PROVIDER";}

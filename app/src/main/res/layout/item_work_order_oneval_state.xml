@@ -16,114 +16,100 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <View
+            android:id="@+id/customerInfo_topDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/customer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Informacion del Cliente"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/customerName_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Nombre" />
+
+        <TextView
+            android:id="@+id/customerAddress_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Direccion"
+            />
+        <TextView
+            android:id="@+id/customerPhone_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Telefono" />
+
+
+        <View
+            android:id="@+id/customerInfo_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/detail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de Orden"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/limitDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Limite de Tiempo" />
+
+        <TextView
+            android:id="@+id/category_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Categoria" />
+
+        <TextView
+            android:id="@+id/description_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/limitDate_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="Limite de Tiempo" />
-
-            <TextView
-                android:id="@+id/limitDate_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="numberSigned"
-                android:text="01/01/1970 23:59"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
+            android:text="Descripcion de trabajo: Cambiar Cuerito de canilla y arreglar canilla floja, ademas gotea " />
+        <View
+            android:id="@+id/orderDetail_bottomDivider"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/customerName_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="Cliente" />
-
-            <TextView
-                android:id="@+id/customerName_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Maria Jose Larralde" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/customerAddress_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="Direccion" />
-
-            <TextView
-                android:id="@+id/customerAddress_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Chacabuco 347, 3G" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/category_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="Categoria" />
-
-            <TextView
-                android:id="@+id/category_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Carpintero" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/description_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Descripcion del trabajo" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/description_value"
-                style="@style/CustomShapeAppearanceFrameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:ellipsize="end"
-                android:lines="5"
-                android:maxLength="200" />
-
-        </LinearLayout>
-
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/dateDetail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de Visita para Diagnostico"
+            android:textStyle="bold" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -139,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="dd/mm/yyyy"
-                android:inputType="date"
+                android:inputType="datetime|date"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -160,6 +146,9 @@
                 android:layout_height="wrap_content"
                 android:hint="24HH:MM"
                 android:inputType="time"
+                android:textAlignment="center"
+                android:ems="5"
+                android:maxLength="5"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -178,9 +167,22 @@
                 android:id="@+id/meetTariff_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="1000sat"
-                android:inputType="number"
-                android:textSize="14sp" />
+                android:autoSizeTextType="none"
+                android:ems="5"
+                android:inputType="numberSigned"
+                android:maxLength="9"
+                android:selectAllOnFocus="true"
+                android:hint="999999999"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/meetComment_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="sat (opcional)" />
 
         </LinearLayout>
 

@@ -108,7 +108,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/openStateDetail_VertLine"
+                        android:id="@+id/openStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -152,7 +152,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/onEvalStateDetail_VertLine"
+                        android:id="@+id/onEvalStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -196,7 +196,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/plannedStateDetail_VertLine"
+                        android:id="@+id/plannedStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -240,7 +240,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/confStateDetail_VertLine"
+                        android:id="@+id/confStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -284,7 +284,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/diagStateDetail_VertLine"
+                        android:id="@+id/diagStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -328,7 +328,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/onProgStateDetail_VertLine"
+                        android:id="@+id/onProgStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -372,7 +372,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/doneStateDetail_VertLine"
+                        android:id="@+id/doneStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -416,7 +416,7 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:id="@+id/closedStateDetail_VertLine"
+                        android:id="@+id/closedStateDetail_vertLine"
                         android:layout_width="2.5dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"

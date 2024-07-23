@@ -18,7 +18,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
@@ -116,8 +118,117 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
     }
 
     @Override
-    public void update(WorkOrderDTO workOrderDTO) {
+    public void update(WorkOrderDTO workOrderDTO, Callback<WorkOrderDTO> callback) {
+        Map<String, Object> updates = new HashMap<>();
 
+        if (workOrderDTO.getCustomerId() != null) {
+            updates.put("customerId", workOrderDTO.getCustomerId());
+        }
+        if (workOrderDTO.getCustomerName() != null) {
+            updates.put("customerName", workOrderDTO.getCustomerName());
+        }
+        if (workOrderDTO.getCustomerAddress() != null) {
+            updates.put("customerAddress", workOrderDTO.getCustomerAddress());
+        }
+        if (workOrderDTO.getCustomerLat() != 0) {
+            updates.put("customerLat", workOrderDTO.getCustomerLat());
+        }
+        if (workOrderDTO.getCustomerLng() != 0) {
+            updates.put("customerLng", workOrderDTO.getCustomerLng());
+        }
+        if (workOrderDTO.getCustomerPhoneNumber() != null) {
+            updates.put("customerPhoneNumber", workOrderDTO.getCustomerPhoneNumber());
+        }
+        //*********************************************************************//
+        if (workOrderDTO.getProviderId() != null) {
+            updates.put("providerId", workOrderDTO.getProviderId());
+        }
+        if (workOrderDTO.getProviderName() != null) {
+            updates.put("providerName", workOrderDTO.getProviderName());
+        }
+        if (workOrderDTO.getProviderAddress() != null) {
+            updates.put("providerAddress", workOrderDTO.getProviderAddress());
+        }
+        if (workOrderDTO.getProviderLat() != 0) {
+            updates.put("providerLat", workOrderDTO.getProviderLat());
+        }
+        if (workOrderDTO.getProviderLng() != 0) {
+            updates.put("providerLng", workOrderDTO.getProviderLng());
+        }
+        if (workOrderDTO.getProviderPhoneNumber() != null) {
+            updates.put("providerPhoneNumber", workOrderDTO.getProviderPhoneNumber());
+        }
+        //*********************************************************************//
+        if (workOrderDTO.getSpecialization() != null) {
+            updates.put("specialization", workOrderDTO.getSpecialization());
+        }
+        if (workOrderDTO.getDescription() != null) {
+            updates.put("description", workOrderDTO.getDescription());
+        }
+        if (workOrderDTO.getDetail() != null) {
+            updates.put("detail", workOrderDTO.getDetail());
+        }
+        if (workOrderDTO.getCreationDate() != null) {
+            updates.put("creationDate", workOrderDTO.getCreationDate());
+        }
+        if (workOrderDTO.getTimeLimit() != null) {
+            updates.put("timeLimit", workOrderDTO.getTimeLimit());
+        }
+        if (workOrderDTO.getState() != null) {
+            updates.put("state", workOrderDTO.getState());
+        }
+        if (workOrderDTO.getStateChangeDate() != null) {
+            updates.put("stateChangeDate", workOrderDTO.getStateChangeDate());
+        }
+        //*********************************************************************//
+        if (workOrderDTO.getInspectionDate() != null) {
+            updates.put("inspectionDate", workOrderDTO.getInspectionDate());
+        }
+        if (workOrderDTO.getInspectionCharges() != null) {
+            updates.put("inspectionCharges", workOrderDTO.getInspectionCharges());
+        }
+        if (workOrderDTO.getInspectionPaymentOrder() != null) {
+            updates.put("inspectionPaymentOrder", workOrderDTO.getInspectionPaymentOrder());
+        }
+        //*********************************************************************//
+
+        if (workOrderDTO.getWorkStartDate() != null) {
+            updates.put("workStartDate", workOrderDTO.getWorkStartDate());
+        }
+        if (workOrderDTO.getWorkEndDate() != null) {
+            updates.put("workEndDate", workOrderDTO.getWorkEndDate());
+        }
+        if (workOrderDTO.getWorkCost() != null) {
+            updates.put("workCost", workOrderDTO.getWorkCost());
+        }
+        if (workOrderDTO.getWorkPaymentOrder() != null) {
+            updates.put("workPaymentOrder", workOrderDTO.getWorkPaymentOrder());
+        }
+        if (workOrderDTO.getWorkWarrantyEndDate() != null) {
+            updates.put("workWarrantyEndDate", workOrderDTO.getWorkWarrantyEndDate());
+        }
+        //*********************************************************************//
+        if (workOrderDTO.getImpressions() != null) {
+            updates.put("impressions", workOrderDTO.getImpressions());
+        }
+        if (workOrderDTO.getAppereanceScore() != null) {
+            updates.put("appereanceScore", workOrderDTO.getAppereanceScore());
+        }
+        if (workOrderDTO.getCleanlinessScore() != null) {
+            updates.put("cleanlinessScore", workOrderDTO.getCleanlinessScore());
+        }
+        if (workOrderDTO.getSpeedScore() != null) {
+            updates.put("speedScore", workOrderDTO.getSpeedScore());
+        }
+        if (workOrderDTO.getQualityScore() != null) {
+            updates.put("qualityScore", workOrderDTO.getQualityScore());
+        }
+        WorkOrderDBRef.child(workOrderDTO.getOrderId()).updateChildren(updates).addOnSuccessListener(aVoid -> {
+                    Log.i(TAG, " update() operation --> WorkOrder Update Success");
+                })
+                .addOnFailureListener(e -> {
+                    Log.i(TAG, " update() operation --> WorkOrder Update Failed: " + e);
+                });
     }
 
 }

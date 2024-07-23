@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface UserDao<T> {
 
-    LiveData<T> findOne(T t);
+    LiveData<T> findUser(T t);
+    void findCustomer(T t,Callback<T> callback);
     void create(T t, Callback<T> callback);
     void update(T t);
     void findProviders(T t, Callback<List<T>> callback);
