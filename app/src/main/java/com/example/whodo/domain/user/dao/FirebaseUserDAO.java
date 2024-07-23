@@ -117,7 +117,6 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
         UserDBRef.orderByChild("uid").equalTo(pUserDTO.getUid()).addListenerForSingleValueEvent(postListener);
 
     }
-
     @Override
     public void update(UserDTO pUserDTO) {
         Map<String, Object> updates = new HashMap<>();
@@ -190,6 +189,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
             }
         }
     }
+
     @Override
     public void findProviders(UserDTO pUserDTO, Callback<List<UserDTO>> callback) {
         GeoLocation center = new GeoLocation(pUserDTO.getLatitude(), pUserDTO.getLongitude());
@@ -269,6 +269,9 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
         });
 
     }
+
+
+
     private void uploadProfileImage(UserDTO pUserDTO,OnSuccessListener<Uri> downloadUrlListener){
         StorageReference mImagesRef = mImageStorageRef.child("PROFILE-PICTURE/" + pUserDTO.getUid());
         Uri mUri = Uri.parse(pUserDTO.getProfilePicture());

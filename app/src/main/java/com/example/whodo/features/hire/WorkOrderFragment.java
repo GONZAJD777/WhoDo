@@ -176,14 +176,16 @@ public class WorkOrderFragment extends Fragment {
     //********************************** PLANNED STATE **********************************//
     private void plannedStateWorkOrder(WorkOrder pWorkOrder) {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
+        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
+        Integer mInspectionCharges = pWorkOrder.getInspectionCharges();
 
         mPlannedStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
         mPlannedStateItem.setProviderAddress("Direccion: "+ pWorkOrder.getProviderAddress());
         mPlannedStateItem.setProviderPhone("Telefono: "+ pWorkOrder.getProviderPhoneNumber());
 
-        mPlannedStateItem.setMeetDate("Fecha de Cita: "+Utils.setLongToDate(pWorkOrder.getTimeLimit()));
-        mPlannedStateItem.setMeetTime("Hora de Cita: "+pWorkOrder.getSpecialization());
-        mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getDescription());
+        mPlannedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
+        mPlannedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
+        mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
 
         mPlannedStateItem.setGenPaymentOrderButtonOCL(v -> { Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
         mPlannedStateItem.setAcceptButtonOCL(v -> { Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    });
