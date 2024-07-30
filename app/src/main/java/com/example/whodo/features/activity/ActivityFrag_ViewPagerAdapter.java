@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.whodo.aplication.ViewPagerFragment;
-
 
 public class ActivityFrag_ViewPagerAdapter extends FragmentStateAdapter {
 

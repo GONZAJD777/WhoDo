@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.whodo.aplication.ViewPagerFragment;
+import com.example.whodo.features.activity.ViewPagerFragment;
 
 
 public class MessagesFrag_ViewPagerAdapter extends FragmentStateAdapter {

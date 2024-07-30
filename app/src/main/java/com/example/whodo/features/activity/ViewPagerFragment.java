@@ -1,4 +1,4 @@
-package com.example.whodo.aplication;
+package com.example.whodo.features.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -15,8 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.whodo.R;
+import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.domain.workOrder.WorkOrder;
-import com.example.whodo.features.activity.ActivityWorkOrderItem;
 import com.example.whodo.utils.Utils;
 
 import java.util.List;
