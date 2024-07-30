@@ -22,6 +22,7 @@ import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.domain.user.User;
 import com.example.whodo.domain.workOrder.WorkOrder;
 import com.example.whodo.features.hire.WorkOrderState.ConfState;
+import com.example.whodo.features.hire.WorkOrderState.DiagState;
 import com.example.whodo.features.hire.WorkOrderState.OnEvalState;
 import com.example.whodo.features.hire.WorkOrderState.OpenState;
 import com.example.whodo.features.hire.WorkOrderState.PlannedState;
@@ -100,6 +101,10 @@ public class WorkOrderFragment extends Fragment {
             String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
             orderId_label.setText(mOrderId);
             confStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
+        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "DIAGNOSED")){
+            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
+            orderId_label.setText(mOrderId);
+            diagStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
         }
 
 
@@ -259,7 +264,34 @@ public class WorkOrderFragment extends Fragment {
         WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
+    //********************************** DIAGNOSE STATE **********************************//
+    private void diagStateWorkOrder(WorkOrder pWorkOrder) {
+        DiagState mDiagStateItem = new DiagState(requireContext());
+        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
 
+        mDiagStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
+        mDiagStateItem.setProviderAddress("Direccion: "+ pWorkOrder.getProviderAddress());
+        mDiagStateItem.setProviderPhone("Telefono: "+ pWorkOrder.getProviderPhoneNumber());
+
+        mDiagStateItem.setWorkStartDate();
+        mDiagStateItem.setWorkEndDate();
+        mDiagStateItem.setWorkDetail();
+        mDiagStateItem.setMaterialCost();
+        mDiagStateItem.setJobCost();
+
+
+        mDiagStateItem.setGenPaymentOrderButtonOCL(v -> { Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
+        mDiagStateItem.setAcceptButtonOCL(v -> {
+            confirmDate(pWorkOrder.getOrderId(),pWorkOrder.getInspectionPaymentOrder());
+            Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    } );
+        mDiagStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
+        mDiagStateItem.setInputLayoutEndIconOCL(v -> {  Log.d(TAG1, "BOTON COPIAR INVOICE PRESIONADO");   });
+
+        plannedStateDetail_LinearLayout.addView(mDiagStateItem);
+        plannedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
+        plannedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
+    }
+    //********************************** DIAGNOSE STATE **********************************//
 
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {

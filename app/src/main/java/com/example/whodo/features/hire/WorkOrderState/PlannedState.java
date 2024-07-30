@@ -60,8 +60,8 @@ public class PlannedState extends RelativeLayout {
     public void setMeetTariff(String pMeetTariff) { this.meetTariff_label.setText(pMeetTariff); }
 
     public void setPaymentOrder(String pPaymentOrder) { this.paymentOrder_label.setText(pPaymentOrder); }
-    public void setInvoice(String pInvoice) { this.paymentOrder_label.setText(pInvoice); }
-    public String getInvoice() { return this.paymentOrder_label.getText().toString(); }
+    public void setInvoice(String pInvoice) { this.invoice_value.setText(pInvoice); }
+    public String getInvoice() { return this.invoice_value.getText().toString(); }
 
     public void setInputLayoutEndIconOCL(OnClickListener OCL) {
         invoice_inputLayout.setEndIconOnClickListener(OCL);

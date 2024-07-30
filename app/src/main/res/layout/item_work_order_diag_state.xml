@@ -76,12 +76,12 @@
             android:id="@+id/workStartDate_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fecha Inicio de Trabajo" />
+            android:text="Fecha Inicio: dd/mm/yyyy" />
         <TextView
             android:id="@+id/workEndDate_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fecha Inicio de Trabajo" />
+            android:text="Fecha FIn: dd/mm/yyyy" />
 
         <TextView
             android:id="@+id/materialCost_label"
@@ -95,7 +95,7 @@
             android:text="Costo Mano de Obra" />
 
         <TextView
-            android:id="@+id/description_label"
+            android:id="@+id/workDetail_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
 
