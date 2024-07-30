@@ -34,7 +34,7 @@ public class WorkOrderDTO {
     //WORK INFO
     private Long WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
     private Long WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
-    private String WorkCost;
+    private Integer WorkCost;
     private String WorkPaymentOrder;
     private Long WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
     //SCORES
@@ -178,10 +178,10 @@ public class WorkOrderDTO {
     }
     public void setWorkEndDate(Long pWorkEndDate){ WorkEndDate=pWorkEndDate; }
 
-    public String getWorkCost() {
+    public Integer getWorkCost() {
         return WorkCost;
     }
-    public void setWorkCost(String pWorkCost){ WorkCost=pWorkCost; }
+    public void setWorkCost(Integer pWorkCost){ WorkCost=pWorkCost; }
 
     public String getWorkPaymentOrder() {
         return WorkPaymentOrder;

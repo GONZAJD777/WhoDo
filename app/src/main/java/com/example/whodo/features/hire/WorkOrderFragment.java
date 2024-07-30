@@ -21,6 +21,7 @@ import com.example.whodo.R;
 import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.domain.user.User;
 import com.example.whodo.domain.workOrder.WorkOrder;
+import com.example.whodo.features.hire.WorkOrderState.ConfState;
 import com.example.whodo.features.hire.WorkOrderState.OnEvalState;
 import com.example.whodo.features.hire.WorkOrderState.OpenState;
 import com.example.whodo.features.hire.WorkOrderState.PlannedState;
@@ -38,6 +39,7 @@ public class WorkOrderFragment extends Fragment {
     private View openStateDetail_vertLine;
     private View onEvalStateDetail_vertLine;
     private View plannedStateDetail_vertLine;
+    private View confStateDetail_vertLine;
     private LinearLayout onEvalStateDetail_LinearLayout;
     private LinearLayout plannedStateDetail_LinearLayout;
     private LinearLayout confStateDetail_LinearLayout;
@@ -70,6 +72,8 @@ public class WorkOrderFragment extends Fragment {
         plannedStateDetail_vertLine=root.findViewById(R.id.plannedStateDetail_vertLine);
 
         confStateDetail_LinearLayout=root.findViewById(R.id.confStateDetail_LinearLayout);
+        confStateDetail_vertLine=root.findViewById(R.id.confStateDetail_vertLine);
+
         diagStateDetail_LinearLayout=root.findViewById(R.id.diagStateDetail_LinearLayout);
         onProgStateDetail_LinearLayout=root.findViewById(R.id.onProgStateDetail_LinearLayout);
         doneStateDetail_LinearLayout=root.findViewById(R.id.doneStateDetail_LinearLayout);
@@ -92,6 +96,10 @@ public class WorkOrderFragment extends Fragment {
             String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
             orderId_label.setText(mOrderId);
             plannedStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
+        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "CONFIRMED")){
+            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
+            orderId_label.setText(mOrderId);
+            confStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
         }
 
 
@@ -110,7 +118,7 @@ public class WorkOrderFragment extends Fragment {
         mOpenStateItem.setSpinnerValues(mProviderServices);
         mOpenStateItem.setOnClickListener(v -> {
             assert mLoggedUser != null;
-            createOrder(mLoggedUser,
+            assignOrder(mLoggedUser,
                     mPickedProvider,
                     mOpenStateItem.getCategoryValue(),
                     mOpenStateItem.getDescriptionValue(),
@@ -121,7 +129,7 @@ public class WorkOrderFragment extends Fragment {
         openStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** OPEN STATE **********************************//
-    private void createOrder(User pCustomer,User pProvider ,String pCategory,String pDescription,Integer pLimitValue){
+    private void assignOrder(User pCustomer,User pProvider ,String pCategory,String pDescription,Integer pLimitValue){
         Long mTimeLimitDate = Utils.setDateToLong(Utils.increseDate(pLimitValue,new Date()));
         Long mCreationDate= Utils.setDateToLong(new Date());
         Long mStateChangeDate=Utils.setDateToLong(new Date());
@@ -151,7 +159,7 @@ public class WorkOrderFragment extends Fragment {
             Long mInspectionDate = Utils.setDateToLong(Utils.setStringToDate(mOnEvalStateItem.getMeetDate() +" "+ mOnEvalStateItem.getmeetTime()));
             Integer mInspectionCharges = Integer.valueOf(mOnEvalStateItem.getmeetTariff());
 
-            acceptDate(pWorkOrder.getOrderId(),
+            planDate(pWorkOrder.getOrderId(),
                        mInspectionDate,
                        mInspectionCharges);
             Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
@@ -163,7 +171,7 @@ public class WorkOrderFragment extends Fragment {
         onEvalStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** ON EVALUATION STATE **********************************//
-    private void acceptDate(String pWorkOrderID,Long pInspectionDate,Integer pInspectionCharges){
+    private void planDate(String pWorkOrderID,Long pInspectionDate,Integer pInspectionCharges){
         Long mStateChangeDate=Utils.setDateToLong(new Date());
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
@@ -177,7 +185,6 @@ public class WorkOrderFragment extends Fragment {
     private void plannedStateWorkOrder(WorkOrder pWorkOrder) {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
         String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
-        Integer mInspectionCharges = pWorkOrder.getInspectionCharges();
 
         mPlannedStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
         mPlannedStateItem.setProviderAddress("Direccion: "+ pWorkOrder.getProviderAddress());
@@ -188,7 +195,9 @@ public class WorkOrderFragment extends Fragment {
         mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
 
         mPlannedStateItem.setGenPaymentOrderButtonOCL(v -> { Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
-        mPlannedStateItem.setAcceptButtonOCL(v -> { Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    });
+        mPlannedStateItem.setAcceptButtonOCL(v -> {
+            confirmDate(pWorkOrder.getOrderId(),pWorkOrder.getInspectionPaymentOrder());
+            Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    } );
         mPlannedStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
         mPlannedStateItem.setInputLayoutEndIconOCL(v -> {  Log.d(TAG1, "BOTON COPIAR INVOICE PRESIONADO");   });
 
@@ -197,6 +206,60 @@ public class WorkOrderFragment extends Fragment {
         plannedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** PLANNED STATE **********************************//
+    private void confirmDate(String pWorkOrderID,String pPaymentOrderID){
+        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setInspectionPaymentOrder("pPaymentOrderID-123");
+        WO.setState("CONFIRMED");
+        WO.setStateChangeDate(mStateChangeDate);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
+    //********************************** CONFIRMED STATE **********************************//
+    private void confStateWorkOrder(WorkOrder pWorkOrder) {
+        ConfState mConfStateItem = new ConfState(requireContext());
+        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
+
+
+        mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
+        mConfStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
+        mConfStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
+
+        mConfStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
+        mConfStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
+
+        mConfStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
+        mConfStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
+        mConfStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
+
+
+        mConfStateItem.setPresentOrderButtonOCL(v -> {
+            Long mWorkStartDate =  Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkStartDate()));
+            Long mWorkEndDate = Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkEndDate()));
+            Integer mWorkJobCost = Integer.valueOf(mConfStateItem.getWorkJobCost()+Integer.valueOf(mConfStateItem.getWorkMaterialCost()));
+            String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
+
+            diagnoseOrder(pWorkOrder.getOrderId(),mWorkStartDate,mWorkEndDate,mWorkJobCost,mWorkTaskDetail);
+            Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");    } );
+
+        confStateDetail_LinearLayout.addView(mConfStateItem);
+        confStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
+        confStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
+    }
+    //********************************** CONFIRMED STATE **********************************//
+    private void diagnoseOrder(String pWorkOrderID,Long pWorkStartDate, Long pWorkEndDate, Integer pWorkCost, String pWorkDetail){
+        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setState("DIAGNOSED");
+        WO.setStateChangeDate(mStateChangeDate);
+        WO.setWorkStartDate(pWorkStartDate);
+        WO.setWorkEndDate(pWorkEndDate);
+        WO.setWorkCost(pWorkCost);
+        WO.setDetail(pWorkDetail);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
+
 
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {

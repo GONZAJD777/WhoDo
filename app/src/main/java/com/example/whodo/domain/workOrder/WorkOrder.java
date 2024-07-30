@@ -21,7 +21,6 @@ public class WorkOrder {
 
     private String Specialization; //Categoria del trabajo demandado
     private String Description;// Descripcion del trabajo a realizar por el cliente
-    private String Detail; // Bitacora de tareas y comentarios del proveedor
     private Long CreationDate; //Fecha y hora de creacion de la orden en formato YYYYMMDD24HHMMSS
     private Long TimeLimit; // Fecha y hora que hasta la cual la orden estara disponible para ser tomada por un proveedor
     private String State; //esta variable ira marcando el ciclo de vida de la orden, desde q se crea hasta q es cerrada el cambio de estado requerira acciones de Customer y provider.
@@ -33,7 +32,8 @@ public class WorkOrder {
     //WORK INFO
     private Long WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
     private Long WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
-    private String WorkCost;
+    private Integer WorkCost;
+    private String Detail; // Bitacora de tareas y comentarios del proveedor
     private String WorkPaymentOrder;
     private Long WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
     //SCORES
@@ -235,10 +235,10 @@ public class WorkOrder {
     }
     public void setWorkEndDate(Long pWorkEndDate){ WorkEndDate=pWorkEndDate; }
 
-    public String getWorkCost() {
+    public Integer getWorkCost() {
         return WorkCost;
     }
-    public void setWorkCost(String pWorkCost){ WorkCost=pWorkCost; }
+    public void setWorkCost(Integer pWorkCost){ WorkCost=pWorkCost; }
 
     public String getWorkPaymentOrder() {
         return WorkPaymentOrder;

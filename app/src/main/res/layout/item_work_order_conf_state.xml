@@ -16,18 +16,161 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <View
+            android:id="@+id/customerInfo_topDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/customer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Informacion del Cliente"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/customerName_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Nombre" />
+
+        <TextView
+            android:id="@+id/customerAddress_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Direccion"
+            />
+        <TextView
+            android:id="@+id/customerPhone_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Telefono" />
+
+
+        <View
+            android:id="@+id/customerInfo_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/orderDetail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de Orden"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/category_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Categoria" />
+
+        <TextView
+            android:id="@+id/description_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:text="Descripcion de trabajo: Cambiar Cuerito de canilla y arreglar canilla floja, ademas gotea " />
+        <View
+            android:id="@+id/orderDetail_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/dateDetail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de visita"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/meetDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Fecha de Cita: dd/mm/yyyy" />
+
+        <TextView
+            android:id="@+id/meetTime_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Horario de Cita: 24HH:mm hs" />
+
+        <TextView
+            android:id="@+id/meetTariff_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tarifa de Visita: 9999sat" />
+
+        <View
+            android:id="@+id/dateDetail_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/diagnostic_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Diagnostico"
+            android:textStyle="bold" />
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/meetDate_label"
+                android:id="@+id/workStartDate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fecha de Finalizacion" />
+                android:text="Fecha Inicio" />
 
             <EditText
-                android:id="@+id/meetDate_value"
+                android:id="@+id/workStartDate_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="dd/mm/yyyy"
+                android:inputType="date"
+                android:textSize="14sp" />
+
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/workEndDate_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha Finalizacion" />
+
+            <EditText
+                android:id="@+id/workEndDate_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="dd/mm/yyyy"
@@ -41,13 +184,13 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/meetTime_label"
+                android:id="@+id/materialCost_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Costo de Materiales" />
 
             <EditText
-                android:id="@+id/meetTariff_value"
+                android:id="@+id/workMaterialCost_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="1000sat"
@@ -61,30 +204,18 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/meetTariff_label"
+                android:id="@+id/jobCost_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Costo de Mano de Obra" />
 
             <EditText
-                android:id="@+id/meetTariff_value"
+                android:id="@+id/workJobCost_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="1000sat"
                 android:inputType="number"
                 android:textSize="14sp" />
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:id="@+id/invoice_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tareas a realizar" />
 
         </TableRow>
 
@@ -93,7 +224,7 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/DescriptionSimpleTextInputLayout"
+                android:id="@+id/workTaskDetail_inputLayout"
                 style="@style/CustomShapeAppearanceFrameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -108,7 +239,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <EditText
-                    android:id="@+id/description_value"
+                    android:id="@+id/workTaskDetail_value"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
@@ -120,6 +251,7 @@
                     android:paddingTop="0dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
+                    android:hint="Detalle de tareas a realizar"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -129,7 +261,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/acceptWorkOrder_button"
+                android:id="@+id/presentOrder_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
