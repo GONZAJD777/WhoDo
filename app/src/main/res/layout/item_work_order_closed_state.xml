@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <TableLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Informacion de CLIENTE -->
+        <View
+            android:id="@+id/customerInfo_topDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/customer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Informacion del Cliente"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/customerName_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Nombre" />
+
+        <TextView
+            android:id="@+id/customerAddress_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Direccion" />
+
+        <TextView
+            android:id="@+id/customerPhone_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Telefono" />
+        <!-- Informacion de CLIENTE -->
+
+        <!-- Informacion de PROVEEDOR -->
+        <View
+            android:id="@+id/providerInfo_topDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/provider_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Informacion del Proveedor"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/providerName_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Nombre" />
+
+        <TextView
+            android:id="@+id/providerAddress_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Direccion" />
+
+        <TextView
+            android:id="@+id/providerPhone_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Telefono" />
+        <!-- Informacion de PROVEEDOR -->
+
+        <!-- Informacion de PEDIDO -->
+        <View
+            android:id="@+id/customerInfo_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/orderDetail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de Orden"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/category_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Categoria" />
+
+        <TextView
+            android:id="@+id/description_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:text="Descripcion de trabajo: Cambiar Cuerito de canilla y arreglar canilla floja, ademas gotea " />
+
+        <!-- Informacion de PEDIDO -->
+        <View
+            android:id="@+id/orderDetail_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/dateDetail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de visita"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/meetDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Fecha de Cita: dd/mm/yyyy" />
+
+        <TextView
+            android:id="@+id/meetTime_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Horario de Cita: 24HH:mm hs" />
+
+        <TextView
+            android:id="@+id/meetTariff_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tarifa de Visita: 9999sat" />
+
+        <TextView
+            android:id="@+id/meetFee_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fee de la plataforma: 500sat" />
+
+        <View
+            android:id="@+id/dateDetail_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/detail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de Trabajo"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/workStartDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha Inicio: dd/mm/yyyy" />
+        <TextView
+            android:id="@+id/workEndDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha FIn: dd/mm/yyyy" />
+        <TextView
+            android:id="@+id/materialCost_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Costo de Materiales: 600000sat" />
+        <TextView
+            android:id="@+id/jobCost_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Costo Mano de Obra: 5000sat" />
+        <TextView
+            android:id="@+id/jobFee_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fee de la plataforma: 10000sat" />
+        <TextView
+            android:id="@+id/workDetail_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:text="Tareas a realizar:\n 1 - Cambiar Cuerito de canilla\n 2 - arreglar canilla floja, ademas gotea " />
+        <View
+            android:id="@+id/providerRating_topDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/providerRating_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Califica a tu Trabajador"
+            android:textStyle="bold" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/providerAppereance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Presentacion personal" />
+
+            <RatingBar
+                android:id="@+id/providerAppereance_ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:indeterminateOnly="false"
+                android:isIndicator="true"
+                android:max="5"
+                android:mirrorForRtl="true"
+                android:progress="1"
+                android:stepSize="1" />
+
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/providerCleanliness_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Limpieza del trabajo" />
+
+            <RatingBar
+                android:id="@+id/providerCleanliness_ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:isIndicator="true"
+                android:max="5"
+                android:progress="1"
+                android:stepSize="1" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/providerSpeed_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Calidad del trabajo" />
+
+            <RatingBar
+                android:id="@+id/providerSpeed_ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:isIndicator="true"
+                android:max="5"
+                android:progress="1"
+                android:stepSize="1" />
+
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/providerQualityScore_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Velocidad del trabajo" />
+
+            <RatingBar
+                android:id="@+id/providerQualityScore_ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:isIndicator="true"
+                android:max="5"
+                android:progress="1"
+                android:stepSize="1" />
+
+        </TableRow>
+
+        <View
+            android:id="@+id/providerRating_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/providerReview_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:text="Reseña del Cliente:\n Excelente, rapido y barato, muy recomendable. " />
+        <View
+            android:id="@+id/providerReview_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/warranty_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="GARANTIA"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/warrantyMessage_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Tiene hasta la siguiente fecha para iniciar el reclamo por alguna falla en el servicio prestado, que no pudiera ser resuelto entre las partes." />
+
+        <TextView
+            android:id="@+id/warrantyEndDate_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Fin de periodo de garantia: dd/mm/yyyy" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/presentOrder_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="presentar" />
+
+
+        </LinearLayout>
+    </TableLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
