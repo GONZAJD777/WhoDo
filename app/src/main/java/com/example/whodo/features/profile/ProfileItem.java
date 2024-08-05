@@ -1,4 +1,4 @@
-package com.example.whodo.uiClasses;
+package com.example.whodo.features.profile;
 
 import android.content.Context;
 import android.view.KeyEvent;

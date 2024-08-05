@@ -12,13 +12,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.whodo.R;
-import com.example.whodo.features.activity.ActivityFrag_ViewPagerAdapter;
-import com.example.whodo.features.activity.ActivityViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 
-public class MainActivityFragment extends Fragment {
+public class ActivityFragment extends Fragment {
 
     private static final String TAG = "TAG-1";
     private ActivityViewModel activityViewModel;

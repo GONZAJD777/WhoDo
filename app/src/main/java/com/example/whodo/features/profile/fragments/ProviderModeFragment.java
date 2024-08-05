@@ -25,8 +25,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.whodo.domain.user.User;
 import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.R;
-import com.example.whodo.uiClasses.ProfileItem;
-import com.example.whodo.uiClasses.ProfileSwitchItem;
+import com.example.whodo.features.profile.ProfileItem;
+import com.example.whodo.features.profile.ProfileSwitchItem;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

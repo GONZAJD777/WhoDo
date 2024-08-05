@@ -29,7 +29,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.whodo.domain.user.User;
 import com.example.whodo.uiClasses.CustomDatePicker;
 import com.example.whodo.R;
-import com.example.whodo.uiClasses.ProfileItem;
+import com.example.whodo.features.profile.ProfileItem;
 import com.example.whodo.aplication.MainActivityViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

@@ -1,4 +1,4 @@
-package com.example.whodo.features.hire.WorkOrderState;
+package com.example.whodo.features.activity.workOrder.workOrderState;
 
 import android.content.Context;
 import android.view.View;
@@ -8,7 +8,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.whodo.R;
-import com.example.whodo.uiClasses.ProfileItem;
 
 public class OnProgState extends RelativeLayout {
 

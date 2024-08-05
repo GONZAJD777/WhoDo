@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +27,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.whodo.R;
 import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.aplication.SingletonUser;
-import com.example.whodo.uiClasses.ProfileItem;
+import com.example.whodo.features.profile.ProfileItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;

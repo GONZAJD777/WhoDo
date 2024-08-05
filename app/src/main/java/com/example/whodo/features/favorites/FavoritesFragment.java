@@ -11,11 +11,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.whodo.R;
-import com.example.whodo.features.favorites.FavoritesFrag_ViewPagerAdapter;
-import com.example.whodo.features.favorites.FavoritesViewModel;
 import com.google.android.material.tabs.TabLayout;
 
-public class MainFavoritesFragment extends Fragment {
+public class FavoritesFragment extends Fragment {
 
     private static final String TAG = "TAG-1";
     private ViewPager2 Favorites_ViewPager;

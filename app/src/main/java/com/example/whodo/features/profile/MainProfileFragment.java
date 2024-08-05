@@ -22,7 +22,6 @@ import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.domain.user.User;
 import com.example.whodo.features.login.LoginActivity;
 import com.example.whodo.R;
-import com.example.whodo.uiClasses.ProfileItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 

@@ -1,6 +1,4 @@
-package com.example.whodo.features.hire;
-
-import static com.example.whodo.utils.Utils.setStringToDate;
+package com.example.whodo.features.activity.workOrder;
 
 import android.annotation.SuppressLint;
 import android.graphics.PorterDuff;
@@ -21,14 +19,15 @@ import com.example.whodo.R;
 import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.domain.user.User;
 import com.example.whodo.domain.workOrder.WorkOrder;
-import com.example.whodo.features.hire.WorkOrderState.ClosedState;
-import com.example.whodo.features.hire.WorkOrderState.ConfState;
-import com.example.whodo.features.hire.WorkOrderState.DiagState;
-import com.example.whodo.features.hire.WorkOrderState.DoneState;
-import com.example.whodo.features.hire.WorkOrderState.OnEvalState;
-import com.example.whodo.features.hire.WorkOrderState.OnProgState;
-import com.example.whodo.features.hire.WorkOrderState.OpenState;
-import com.example.whodo.features.hire.WorkOrderState.PlannedState;
+import com.example.whodo.features.activity.workOrder.workOrderState.ClosedState;
+import com.example.whodo.features.activity.workOrder.workOrderState.ConfState;
+import com.example.whodo.features.activity.workOrder.workOrderState.DiagState;
+import com.example.whodo.features.activity.workOrder.workOrderState.DoneState;
+import com.example.whodo.features.activity.workOrder.workOrderState.OnEvalState;
+import com.example.whodo.features.activity.workOrder.workOrderState.OnProgState;
+import com.example.whodo.features.activity.workOrder.workOrderState.OpenState;
+import com.example.whodo.features.activity.workOrder.workOrderState.PlannedState;
+import com.example.whodo.features.hire.HireFragmentViewModel;
 import com.example.whodo.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

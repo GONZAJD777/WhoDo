@@ -1,4 +1,4 @@
-package com.example.whodo.uiClasses;
+package com.example.whodo.features.hire;
 
 
 import android.content.Context;

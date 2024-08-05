@@ -15,13 +15,13 @@ import com.example.whodo.domain.workOrder.WorkOrderDTO;
 import com.example.whodo.domain.workOrder.WorkOrderMapper;
 import com.example.whodo.domain.workOrder.dao.FirebaseWorkOrderDAO;
 import com.example.whodo.domain.workOrder.dao.WorkOrderDao;
-import com.example.whodo.features.favorites.MainFavoritesFragment;
+import com.example.whodo.features.favorites.FavoritesFragment;
 import com.example.whodo.features.hire.MainHireFragment;
-import com.example.whodo.features.hire.WorkOrderFragment;
+import com.example.whodo.features.activity.workOrder.WorkOrderFragment;
 import com.example.whodo.features.messages.MainMessagesFragment;
 import com.example.whodo.features.profile.MainProfileFragment;
 import com.example.whodo.domain.user.User;
-import com.example.whodo.features.activity.MainActivityFragment;
+import com.example.whodo.features.activity.ActivityFragment;
 import com.example.whodo.features.profile.fragments.CommentsFragment;
 import com.example.whodo.features.profile.fragments.EditProfileFragment;
 import com.example.whodo.features.profile.fragments.LegalTermsFragment;
@@ -131,8 +131,8 @@ public class MainActivityViewModel extends ViewModel {
         switch (pTab)
         {
             case 0:  mFragmentSelected.setValue(new MainHireFragment()); break;
-            case 1:  mFragmentSelected.setValue(new MainFavoritesFragment()); break;
-            case 2:  mFragmentSelected.setValue(new MainActivityFragment()); break;
+            case 1:  mFragmentSelected.setValue(new FavoritesFragment()); break;
+            case 2:  mFragmentSelected.setValue(new ActivityFragment()); break;
             case 3:  mFragmentSelected.setValue(new MainMessagesFragment()); break;
             case 4:  mFragmentSelected.setValue(new MainProfileFragment()); break;
             case 5:  mFragmentSelected.setValue(new EditProfileFragment()); break;
