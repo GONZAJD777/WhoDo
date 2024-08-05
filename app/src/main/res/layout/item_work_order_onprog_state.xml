@@ -2,11 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-
-    >
+    android:layout_height="match_parent">
 
     <TableLayout
         android:layout_width="0dp"
@@ -16,81 +13,117 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TableRow
+        <!-- Informacion de cliente -->
+        <View
+            android:id="@+id/customerInfo_topDivider"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/meetDate_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fecha Limite" />
-
-            <TextView
-                android:id="@+id/meetDate_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="dd/mm/yyyy"
-                android:inputType="date"
-                android:textSize="14sp" />
-
-        </TableRow>
-
-        <TableRow
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/customer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Informacion del Cliente"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/customerName_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Nombre" />
+        <TextView
+            android:id="@+id/customerAddress_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Direccion"
+            />
+        <TextView
+            android:id="@+id/customerPhone_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:text="Telefono" />
+        <View
+            android:id="@+id/customerInfo_bottomDivider"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <!-- **************************** -->
 
-            <TextView
-                android:id="@+id/invoice_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bitacora de Tareas" />
+        <!-- Informacion del Trabajo a realizar -->
+        <View
+            android:id="@+id/providerInfo_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/detail_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Detalle de Trabajo"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/workStartDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha Inicio: dd/mm/yyyy" />
+        <TextView
+            android:id="@+id/workEndDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha FIn: dd/mm/yyyy" />
+        <TextView
+            android:id="@+id/materialCost_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Costo de Materiales" />
+        <TextView
+            android:id="@+id/jobCost_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Costo Mano de Obra" />
+        <TextView
+            android:id="@+id/jobFee_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comision de Plataforma" />
+        <TextView
+            android:id="@+id/workDetail_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
-        </TableRow>
+            android:text="Tareas a realizar:\n 1 - Cambiar Cuerito de canilla\n 2 - arreglar canilla floja, ademas gotea " />
+        <View
+            android:id="@+id/orderDetail_bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <!-- **************************** -->
 
+        <!-- Boton Finalizar Orden -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/DescriptionSimpleTextInputLayout"
-                style="@style/CustomShapeAppearanceFrameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="14dp"
-                app:boxBackgroundMode="none"
-                app:counterEnabled="true"
-                app:counterMaxLength="200"
-                app:endIconMode="clear_text"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <EditText
-                    android:id="@+id/description_value"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:background="@android:color/transparent"
-                    android:gravity="start|top"
-                    android:inputType="textMultiLine"
-                    android:lines="5"
-                    android:maxLength="200"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
-                    android:singleLine="true"
-                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
             <Button
-                android:id="@+id/acceptWorkOrder_button"
+                android:id="@+id/finishWorkOrder_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -98,6 +131,7 @@
 
 
         </LinearLayout>
+        <!-- **************************** -->
     </TableLayout>
 
 

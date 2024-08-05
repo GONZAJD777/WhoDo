@@ -39,10 +39,10 @@ public class WorkOrderDTO {
     private Long WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
     //SCORES
     private String Impressions;
-    private String AppereanceScore;
-    private String CleanlinessScore;
-    private String SpeedScore;
-    private String QualityScore;
+    private Integer AppereanceScore;
+    private Integer CleanlinessScore;
+    private Integer SpeedScore;
+    private Integer QualityScore;
 
     public WorkOrderDTO() {}
 
@@ -199,25 +199,25 @@ public class WorkOrderDTO {
     }
     public void setImpressions(String pImpressions){ Impressions=pImpressions; }
 
-    public String getAppereanceScore() {
+    public Integer getAppereanceScore() {
         return AppereanceScore;
     }
-    public void setAppereanceScore(String pAppereanceScore){ AppereanceScore=pAppereanceScore; }
+    public void setAppereanceScore(Integer pAppereanceScore){ AppereanceScore=pAppereanceScore; }
 
-    public String getCleanlinessScore() {
+    public Integer getCleanlinessScore() {
         return CleanlinessScore;
     }
-    public void setCleanlinessScore(String pCleanlinessScore){ CleanlinessScore=pCleanlinessScore; }
+    public void setCleanlinessScore(Integer pCleanlinessScore){ CleanlinessScore=pCleanlinessScore; }
 
-    public String getSpeedScore() {
+    public Integer getSpeedScore() {
         return SpeedScore;
     }
-    public void setSpeedScore(String pSpeedScore){ SpeedScore=pSpeedScore; }
+    public void setSpeedScore(Integer pSpeedScore){ SpeedScore=pSpeedScore; }
 
-    public String getQualityScore() {
+    public Integer getQualityScore() {
         return QualityScore;
     }
-    public void setQualityScore(String pQualityScore){ QualityScore=pQualityScore; }
+    public void setQualityScore(Integer pQualityScore){ QualityScore=pQualityScore; }
 
 
 }

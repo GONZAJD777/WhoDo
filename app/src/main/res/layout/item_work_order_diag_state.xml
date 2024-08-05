@@ -15,6 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <View
             android:id="@+id/providerInfo_topDivider"
             android:layout_width="match_parent"
@@ -23,7 +24,6 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:background="?android:attr/listDivider" />
-
         <TextView
             android:id="@+id/provider_label"
             android:layout_width="wrap_content"
@@ -31,7 +31,6 @@
             android:gravity="center"
             android:text="Informacion del Proveedor"
             android:textStyle="bold" />
-
         <TextView
             android:id="@+id/providerName_label"
             android:layout_width="wrap_content"
@@ -39,7 +38,6 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:text="Nombre" />
-
         <TextView
             android:id="@+id/providerAddress_label"
             android:layout_width="wrap_content"
@@ -55,8 +53,6 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:text="Telefono" />
-
-
         <View
             android:id="@+id/providerInfo_bottomDivider"
             android:layout_width="match_parent"
@@ -65,6 +61,7 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:background="?android:attr/listDivider" />
+
         <TextView
             android:id="@+id/detail_label"
             android:layout_width="wrap_content"
@@ -82,7 +79,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Fecha FIn: dd/mm/yyyy" />
-
         <TextView
             android:id="@+id/materialCost_label"
             android:layout_width="wrap_content"
@@ -93,14 +89,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Costo Mano de Obra" />
-
+        <TextView
+            android:id="@+id/jobFee_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comision de Plataforma" />
         <TextView
             android:id="@+id/workDetail_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
 
             android:text="Tareas a realizar:\n 1 - Cambiar Cuerito de canilla\n 2 - arreglar canilla floja, ademas gotea " />
-
         <View
             android:id="@+id/orderDetail_bottomDivider"
             android:layout_width="match_parent"
@@ -109,6 +108,7 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:background="?android:attr/listDivider" />
+
         <TextView
             android:id="@+id/dateDetail_label"
             android:layout_width="wrap_content"
@@ -133,6 +133,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Generar" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/invoice_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Copia la cadena en tu billetera de Lightning Network para realizar el pago" />
+
+
+
         </TableRow>
         <LinearLayout
             android:layout_width="match_parent"

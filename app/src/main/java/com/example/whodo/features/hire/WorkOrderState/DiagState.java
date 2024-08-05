@@ -21,6 +21,7 @@ public class DiagState extends RelativeLayout {
     private TextView workEndDate_label;
     private TextView materialCost_label;
     private TextView jobCost_label;
+    private TextView jobFee_label;
     private TextView workDetail_label;
 
     private TextView paymentOrder_label;
@@ -44,6 +45,7 @@ public class DiagState extends RelativeLayout {
         workEndDate_label=root.findViewById(R.id.workEndDate_label);
         materialCost_label=root.findViewById(R.id.materialCost_label);
         jobCost_label=root.findViewById(R.id.jobCost_label);
+        jobFee_label=root.findViewById(R.id.jobFee_label);
         workDetail_label=root.findViewById(R.id.workDetail_label);
 
         paymentOrder_label=root.findViewById(R.id.paymentOrder_label);
@@ -63,6 +65,7 @@ public class DiagState extends RelativeLayout {
     public void setWorkEndDate(String pWorkEndDate) { this.workEndDate_label.setText(pWorkEndDate); }
     public void setMaterialCost(String pMaterialCost) { this.materialCost_label.setText(pMaterialCost); }
     public void setJobCost(String pJobCost) { this.jobCost_label.setText(pJobCost); }
+    public void setJobFee(String pJobFee) { this.jobFee_label.setText(pJobFee);  }
     public void setWorkDetail(String pWorkDetail) { this.workDetail_label.setText(pWorkDetail); }
 
 
@@ -82,5 +85,6 @@ public class DiagState extends RelativeLayout {
     public void setRejectButtonOCL(OnClickListener OCL) {
         rejectWorkOrder_button.setOnClickListener(OCL);
     }
+
 
 }

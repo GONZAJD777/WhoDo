@@ -25,6 +25,7 @@ public class WorkOrder {
     private Long TimeLimit; // Fecha y hora que hasta la cual la orden estara disponible para ser tomada por un proveedor
     private String State; //esta variable ira marcando el ciclo de vida de la orden, desde q se crea hasta q es cerrada el cambio de estado requerira acciones de Customer y provider.
     private Long StateChangeDate; //Fecha y hora del ultimo cambio de estado en formato YYYYMMDD24HHMMSS
+    
     //INSPECTION INFO
     private Long InspectionDate; //Fecha y hora de cita de inspeccion en formato YYYYMMDD24HHMMSS
     private Integer InspectionCharges; //Cargo por la visita para inspeccion, es opcional
@@ -37,11 +38,11 @@ public class WorkOrder {
     private String WorkPaymentOrder;
     private Long WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
     //SCORES
-    private String Impressions;
-    private String AppereanceScore;
-    private String CleanlinessScore;
-    private String SpeedScore;
-    private String QualityScore;
+    private String Impressions; //Review
+    private Integer AppereanceScore;
+    private Integer CleanlinessScore;
+    private Integer SpeedScore;
+    private Integer QualityScore;
 
     public WorkOrder() {}
 
@@ -256,25 +257,25 @@ public class WorkOrder {
     }
     public void setImpressions(String pImpressions){ Impressions=pImpressions; }
 
-    public String getAppereanceScore() {
+    public Integer getAppereanceScore() {
         return AppereanceScore;
     }
-    public void setAppereanceScore(String pAppereanceScore){ AppereanceScore=pAppereanceScore; }
+    public void setAppereanceScore(Integer pAppereanceScore){ AppereanceScore=pAppereanceScore; }
 
-    public String getCleanlinessScore() {
+    public Integer getCleanlinessScore() {
         return CleanlinessScore;
     }
-    public void setCleanlinessScore(String pCleanlinessScore){ CleanlinessScore=pCleanlinessScore; }
+    public void setCleanlinessScore(Integer pCleanlinessScore){ CleanlinessScore=pCleanlinessScore; }
 
-    public String getSpeedScore() {
+    public Integer getSpeedScore() {
         return SpeedScore;
     }
-    public void setSpeedScore(String pSpeedScore){ SpeedScore=pSpeedScore; }
+    public void setSpeedScore(Integer pSpeedScore){ SpeedScore=pSpeedScore; }
 
-    public String getQualityScore() {
+    public Integer getQualityScore() {
         return QualityScore;
     }
-    public void setQualityScore(String pQualityScore){ QualityScore=pQualityScore; }
+    public void setQualityScore(Integer pQualityScore){ QualityScore=pQualityScore; }
 
 
 }

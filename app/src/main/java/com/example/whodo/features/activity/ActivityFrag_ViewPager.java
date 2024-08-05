@@ -19,23 +19,24 @@ import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.domain.workOrder.WorkOrder;
 import com.example.whodo.utils.Utils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 
-public class ViewPagerFragment extends Fragment {
+public class ActivityFrag_ViewPager extends Fragment {
 
     private Integer FragType=0;
 
     private LinearLayout LinearLayoutItems;
-    private View ItemMessage;
-    private View ItemFavoritesItem;
-    private View ItemNotificactions;
 
     private MainActivityViewModel mMainActivityViewModel;
 
-    public ViewPagerFragment(){}
-    public ViewPagerFragment(Integer Ft) {
+    private final String [] mStates = {"ONEVALUATION","CONFIRMED","ONPROGRESS","PLANNED","DIAGNOSED"};
+
+
+    public ActivityFrag_ViewPager(){}
+    public ActivityFrag_ViewPager(Integer Ft) {
         FragType=Ft;
     }
 
@@ -51,62 +52,35 @@ public class ViewPagerFragment extends Fragment {
 
         mMainActivityViewModel.getWorkOrder().observe(getViewLifecycleOwner(),this::addFragments);
 
-
-        ItemMessage = inflater.inflate(R.layout.item_messages,container,false);
-        ItemNotificactions = inflater.inflate(R.layout.item_notifications,container,false);
-        ItemFavoritesItem = inflater.inflate(R.layout.item_favorites,container,false);
-
-
-
         return root;
     }
 
     private void addFragments(List<WorkOrder> workOrders) {
         LinearLayoutItems.removeAllViews();
-        if (FragType==1) {addFavoritesItem();}
-
-        if (FragType==2) {
+        if (FragType==0) {
             for (WorkOrder mWorkOrder : workOrders) {
-                addPendingItem(mWorkOrder);
+                if (Arrays.asList(mStates).contains(mWorkOrder.getState()) ) {
+                    addActivityItem(mWorkOrder);
+                }
             }
         }
-
-        if (FragType==3) {addClosedItem();}
-
-        if (FragType==4) {addCanceledItem();}
-
-        if (FragType==5) {addMessageItem();}
-
-        if (FragType==6) {addNotificationItem();}
+        if (FragType==1) {
+            for (WorkOrder mWorkOrder : workOrders) {
+                if (Objects.equals(mWorkOrder.getState(), "DONE")) {
+                    addActivityItem(mWorkOrder);
+                }
+            }
+        }
+        if (FragType==2) {
+            for (WorkOrder mWorkOrder : workOrders) {
+                if (Objects.equals(mWorkOrder.getState(), "CLOSED")) {
+                    addActivityItem(mWorkOrder);
+                }
+            }
+        }
     }
 
-
-    @SuppressLint("SetTextI18n")
-    private void addFavoritesItem (){
-        TextView textView_Name = ItemFavoritesItem.findViewById(R.id.textView_Name);
-        TextView textView_Reviews = ItemFavoritesItem.findViewById(R.id.textView_Reviews);
-        TextView textView_PricePercent = ItemFavoritesItem.findViewById(R.id.textView_PricePercent);
-        TextView textView_Speed = ItemFavoritesItem.findViewById(R.id.textView_Speed);
-        TextView textView_Spec = ItemFavoritesItem.findViewById(R.id.textView_Spec);
-        Log.d("addFavoritesItem", "MessageItem agregar item");
-        textView_Name.setText("Ricardo Fleitas");
-        textView_Reviews.setText("4.3 (135)");
-        textView_PricePercent.setText("1500 (4%)");
-        textView_Speed.setText("6.5 dias (103)");
-        textView_Spec.setText("ELECTRICIDAD/PLOMERIA");
-        LinearLayoutItems.addView(ItemFavoritesItem);
-
-    }
-
-    private void addClosedItem (){
-
-    }
-
-    private void addCanceledItem (){
-
-    }
-
-    private void addPendingItem (WorkOrder pWorkOrder){
+    private void addActivityItem (WorkOrder pWorkOrder){
         ActivityWorkOrderItem mActivityWorkOrderItem = new ActivityWorkOrderItem(requireContext());
         String mWorkOrderType;
         String mCustomerStates = "PLANNED,DIAGNOSED,DONE";
@@ -140,37 +114,6 @@ public class ViewPagerFragment extends Fragment {
             }
         });
         LinearLayoutItems.addView(mActivityWorkOrderItem);
-
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void addMessageItem (){
-        TextView textView_Name = ItemMessage.findViewById(R.id.textView_Name);
-        TextView textView_Date = ItemMessage.findViewById(R.id.textView_Date);
-        TextView textView_Message = ItemMessage.findViewById(R.id.textView_Message);
-        TextView textView_Status = ItemMessage.findViewById(R.id.textView_Status);
-        Log.d("addMessageItem", "MessageItem agregar item");
-        textView_Name.setText("Fernanda");
-        textView_Message.setText("Cagaste fuego, ya esta ocupada campeon pero tengo esta entre las piernas donde podes entrar");
-        textView_Date.setText("1 de Junio de 2021");
-        textView_Status.setText("No disponible, 1 de Junio 2021 - 10 de Junio 2021");
-        LinearLayoutItems.addView(ItemMessage);
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void addNotificationItem (){
-        TextView textView_Label = ItemNotificactions.findViewById(R.id.textView_Label);
-        TextView textView_DayDate = ItemNotificactions.findViewById(R.id.textView_DayDate);
-        TextView textView_DayMonthYear = ItemNotificactions.findViewById(R.id.textView_DayMonthYear);
-        TextView textView_Notification = ItemNotificactions.findViewById(R.id.textView_Notification);
-        TextView textView_Hour = ItemNotificactions.findViewById(R.id.textView_Hour);
-        Log.d("addNotificationItem", "MessageItem agregar item");
-        textView_Label.setText("Notificacion");
-        textView_DayDate.setText("07");
-        textView_DayMonthYear.setText("Oct 2021");
-        textView_Notification.setText("Tienes una cita con Ricardo Fleitas PLOMERO/ELECTRICISTA el dia y hora indicada.");
-        textView_Hour.setText("11:00");
-        LinearLayoutItems.addView(ItemNotificactions);
 
     }
 

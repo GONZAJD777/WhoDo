@@ -27,6 +27,8 @@ public class OnEvalState extends RelativeLayout {
     private EditText meetDate_value;
     private EditText meetTime_value;
     private EditText meetTariff_value;
+    private TextView meetFee_label;
+
 
     private Button acceptWorkOrder_button;
     private Button rejectWorkOrder_button;
@@ -49,6 +51,8 @@ public class OnEvalState extends RelativeLayout {
         meetDate_value=root.findViewById(R.id.meetDate_value);
         meetTime_value=root.findViewById(R.id.meetTime_value);
         meetTariff_value=root.findViewById(R.id.meetTariff_value);
+        meetFee_label=root.findViewById(R.id.meetFee_label);
+
 
         acceptWorkOrder_button=root.findViewById(R.id.acceptWorkOrder_button);
         rejectWorkOrder_button=root.findViewById(R.id.rejectWorkOrder_button);
@@ -65,6 +69,8 @@ public class OnEvalState extends RelativeLayout {
     public String getMeetDate(){ return meetDate_value.getText().toString(); }
     public String getmeetTime(){ return meetTime_value.getText().toString(); }
     public String getmeetTariff(){ return meetTariff_value.getText().toString(); }
+    public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
+
 
     public void setAcceptButtonOCL(OnClickListener OCL) {
         acceptWorkOrder_button.setOnClickListener(OCL);

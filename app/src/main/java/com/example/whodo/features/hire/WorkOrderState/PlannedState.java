@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.whodo.R;
+import com.example.whodo.uiClasses.ProfileItem;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class PlannedState extends RelativeLayout {
@@ -20,6 +21,8 @@ public class PlannedState extends RelativeLayout {
     private TextView meetDate_label;
     private TextView meetTime_label;
     private TextView meetTariff_label;
+    private TextView meetFee_label;
+
 
     private TextView paymentOrder_label;
     private EditText invoice_value;
@@ -40,6 +43,7 @@ public class PlannedState extends RelativeLayout {
         meetDate_label= root.findViewById(R.id.meetDate_label);
         meetTime_label= root.findViewById(R.id.meetTime_label);
         meetTariff_label= root.findViewById(R.id.meetTariff_label);
+        meetFee_label=root.findViewById(R.id.meetFee_label);
 
         paymentOrder_label= root.findViewById(R.id.paymentOrder_label);
         invoice_value= root.findViewById(R.id.invoice_value);
@@ -58,6 +62,8 @@ public class PlannedState extends RelativeLayout {
     public void setMeetDate(String pMeetDate) { this.meetDate_label.setText(pMeetDate); }
     public void setMeetTime(String pMeetTime) { this.meetTime_label.setText(pMeetTime); }
     public void setMeetTariff(String pMeetTariff) { this.meetTariff_label.setText(pMeetTariff); }
+    public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
+
 
     public void setPaymentOrder(String pPaymentOrder) { this.paymentOrder_label.setText(pPaymentOrder); }
     public void setInvoice(String pInvoice) { this.invoice_value.setText(pInvoice); }

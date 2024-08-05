@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.whodo.R;
+import com.example.whodo.uiClasses.ProfileItem;
 
 public class ConfState extends RelativeLayout {
 
@@ -22,13 +23,16 @@ public class ConfState extends RelativeLayout {
     private TextView meetDate_label;
     private TextView meetTime_label;
     private TextView meetTariff_label;
+    private TextView meetFee_label;
 
     private EditText workStartDate_value;
     private EditText workEndDate_value;
     private EditText workMaterialCost_value;
     private EditText workJobCost_value;
+    private TextView jobFee_label;
     private EditText workTaskDetail_value;
     private Button presentOrder_button;
+
 
     public ConfState(Context context) {
         super(context);
@@ -44,11 +48,13 @@ public class ConfState extends RelativeLayout {
         meetDate_label= root.findViewById(R.id.meetDate_label);
         meetTime_label= root.findViewById(R.id.meetTime_label);
         meetTariff_label= root.findViewById(R.id.meetTariff_label);
+        meetFee_label= root.findViewById(R.id.meetFee_label);
 
         workStartDate_value= root.findViewById(R.id.workStartDate_value);
         workEndDate_value= root.findViewById(R.id.workEndDate_value);
         workMaterialCost_value= root.findViewById(R.id.workMaterialCost_value);
         workJobCost_value= root.findViewById(R.id.workJobCost_value);
+        jobFee_label= root.findViewById(R.id.jobFee_label);
         workTaskDetail_value= root.findViewById(R.id.workTaskDetail_value);
 
         presentOrder_button= root.findViewById(R.id.presentOrder_button);
@@ -64,12 +70,15 @@ public class ConfState extends RelativeLayout {
     public void setMeetDate(String pMeetDate) { this.meetDate_label.setText(pMeetDate); }
     public void setMeetTime(String pMeetTime) { this.meetTime_label.setText(pMeetTime); }
     public void setMeetTariff(String pMeetTariff) { this.meetTariff_label.setText(pMeetTariff); }
+    public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
 
     public String getWorkStartDate(){ return workStartDate_value.getText().toString(); }
     public String getWorkEndDate(){ return workEndDate_value.getText().toString(); }
     public String getWorkMaterialCost(){ return workMaterialCost_value.getText().toString(); }
     public String getWorkJobCost(){ return workJobCost_value.getText().toString(); }
     public String getWorkTaskDetail(){ return workTaskDetail_value.getText().toString(); }
+    public void setJobFee(String pJobFee) { this.jobFee_label.setText(pJobFee); }
+
 
     public void setPresentOrderButtonOCL(OnClickListener OCL) {
         presentOrder_button.setOnClickListener(OCL);

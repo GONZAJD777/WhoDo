@@ -124,6 +124,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tarifa de Visita: 9999sat" />
+        <TextView
+            android:id="@+id/meetFee_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comision de Plataforma" />
 
         <View
             android:id="@+id/dateDetail_bottomDivider"
@@ -218,7 +223,11 @@
                 android:textSize="14sp" />
 
         </TableRow>
-
+        <TextView
+            android:id="@+id/jobFee_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comision de Plataforma" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">

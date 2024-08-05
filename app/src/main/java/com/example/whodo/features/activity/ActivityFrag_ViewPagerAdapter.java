@@ -21,18 +21,12 @@ public class ActivityFrag_ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position)
         {
-            case 0: return new ViewPagerFragment(2);
-            case 1: return new ViewPagerFragment(3);
-            case 2: return new ViewPagerFragment(4);
-
-
-            //adapter.addFrag(new ViewPagerFragment(1), "");
-            //adapter.addFrag(new ViewPagerFragment(5), "Messages");
-            //adapter.addFrag(new ViewPagerFragment(6), "Notifications");
-
+            case 0: return new ActivityFrag_ViewPager(0);
+            case 1: return new ActivityFrag_ViewPager(1);
+            case 2: return new ActivityFrag_ViewPager(2);
         }
 
-        return new ViewPagerFragment(2);
+        return new ActivityFrag_ViewPager(2);
     }
     //cuenta la cantidad de items en el array Titles
     @Override

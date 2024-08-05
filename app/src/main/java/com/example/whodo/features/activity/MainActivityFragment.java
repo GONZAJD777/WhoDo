@@ -25,7 +25,7 @@ public class MainActivityFragment extends Fragment {
     private TextView textView1;
     private ViewPager2 Activity_ViewPager;
     private TabLayout Activity_TabLayout;
-    private final String[] Titles = new String[]{"Pendientes","Finalizadas","Canceladas"};
+    private final String[] Titles = new String[]{"En Curso","Finalizadas","Cerradas"};
     private ActivityFrag_ViewPagerAdapter Activity_ViewPagerAdapterFrag;
 
 

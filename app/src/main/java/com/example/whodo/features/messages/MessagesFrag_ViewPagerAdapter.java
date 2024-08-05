@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.whodo.features.activity.ViewPagerFragment;
+import com.example.whodo.features.activity.ActivityFrag_ViewPager;
 
 
 public class MessagesFrag_ViewPagerAdapter extends FragmentStateAdapter {
@@ -23,12 +23,12 @@ public class MessagesFrag_ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new ViewPagerFragment(5);
+                return new MessagesFrag_ViewPager(0);
             case 1:
-                return new ViewPagerFragment(6);
+                return new MessagesFrag_ViewPager(1);
 
         }
-        return new ViewPagerFragment(5);
+        return new MessagesFrag_ViewPager(0);
     }
     //cuenta la cantidad de items en el array Titles
     @Override

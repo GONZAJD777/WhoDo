@@ -21,9 +21,12 @@ import com.example.whodo.R;
 import com.example.whodo.aplication.MainActivityViewModel;
 import com.example.whodo.domain.user.User;
 import com.example.whodo.domain.workOrder.WorkOrder;
+import com.example.whodo.features.hire.WorkOrderState.ClosedState;
 import com.example.whodo.features.hire.WorkOrderState.ConfState;
 import com.example.whodo.features.hire.WorkOrderState.DiagState;
+import com.example.whodo.features.hire.WorkOrderState.DoneState;
 import com.example.whodo.features.hire.WorkOrderState.OnEvalState;
+import com.example.whodo.features.hire.WorkOrderState.OnProgState;
 import com.example.whodo.features.hire.WorkOrderState.OpenState;
 import com.example.whodo.features.hire.WorkOrderState.PlannedState;
 import com.example.whodo.utils.Utils;
@@ -37,10 +40,6 @@ public class WorkOrderFragment extends Fragment {
     private HireFragmentViewModel mHireFragmentViewModel;
     private MainActivityViewModel mMainActivityViewModel;
     private LinearLayout openStateDetail_LinearLayout;
-    private View openStateDetail_vertLine;
-    private View onEvalStateDetail_vertLine;
-    private View plannedStateDetail_vertLine;
-    private View confStateDetail_vertLine;
     private LinearLayout onEvalStateDetail_LinearLayout;
     private LinearLayout plannedStateDetail_LinearLayout;
     private LinearLayout confStateDetail_LinearLayout;
@@ -48,6 +47,14 @@ public class WorkOrderFragment extends Fragment {
     private LinearLayout onProgStateDetail_LinearLayout;
     private LinearLayout doneStateDetail_LinearLayout;
     private LinearLayout closedStateDetail_LinearLayout;
+    private View openStateDetail_vertLine;
+    private View onEvalStateDetail_vertLine;
+    private View plannedStateDetail_vertLine;
+    private View confStateDetail_vertLine;
+    private View diagStateDetail_vertLine;
+    private View onProgStateDetail_vertLine;
+    private View doneStateDetail_vertLine;
+    private View closedStateDetail_vertLine;
     private TextView orderId_label;
 
 
@@ -76,17 +83,17 @@ public class WorkOrderFragment extends Fragment {
         confStateDetail_vertLine=root.findViewById(R.id.confStateDetail_vertLine);
 
         diagStateDetail_LinearLayout=root.findViewById(R.id.diagStateDetail_LinearLayout);
-        onProgStateDetail_LinearLayout=root.findViewById(R.id.onProgStateDetail_LinearLayout);
-        doneStateDetail_LinearLayout=root.findViewById(R.id.doneStateDetail_LinearLayout);
-        closedStateDetail_LinearLayout=root.findViewById(R.id.closedStateDetail_LinearLayout);
+        diagStateDetail_vertLine=root.findViewById(R.id.diagStateDetail_vertLine);
 
-        //onEvalStateDetail_LinearLayout.addView(new OnEvalState(requireContext()));
-//        plannedStateDetail_LinearLayout.addView(new PlannedState(requireContext()));
-//        confStateDetail_LinearLayout.addView(new ConfState(requireContext()));
-//        diagStateDetail_LinearLayout.addView(new DiagState(requireContext()));
-//        onProgStateDetail_LinearLayout.addView(new OnProgState(requireContext()));
-//        doneStateDetail_LinearLayout.addView(new DoneState(requireContext()));
-//        closedStateDetail_LinearLayout.addView(new ClosedState(requireContext()));
+        onProgStateDetail_LinearLayout=root.findViewById(R.id.onProgStateDetail_LinearLayout);
+        onProgStateDetail_vertLine=root.findViewById(R.id.onProgStateDetail_vertLine);
+
+        doneStateDetail_LinearLayout=root.findViewById(R.id.doneStateDetail_LinearLayout);
+        doneStateDetail_vertLine=root.findViewById(R.id.doneStateDetail_vertLine);
+
+        closedStateDetail_LinearLayout=root.findViewById(R.id.closedStateDetail_LinearLayout);
+        closedStateDetail_vertLine=root.findViewById(R.id.closedStateDetail_vertLine);
+
         if(mMainActivityViewModel.getPickedWorkOrder().getValue()==null) {
             openStateWorkOrder();
         } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "ONEVALUATION")) {
@@ -105,6 +112,18 @@ public class WorkOrderFragment extends Fragment {
             String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
             orderId_label.setText(mOrderId);
             diagStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
+        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "ONPROGRESS")){
+            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
+            orderId_label.setText(mOrderId);
+            onProgStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
+        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "DONE")){
+            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
+            orderId_label.setText(mOrderId);
+            doneStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
+        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "CLOSED")){
+            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
+            orderId_label.setText(mOrderId);
+            closedStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
         }
 
 
@@ -160,6 +179,10 @@ public class WorkOrderFragment extends Fragment {
         mOnEvalStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
         mOnEvalStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
 
+        //Esto debe cambiar dinamicamente cuando se ingresa un valor en los campos
+        //configurar OnTextChangeListener
+        mOnEvalStateItem.setMeetFee("Comision Plataforma: 500sat");
+
         mOnEvalStateItem.setAcceptButtonOCL(v -> {
             Long mInspectionDate = Utils.setDateToLong(Utils.setStringToDate(mOnEvalStateItem.getMeetDate() +" "+ mOnEvalStateItem.getmeetTime()));
             Integer mInspectionCharges = Integer.valueOf(mOnEvalStateItem.getmeetTariff());
@@ -198,6 +221,7 @@ public class WorkOrderFragment extends Fragment {
         mPlannedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
         mPlannedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
         mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
+        mPlannedStateItem.setMeetFee("Comision Plataforma: 500sat");
 
         mPlannedStateItem.setGenPaymentOrderButtonOCL(v -> { Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
         mPlannedStateItem.setAcceptButtonOCL(v -> {
@@ -225,7 +249,6 @@ public class WorkOrderFragment extends Fragment {
         ConfState mConfStateItem = new ConfState(requireContext());
         String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
 
-
         mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mConfStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
         mConfStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
@@ -236,11 +259,15 @@ public class WorkOrderFragment extends Fragment {
         mConfStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
         mConfStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
         mConfStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
+        mConfStateItem.setMeetFee("Comision Plataforma: 500sat");
 
+        //Esto debe cambiar dinamicamente cuando se ingresa un valor en los campos
+        //configurar OnTextChangeListener
+        mConfStateItem.setJobFee("Comision Plataforma: 500sat");
 
         mConfStateItem.setPresentOrderButtonOCL(v -> {
-            Long mWorkStartDate =  Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkStartDate()));
-            Long mWorkEndDate = Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkEndDate()));
+            Long mWorkStartDate =  Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkStartDate() +"00:00"));
+            Long mWorkEndDate = Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkEndDate() +"00:00"));
             Integer mWorkJobCost = Integer.valueOf(mConfStateItem.getWorkJobCost()+Integer.valueOf(mConfStateItem.getWorkMaterialCost()));
             String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
 
@@ -267,31 +294,154 @@ public class WorkOrderFragment extends Fragment {
     //********************************** DIAGNOSE STATE **********************************//
     private void diagStateWorkOrder(WorkOrder pWorkOrder) {
         DiagState mDiagStateItem = new DiagState(requireContext());
-        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
+        String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
+        String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
+
 
         mDiagStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
-        mDiagStateItem.setProviderAddress("Direccion: "+ pWorkOrder.getProviderAddress());
-        mDiagStateItem.setProviderPhone("Telefono: "+ pWorkOrder.getProviderPhoneNumber());
+        mDiagStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
+        mDiagStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProviderPhoneNumber());
 
-        mDiagStateItem.setWorkStartDate();
-        mDiagStateItem.setWorkEndDate();
-        mDiagStateItem.setWorkDetail();
-        mDiagStateItem.setMaterialCost();
-        mDiagStateItem.setJobCost();
+        mDiagStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate.substring(0, 10));
+        mDiagStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate.substring(0, 10));
+        mDiagStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
+        mDiagStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkCost()+"sat");
+        mDiagStateItem.setJobCost("Costo Mano de Obra: ");
+        mDiagStateItem.setJobFee("Tarifa de Plataforma: ");
 
-
-        mDiagStateItem.setGenPaymentOrderButtonOCL(v -> { Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
         mDiagStateItem.setAcceptButtonOCL(v -> {
-            confirmDate(pWorkOrder.getOrderId(),pWorkOrder.getInspectionPaymentOrder());
-            Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    } );
+            acceptContract(pWorkOrder.getOrderId(),
+                    pWorkOrder.getWorkPaymentOrder()
+                    );
+            Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
+        mDiagStateItem.setGenPaymentOrderButtonOCL(v -> {  Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    } );
         mDiagStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
         mDiagStateItem.setInputLayoutEndIconOCL(v -> {  Log.d(TAG1, "BOTON COPIAR INVOICE PRESIONADO");   });
 
-        plannedStateDetail_LinearLayout.addView(mDiagStateItem);
-        plannedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
-        plannedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
+        diagStateDetail_LinearLayout.addView(mDiagStateItem);
+        diagStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
+        diagStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** DIAGNOSE STATE **********************************//
+    private void acceptContract(String pWorkOrderID, String pWorkPaymentOrderID){
+        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setState("ONPROGRESS");
+        WO.setStateChangeDate(mStateChangeDate);
+//        WO.setWorkStartDate(pWorkStartDate);
+//        WO.setWorkEndDate(pWorkEndDate);
+//        WO.setWorkCost(pWorkCost);
+//        WO.setDetail(pWorkDetail);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
+    //********************************** ON PROGRESS STATE **********************************//
+    private void onProgStateWorkOrder(WorkOrder pWorkOrder) {
+        OnProgState mOnProgStateItem = new OnProgState(requireContext());
+        String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
+        String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
+
+        mOnProgStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
+        mOnProgStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
+        mOnProgStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
+
+        mOnProgStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate.substring(0, 10));
+        mOnProgStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate.substring(0, 10));
+        mOnProgStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
+        mOnProgStateItem.setMaterialCost("Costo de Materiales" + pWorkOrder.getWorkCost()+"sat");
+        mOnProgStateItem.setJobCost("Costo de Trabajo: 122sat");
+        mOnProgStateItem.setJobFee("Comision Plataforma: 500sat");
+
+
+        mOnProgStateItem.setFinishWorkOrderButtonOCL(v -> {
+            finishOrder(pWorkOrder.getOrderId());
+            Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
+
+        onProgStateDetail_LinearLayout.addView(mOnProgStateItem);
+        onProgStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
+        onProgStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
+    }
+    //********************************** ON PROGRESS STATE **********************************//
+    private void finishOrder(String pWorkOrderID){
+        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setState("DONE");
+        WO.setStateChangeDate(mStateChangeDate);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
+    //********************************** DONE STATE **********************************//
+    private void doneStateWorkOrder(WorkOrder pWorkOrder) {
+        DoneState mDoneStateItem = new DoneState(requireContext());
+        mDoneStateItem.setAcceptButtonOCL(v -> {
+            closeOrder(pWorkOrder.getOrderId(),
+                    mDoneStateItem.getProviderAppereanceScore(),
+                    mDoneStateItem.getProviderCleanlinessScore(),
+                    mDoneStateItem.getProviderSpeedScore(),
+                    mDoneStateItem.getProviderQualityScoreScore(),
+                    mDoneStateItem.getProviderReview());
+            Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
+
+        doneStateDetail_LinearLayout.addView(mDoneStateItem);
+        doneStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
+        doneStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
+    }
+    //********************************** DONE STATE **********************************//
+    private void closeOrder(String pWorkOrderID,Integer pAppereanceScore ,Integer pCleanlinessScore,Integer pSpeedScore,Integer pQualityScore,String pImpressions){
+        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setState("CLOSED");
+        WO.setStateChangeDate(mStateChangeDate);
+        WO.setAppereanceScore(pAppereanceScore);
+        WO.setCleanlinessScore(pCleanlinessScore);
+        WO.setSpeedScore(pSpeedScore);
+        WO.setQualityScore(pQualityScore);
+        WO.setImpressions(pImpressions);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
+    //********************************** CLOSED STATE **********************************//
+    private void closedStateWorkOrder(WorkOrder pWorkOrder) {
+        ClosedState mClosedStateItem = new ClosedState(requireContext());
+        String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
+        String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
+        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
+        String mWarrantyDate = String.valueOf(Utils.increseDate(7,Utils.setStringToDate(Utils.setLongToDate(pWorkOrder.getWorkEndDate()))));
+
+        mClosedStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
+        mClosedStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
+        mClosedStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
+
+        mClosedStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
+        mClosedStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
+        mClosedStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProviderPhoneNumber());
+
+        mClosedStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
+        mClosedStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
+
+        mClosedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
+        mClosedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
+        mClosedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
+        mClosedStateItem.setMeetFee("Comision Plataforma: 500sat");
+
+        mClosedStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate.substring(0, 10));
+        mClosedStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate.substring(0, 10));
+        mClosedStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
+        mClosedStateItem.setMaterialCost("Costo TOTAL a pagar: " + pWorkOrder.getWorkCost()+"sat");
+        mClosedStateItem.setJobCost("Costo de Trabajo: 122sat");
+        mClosedStateItem.setJobFee("Comision Plataforma: 500sat");
+
+        mClosedStateItem.setProviderReview("Reseña del cliente:\n" + pWorkOrder.getImpressions());
+        mClosedStateItem.setWarrantyEndDate(mWarrantyDate);
+
+        //mClosedStateItem.setAcceptButtonOCL(v -> { Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
+
+        closedStateDetail_LinearLayout.addView(mClosedStateItem);
+        closedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
+        closedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
+    }
+    //********************************** CLOSED STATE **********************************//
+
 
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {

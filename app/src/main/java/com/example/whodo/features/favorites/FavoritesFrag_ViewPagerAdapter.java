@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.whodo.features.activity.ViewPagerFragment;
+import com.example.whodo.features.activity.ActivityFrag_ViewPager;
 
 
 public class FavoritesFrag_ViewPagerAdapter extends FragmentStateAdapter {
@@ -15,16 +15,12 @@ public class FavoritesFrag_ViewPagerAdapter extends FragmentStateAdapter {
         super(fragment);
     }
 
-
     //***************************************************************************
     // Estos metodos crean los fragmentos principales cuando se llama al constructor
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return new ViewPagerFragment(1);
-
-            //adapter.addFrag(new ViewPagerFragment(5), "Messages");
-            //adapter.addFrag(new ViewPagerFragment(6), "Notifications");
+        return new FavoritesFrag_ViewPager(0);
      }
 
     //cuenta la cantidad de items en el array Titles

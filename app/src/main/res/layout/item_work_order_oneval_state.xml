@@ -24,7 +24,6 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:background="?android:attr/listDivider" />
-
         <TextView
             android:id="@+id/customer_label"
             android:layout_width="wrap_content"
@@ -32,7 +31,6 @@
             android:gravity="center"
             android:text="Informacion del Cliente"
             android:textStyle="bold" />
-
         <TextView
             android:id="@+id/customerName_label"
             android:layout_width="wrap_content"
@@ -40,7 +38,6 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:text="Nombre" />
-
         <TextView
             android:id="@+id/customerAddress_label"
             android:layout_width="wrap_content"
@@ -56,7 +53,6 @@
             android:layout_marginStart="@dimen/general_horizontal_margin"
             android:layout_marginEnd="@dimen/general_horizontal_margin"
             android:text="Telefono" />
-
 
         <View
             android:id="@+id/customerInfo_bottomDivider"
@@ -185,6 +181,12 @@
                 android:text="sat (opcional)" />
 
         </LinearLayout>
+        <TextView
+            android:id="@+id/meetFee_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Comision de plataforma: 500sat" />
 
         <LinearLayout
             android:layout_width="match_parent"
