@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -38,6 +40,8 @@ public class WorkOrderFragment extends Fragment {
     private final String TAG1 = "WORK-ORDER-FRAG";
     private HireFragmentViewModel mHireFragmentViewModel;
     private MainActivityViewModel mMainActivityViewModel;
+    private NestedScrollView work0rderStates_scrollView;
+    private LinearLayout workOrderStates_LinearLayout;
     private LinearLayout openStateDetail_LinearLayout;
     private LinearLayout onEvalStateDetail_LinearLayout;
     private LinearLayout plannedStateDetail_LinearLayout;
@@ -70,6 +74,9 @@ public class WorkOrderFragment extends Fragment {
         FloatingActionButton saveChangesButton = root.findViewById(R.id.SaveChangesButton);
         saveChangesButton.setOnClickListener(this::onClick);
 
+        work0rderStates_scrollView=root.findViewById(R.id.work0rderStates_scrollView);
+        workOrderStates_LinearLayout=root.findViewById(R.id.workOrderStates_LinearLayout);
+
         openStateDetail_LinearLayout=root.findViewById(R.id.openStateDetail_LinearLayout);
         openStateDetail_vertLine=root.findViewById(R.id.openStateDetail_vertLine);
 
@@ -99,37 +106,52 @@ public class WorkOrderFragment extends Fragment {
     }
     
     private void setWorkOrderView(WorkOrder pWorkOrder){
+        View fila;
         if(pWorkOrder==null) {
             openStateWorkOrder();
+            fila = workOrderStates_LinearLayout.getChildAt(0); // Índice 2 para la tercera fila
         } else if (Objects.equals(pWorkOrder.getState(), "ONEVALUATION")) {
             String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
             onEvalStateWorkOrder(pWorkOrder);
+            fila = workOrderStates_LinearLayout.getChildAt(2); // Índice 2 para la tercera fila
         } else if (Objects.equals(pWorkOrder.getState(), "PLANNED")){
             String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
             plannedStateWorkOrder(pWorkOrder);
+            fila = workOrderStates_LinearLayout.getChildAt(4); // Índice 2 para la tercera fila
         } else if (Objects.equals(pWorkOrder.getState(), "CONFIRMED")){
             String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
             confStateWorkOrder(pWorkOrder);
+            fila = workOrderStates_LinearLayout.getChildAt(6); // Índice 2 para la tercera fila
         } else if (Objects.equals(pWorkOrder.getState(), "DIAGNOSED")){
             String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
             diagStateWorkOrder(pWorkOrder);
+            fila = workOrderStates_LinearLayout.getChildAt(8); // Índice 2 para la tercera fila
         } else if (Objects.equals(pWorkOrder.getState(), "ONPROGRESS")){
             String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
             onProgStateWorkOrder(pWorkOrder);
+            fila = workOrderStates_LinearLayout.getChildAt(10); // Índice 2 para la tercera fila
         } else if (Objects.equals(pWorkOrder.getState(), "DONE")){
             String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
             doneStateWorkOrder(pWorkOrder);
+            fila = workOrderStates_LinearLayout.getChildAt(12); // Índice 2 para la tercera fila
         } else if (Objects.equals(pWorkOrder.getState(), "CLOSED")){
             String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
             closedStateWorkOrder(pWorkOrder);
+            fila = workOrderStates_LinearLayout.getChildAt(14); // Índice 2 para la tercera fila
+        } else {
+            fila = null;
         }
+        work0rderStates_scrollView.post(() -> {
+            assert fila != null;
+            work0rderStates_scrollView.smoothScrollTo(0, fila.getTop());
+        });
     }
     //********************************** OPEN STATE **********************************//
     private void openStateWorkOrder () {
@@ -407,7 +429,7 @@ public class WorkOrderFragment extends Fragment {
         String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
         String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
         String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
-        String mWarrantyDate = String.valueOf(Utils.increseDate(7,Utils.setStringToDate(Utils.setLongToDate(pWorkOrder.getWorkEndDate()))));
+        String mWarrantyDate = Utils.setDateFormat(Utils.increseDate(7,Utils.setStringToDate(Utils.setLongToDate(pWorkOrder.getWorkEndDate()))), "dd-MM-yyyy HH:mm'hs'");
 
         mClosedStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mClosedStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
@@ -433,7 +455,7 @@ public class WorkOrderFragment extends Fragment {
         mClosedStateItem.setJobFee("Comision Plataforma: 500sat");
 
         mClosedStateItem.setProviderReview("Reseña del cliente:\n" + pWorkOrder.getImpressions());
-        mClosedStateItem.setWarrantyEndDate(mWarrantyDate);
+        mClosedStateItem.setWarrantyEndDate("Fecha limite de Garantia: " + mWarrantyDate);
 
         //mClosedStateItem.setAcceptButtonOCL(v -> { Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
 
