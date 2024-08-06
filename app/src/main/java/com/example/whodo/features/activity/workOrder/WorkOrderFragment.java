@@ -64,7 +64,8 @@ public class WorkOrderFragment extends Fragment {
         View root = inflater.inflate(R.layout.act_work_order_lifecycle, container, false);
         mHireFragmentViewModel = new ViewModelProvider(requireActivity()).get(HireFragmentViewModel.class);
         mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-
+        mMainActivityViewModel.getPickedWorkOrder().observe(getViewLifecycleOwner(),this::setWorkOrderView);
+                
         orderId_label = root.findViewById(R.id.orderId_label);
         FloatingActionButton saveChangesButton = root.findViewById(R.id.SaveChangesButton);
         saveChangesButton.setOnClickListener(this::onClick);
@@ -93,42 +94,43 @@ public class WorkOrderFragment extends Fragment {
         closedStateDetail_LinearLayout=root.findViewById(R.id.closedStateDetail_LinearLayout);
         closedStateDetail_vertLine=root.findViewById(R.id.closedStateDetail_vertLine);
 
-        if(mMainActivityViewModel.getPickedWorkOrder().getValue()==null) {
-            openStateWorkOrder();
-        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "ONEVALUATION")) {
-            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
-            orderId_label.setText(mOrderId);
-            onEvalStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
-        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "PLANNED")){
-            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
-            orderId_label.setText(mOrderId);
-            plannedStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
-        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "CONFIRMED")){
-            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
-            orderId_label.setText(mOrderId);
-            confStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
-        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "DIAGNOSED")){
-            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
-            orderId_label.setText(mOrderId);
-            diagStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
-        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "ONPROGRESS")){
-            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
-            orderId_label.setText(mOrderId);
-            onProgStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
-        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "DONE")){
-            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
-            orderId_label.setText(mOrderId);
-            doneStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
-        } else if (Objects.equals(mMainActivityViewModel.getPickedWorkOrder().getValue().getState(), "CLOSED")){
-            String mOrderId= "ID de Orden: "+mMainActivityViewModel.getPickedWorkOrder().getValue().getOrderId();
-            orderId_label.setText(mOrderId);
-            closedStateWorkOrder(mMainActivityViewModel.getPickedWorkOrder().getValue());
-        }
-
 
         return root;
     }
-
+    
+    private void setWorkOrderView(WorkOrder pWorkOrder){
+        if(pWorkOrder==null) {
+            openStateWorkOrder();
+        } else if (Objects.equals(pWorkOrder.getState(), "ONEVALUATION")) {
+            String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+            onEvalStateWorkOrder(pWorkOrder);
+        } else if (Objects.equals(pWorkOrder.getState(), "PLANNED")){
+            String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+            plannedStateWorkOrder(pWorkOrder);
+        } else if (Objects.equals(pWorkOrder.getState(), "CONFIRMED")){
+            String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+            confStateWorkOrder(pWorkOrder);
+        } else if (Objects.equals(pWorkOrder.getState(), "DIAGNOSED")){
+            String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+            diagStateWorkOrder(pWorkOrder);
+        } else if (Objects.equals(pWorkOrder.getState(), "ONPROGRESS")){
+            String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+            onProgStateWorkOrder(pWorkOrder);
+        } else if (Objects.equals(pWorkOrder.getState(), "DONE")){
+            String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+            doneStateWorkOrder(pWorkOrder);
+        } else if (Objects.equals(pWorkOrder.getState(), "CLOSED")){
+            String mOrderId= "ID de Orden: "+pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+            closedStateWorkOrder(pWorkOrder);
+        }
+    }
     //********************************** OPEN STATE **********************************//
     private void openStateWorkOrder () {
         String[] mProviderServices = Objects.requireNonNull(mHireFragmentViewModel.getPickedProvider().getValue()).getSpecialization().split(",");
