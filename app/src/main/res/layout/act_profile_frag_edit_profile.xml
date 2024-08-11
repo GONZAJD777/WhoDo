@@ -302,13 +302,13 @@
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.example.whodo.uiClasses.CustomMapView
+            <com.example.whodo.app.uiClasses.CustomMapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:ignore="SpeakableTextPresentCheck">
 
-            </com.example.whodo.uiClasses.CustomMapView>
+            </com.example.whodo.app.uiClasses.CustomMapView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>

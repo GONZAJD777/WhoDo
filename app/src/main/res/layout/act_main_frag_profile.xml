@@ -12,7 +12,7 @@
     android:isScrollContainer="true"
     android:verticalScrollbarPosition="right"
     app:layout_anchorGravity="center_horizontal"
-    tools:context=".features.profile.MainProfileFragment">
+    tools:context=".app.features.profile.MainProfileFragment">
 
     <ScrollView
         android:layout_width="match_parent"

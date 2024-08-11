@@ -46,6 +46,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-database:21.0.0'
     implementation platform('com.google.firebase:firebase-bom:33.1.2')
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    // Add the dependencies for the App Check libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+
     implementation 'com.firebase:geofire-android-common:3.1.0'
     //google dependencies
 
