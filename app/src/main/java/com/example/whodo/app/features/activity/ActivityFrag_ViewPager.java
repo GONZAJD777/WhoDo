@@ -1,6 +1,9 @@
 package com.example.whodo.app.features.activity;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +19,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.whodo.R;
 import com.example.whodo.app.MainActivityViewModel;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
+import com.example.whodo.app.resources.images.ImageManager;
 import com.example.whodo.app.utils.Utils;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -93,9 +98,14 @@ public class ActivityFrag_ViewPager extends Fragment {
         mActivityWorkOrderItem.setLastUpdate("Ultima Actualizacion: " + Utils.setLongToDate(pWorkOrder.getStateChangeDate()));
 
         if (mWorkOrderType.equals("CUSTOMER")) {
-            mActivityWorkOrderItem.setCategoryImage(AppCompatResources.getDrawable(requireContext(), getImageFromString(pWorkOrder.getSpecialization(), 64, 1)));
+            Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_64", 210, 210);
+            Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
+            mActivityWorkOrderItem.setCategoryImage(drawable);
+
         }else {
-            mActivityWorkOrderItem.setCategoryImage(AppCompatResources.getDrawable(requireContext(), getImageFromString(pWorkOrder.getSpecialization(), 64,2)));
+            Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_orden_64", 205, 205);
+            Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
+            mActivityWorkOrderItem.setCategoryImage(drawable);
         }
 
         if (mWorkOrderType.equals("CUSTOMER") && mCustomerStates.contains(pWorkOrder.getState())){

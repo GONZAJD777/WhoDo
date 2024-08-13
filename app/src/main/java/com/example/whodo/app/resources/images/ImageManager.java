@@ -79,7 +79,7 @@ public  class ImageManager {
         pCallback.onSuccess(checkStoredIcons(pContext));
     }
 
-    public static Bitmap getStoredIcon (Context pContext,String pIconName){
+    public static Bitmap getStoredIcon (Context pContext,String pIconName, int pScaledWidth, int pScaledHeight){
         File internalDir = pContext.getFilesDir();
         File mFullPathServIconDirectory = new File(internalDir, mServIconDirectory);
         String mRelIconPath = pIconName.replaceAll("\\s+", "_").toLowerCase()+"_.*\\.png"; // Ruta al archivo del icono
@@ -113,7 +113,7 @@ public  class ImageManager {
         if(mIconBitmap==null){
             mIconBitmap = BitmapFactory.decodeResource(pContext.getResources(), R.drawable.loading_512);
         }
-        Bitmap mScaledIconBitmap = Bitmap.createScaledBitmap(mIconBitmap, 80, 80, false);
+        Bitmap mScaledIconBitmap = Bitmap.createScaledBitmap(mIconBitmap, pScaledWidth, pScaledHeight, false);
         return mScaledIconBitmap;
     }
 

@@ -102,7 +102,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
     private HireFragmentViewModel mHireFragmentViewModel;
     private ImagesViewModel mImagesViewModel;
-    private MainActivityViewModel model;
+    private MainActivityViewModel mMainActivityViewModel;
     private User mLoggedUser;
 
     @Override
@@ -110,10 +110,10 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         
         View root = inflater.inflate(R.layout.act_main_frag_hire, container, false);
 
+        mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
         mHireFragmentViewModel = new ViewModelProvider(requireActivity()).get(HireFragmentViewModel.class);
         mImagesViewModel = new ViewModelProvider(requireActivity()).get(ImagesViewModel.class);
 
-        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
 
         AvgTime_TextView = root.findViewById(R.id.AvgTime_TextView);
         AvgTariff_TextView = root.findViewById(R.id.AvgTariff_TextView);
@@ -221,12 +221,10 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        model.getLoggedUser().observe(requireActivity(), this::loadUser);
-        model.getProviders().observe(getViewLifecycleOwner(),this::loadProviders);
-        model.getServices().observe(getViewLifecycleOwner(),this::loadServices);
+        mMainActivityViewModel.getLoggedUser().observe(requireActivity(), this::loadUser);
+        mMainActivityViewModel.getProviders().observe(getViewLifecycleOwner(),this::loadProviders);
+        mMainActivityViewModel.getServices().observe(getViewLifecycleOwner(),this::loadServices);
         mHireFragmentViewModel.getDistanceFilter().observe(getViewLifecycleOwner(),this::loadDistanceFilter);
-        //we will observe getProvidersLiveData
-        //observe the picked provider and hold the information for further use
         mHireFragmentViewModel.getPickedProvider().observe(getViewLifecycleOwner(),this::showProviderDetail);
 
         return root;
@@ -248,7 +246,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         MaxDistanceFilterLabel.setText(serviceDistanceFilterLabel);
     }
     private void openFragment(){
-        model.setSelectedFragment(15,View.GONE);
+        mMainActivityViewModel.setSelectedFragment(15,View.GONE);
         // model.TabLayoutVisibility(View.GONE);
     }
 
@@ -312,7 +310,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                 ProviderDetailBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 break;
             case R.id.Hire_Button:
-                model.setPickedWorkOrder(null);
+                mMainActivityViewModel.setPickedWorkOrder(null);
                 openFragment ();
                 break;
         }
@@ -388,7 +386,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
         if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "1")) {
             String mMapIconName = "my_location_customer";
-            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName);
+            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
                                 .title("Tu Ubicacion Registrada")
                                 .snippet(SnippetText)
@@ -396,7 +394,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                                 .setTag(pProvider);
         } else if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "2")) {
             String mMapIconName = "my_location_provider";
-            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName);
+            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
                                 .title("Tu Ubicacion Registrada")
                                 .snippet(SnippetText)
@@ -411,7 +409,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             else {
                 mServIconName = pProvider.getSpecialization().replaceAll(RegSeed, "") + "_64";
             }
-            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mServIconName);
+            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mServIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
                                 .title(pProvider.getName())
                                 .snippet(SnippetText)
@@ -433,7 +431,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
             ImageView Spec = new ImageView(this.requireContext());
             String mServIconName = SpecArrayList.get(i) + "_borderless_16";
-            Bitmap mServIconImage = ImageManager.getStoredIcon(requireContext(),mServIconName);
+            Bitmap mServIconImage = ImageManager.getStoredIcon(requireContext(),mServIconName,80,80);
             Spec.setImageBitmap(mServIconImage);
             LinearLayout.LayoutParams ImageViewLP=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
             ImageViewLP.gravity=Gravity.CENTER;
@@ -500,12 +498,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                 for(int i = 0; i< SpecArrayList.size(); i++){
                     ImageView Spec = new ImageView(requireContext());
                     String mMapIconName = SpecArrayList.get(i) + "_24";
-                    Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName);
+                    Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
                     Spec.setImageBitmap(mMapIcon);
                     LinearLayout.LayoutParams ImageViewLP=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
                     ImageViewLP.gravity=Gravity.CENTER;
                     Spec.setLayoutParams(ImageViewLP);
-                    //Spec.setImageResource(getImageFromString(SpecArrayList.get(i),24));
                     SpecList.addView(Spec);
                 }
 
