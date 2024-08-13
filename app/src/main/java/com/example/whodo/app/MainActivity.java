@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity  {
         mMainActivityViewModel.getFragmentVisibility().observe(this,this::setTabLayoutVisibility);
 
         mImagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
-        mImagesViewModel.getMapIconList().observe(this,this::LoadImages);
+        mImagesViewModel.getServIconNames().observe(this,this::LoadImages);
 
         Main_TabLayout=findViewById(R.id.Main_TabLayout);
         mFragmentManager = getSupportFragmentManager();
@@ -66,13 +66,13 @@ public class MainActivity extends AppCompatActivity  {
         }
 
         private void LoadImages(List<String> mapIconList){
-            List<String> mMissingMapIcons = ImageManager.checkMissingMapIcons(mapIconList, this);
-            if(!mMissingMapIcons.isEmpty()){
-                mImagesViewModel.getMapIcons().observe(this,mMapIcons -> {
-                    ImageManager.loadMapIcons(mMapIcons, this, new Callback<List<String>>() {
+            List<String> mMissingIconNames = ImageManager.checkMissingIcons(mapIconList, this);
+            if(!mMissingIconNames.isEmpty()){
+                mImagesViewModel.getServIconImages().observe(this,mServIconImages -> {
+                    ImageManager.storeIcons(mServIconImages, this, new Callback<List<String>>() {
                         @Override
-                        public void onSuccess(List<String> pMapIconNameList) {
-                            mImagesViewModel.setStorageLoadedMapIcons(pMapIconNameList);
+                        public void onSuccess(List<String> pStoredIconNames) {
+                            mImagesViewModel.setStoredServIconNames(pStoredIconNames);
                         }
                         @Override
                         public void onError(Exception e) {
@@ -80,7 +80,9 @@ public class MainActivity extends AppCompatActivity  {
                         }
                     });
                 });
-                mImagesViewModel.setMapIcons(mMissingMapIcons);
+                mImagesViewModel.setServIconImages(mMissingIconNames);
+            } else {
+                mImagesViewModel.setStoredServIconNames(ImageManager.checkStoredIcons(this));
             }
 
         }

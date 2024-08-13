@@ -252,31 +252,23 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         // model.TabLayoutVisibility(View.GONE);
     }
 
-
     @Override
     public void onMapReady(@NonNull GoogleMap pGoogleMap) {
         pGoogleMap.getUiSettings().setMapToolbarEnabled(true);
         //Once mas is ready, call get the providers to populate the map
-        if (mHireFragmentViewModel.getProvidersLiveData().getValue()!=null) {
-            if (ImageManager.checkMapIcons(requireContext()).isEmpty()) {
-                mImagesViewModel.getStorageLoadedMapIcons().observe(getViewLifecycleOwner(),mMapIcons -> {
-                    this.setProviderMarkers(pGoogleMap,mHireFragmentViewModel.getProvidersLiveData().getValue());
-                });
-            }else {
+        if (!mHireFragmentViewModel.getProvidersLiveData().isInitialized()) {
+            mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(),pProviders -> {
+                this.setProviderMarkers(pGoogleMap,pProviders);
+                mImagesViewModel.getStoredServIconNames().observe(getViewLifecycleOwner(),pStoredSerIconNames -> { this.setProviderMarkers(pGoogleMap,pProviders); });
+            });
+        }else {
+            this.setProviderMarkers(pGoogleMap,mHireFragmentViewModel.getProvidersLiveData().getValue());
+            mImagesViewModel.getStoredServIconNames().observe(getViewLifecycleOwner(),pStoredSerIconNames -> {
                 this.setProviderMarkers(pGoogleMap,mHireFragmentViewModel.getProvidersLiveData().getValue());
-            }
-        } else {
-            if (ImageManager.checkMapIcons(requireContext()).isEmpty()) {
-                mImagesViewModel.getStorageLoadedMapIcons().observe(getViewLifecycleOwner(),mMapIcons -> {
-                    mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(),pProviders -> {
-                        setProviderMarkers(pGoogleMap,pProviders);
-                    });
-                });
-            }else {
-                mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(),pProviders -> {
-                    setProviderMarkers(pGoogleMap,pProviders);
-                });
-            }
+            });
+            mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(),pProviders -> {
+                this.setProviderMarkers(pGoogleMap,pProviders);
+            });
         }
 
         pGoogleMap.setOnInfoWindowClickListener(marker -> {
@@ -303,7 +295,6 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             setMarkerSnippet(pGoogleMap);
         }
     }
-
     @SuppressLint("NonConstantResourceId")
     private void onClick(@NonNull View view) {
         switch (view.getId()) {
@@ -374,7 +365,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         clearLinearLayout(ReelItemsLinearLayout);
         if (pGoogleMap != null){
             pGoogleMap.clear();
-            if (!pProviders.isEmpty())
+            if (pProviders != null)
             {
                 for(int i = 0; i< pProviders.size(); i++) {
                     addMarkers(pGoogleMap, pProviders.get(i));
@@ -397,7 +388,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
         if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "1")) {
             String mMapIconName = "my_location_customer";
-            Bitmap mMapIcon = ImageManager.getMapIcon(requireContext(),mMapIconName);
+            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
                                 .title("Tu Ubicacion Registrada")
                                 .snippet(SnippetText)
@@ -405,15 +396,22 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                                 .setTag(pProvider);
         } else if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "2")) {
             String mMapIconName = "my_location_provider";
-            Bitmap mMapIcon = ImageManager.getMapIcon(requireContext(),mMapIconName);
+            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
                                 .title("Tu Ubicacion Registrada")
                                 .snippet(SnippetText)
                                 .icon(BitmapDescriptorFactory.fromBitmap(mMapIcon))))
                                 .setTag(pProvider);
         } else {
-            String mMapIconName = pProvider.getSpecialization().replaceAll(RegSeed, "") + "_24";
-            Bitmap mMapIcon = ImageManager.getMapIcon(requireContext(),mMapIconName);
+            String mServIconName;
+            String[] mSplit = pProvider.getSpecialization().split(",");
+            if (mSplit.length>1) {
+                mServIconName= "varios_24";
+            }
+            else {
+                mServIconName = pProvider.getSpecialization().replaceAll(RegSeed, "") + "_64";
+            }
+            Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mServIconName);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
                                 .title(pProvider.getName())
                                 .snippet(SnippetText)
@@ -434,7 +432,9 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         for(int i = 0; i< SpecArrayList.size(); i++){
 
             ImageView Spec = new ImageView(this.requireContext());
-            Spec.setImageResource(getImageFromString(SpecArrayList.get(i),16));
+            String mServIconName = SpecArrayList.get(i) + "_borderless_16";
+            Bitmap mServIconImage = ImageManager.getStoredIcon(requireContext(),mServIconName);
+            Spec.setImageBitmap(mServIconImage);
             LinearLayout.LayoutParams ImageViewLP=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
             ImageViewLP.gravity=Gravity.CENTER;
             Spec.setLayoutParams(ImageViewLP);
@@ -499,10 +499,13 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                 ArrayList<String> SpecArrayList = new ArrayList<>(Arrays.asList(snippetSpec.getText().toString().split(",")));
                 for(int i = 0; i< SpecArrayList.size(); i++){
                     ImageView Spec = new ImageView(requireContext());
+                    String mMapIconName = SpecArrayList.get(i) + "_24";
+                    Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName);
+                    Spec.setImageBitmap(mMapIcon);
                     LinearLayout.LayoutParams ImageViewLP=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
                     ImageViewLP.gravity=Gravity.CENTER;
                     Spec.setLayoutParams(ImageViewLP);
-                    Spec.setImageResource(getImageFromString(SpecArrayList.get(i),24));
+                    //Spec.setImageResource(getImageFromString(SpecArrayList.get(i),24));
                     SpecList.addView(Spec);
                 }
 
@@ -553,43 +556,6 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
         ProviderDetailBottomSheetBehavior.setDraggable(false);
         ProviderDetailBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-    private int getImageFromString (String pService,int pSize) {
-        int ServiceImage = R.drawable.proveevarios;
-        if (pSize==16)
-        {switch (pService) {
-            case "Plomero":
-                ServiceImage = R.drawable.plomeria_16;
-                break;
-            case "Pintor":
-                ServiceImage = R.drawable.pintura_16;
-                break;
-            case "Electricista":
-                ServiceImage = R.drawable.electricista_16;
-                break;
-            case "Carpintero":
-                ServiceImage = R.drawable.carpinteria_16;
-                break;
-            case "Albañil":
-                ServiceImage = R.drawable.alba_ileria_16;
-                break;
-            case "Tecnico de Computacion":
-                ServiceImage = R.drawable.computacion_16;
-                break;
-            case "Tecnico de Refrigeracion":
-                ServiceImage = R.drawable.refrigeracion_16;
-                break;
-            case "Jardinero":
-                ServiceImage = R.drawable.jardineria_16;
-                break;
-            case "Cerrajero":
-                ServiceImage = R.drawable.cerrajeria_16;
-                break;
-            case "Gasista":
-                ServiceImage = R.drawable.gasista_16;
-                break;
-        }}
-        return ServiceImage;
     }
     private void getLocationPermission(){
         Log.d("getLocationPermission()", "getLocationPermission: getting location permissions");

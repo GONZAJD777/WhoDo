@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
+import com.example.whodo.R;
 import com.example.whodo.app.Callback;
 
 import java.io.File;
@@ -17,43 +20,44 @@ import java.util.Objects;
 import java.util.Set;
 
 public  class ImageManager {
-    private static final String TAG = "MAIN-ACTIVITY";
+    private static final String TAG = "IMAGE-MANAGER";
+    private static final String mServIconDirectory="servIconImages";
     private  ImageManager() {}
 
-    public static List<String> checkMissingMapIcons (List<String> pMapIconList, Context pContext) {
+    public static List<String> checkMissingIcons (List<String> pMapIconList, Context pContext) {
 
         Set<String> mListA = new HashSet<>(pMapIconList);
-        Set<String> mListB = new HashSet<>(checkMapIcons(pContext));
+        Set<String> mListB = new HashSet<>(checkStoredIcons(pContext));
 
         mListA.removeAll(mListB);
-        List<String> mMissingMapIcons = new ArrayList<>(mListA);
+        List<String> mMissingIconNames = new ArrayList<>(mListA);
 
-        return mMissingMapIcons;
+        return mMissingIconNames;
     }
 
-    public static List<String> checkMapIcons (Context pContext){
+    public static List<String> checkStoredIcons (Context pContext){
         File internalDir = pContext.getFilesDir();
-        File mMapIconsDirectory = new File(internalDir, "MapIcons");
+        File mMapIconsDirectory = new File(internalDir, mServIconDirectory);
         if (!mMapIconsDirectory.exists()) {
             mMapIconsDirectory.mkdir();
         }
 
         // Crear una lista para almacenar los nombres de archivos
-        List<String> mMapIconNames = new ArrayList<>();
+        List<String> mStoredIconNames = new ArrayList<>();
 
         // Iterar sobre los archivos en el directorio interno
         for (File file : Objects.requireNonNull(mMapIconsDirectory.listFiles())) {
             if (file.isFile()) {
-                mMapIconNames.add(file.getName());
+                mStoredIconNames.add(file.getName());
             }
         }
 
-        return mMapIconNames;
+        return mStoredIconNames;
     }
 
-    public static void loadMapIcons (List<ImageDTO> pMapIcons, Context pContext,Callback<List<String>> pCallback){
+    public static void storeIcons (List<ImageDTO> pMapIcons, Context pContext,Callback<List<String>> pCallback){
         File internalDir = pContext.getFilesDir();
-        File mMapIconsDirectory = new File(internalDir, "MapIcons");
+        File mMapIconsDirectory = new File(internalDir, mServIconDirectory);
 
         // Itera sobre los bitmaps y los nombres de archivo
         for (int i = 0; i < pMapIcons.size(); i++) {
@@ -72,40 +76,45 @@ public  class ImageManager {
                 // Maneja el error aquí (por ejemplo, reintentar o registrar el problema)
             }
         }
-        pCallback.onSuccess(checkMapIcons(pContext));
+        pCallback.onSuccess(checkStoredIcons(pContext));
     }
-    
-    public static Bitmap getMapIcon (Context pContext,String pIconName){
+
+    public static Bitmap getStoredIcon (Context pContext,String pIconName){
         File internalDir = pContext.getFilesDir();
-        File mMapIconsDirectory = new File(internalDir, "MapIcons");
-        String mIconPath = mMapIconsDirectory+"/"+pIconName.replaceAll("\\s+", "_").toLowerCase()+".png"; // Ruta al archivo del icono
+        File mFullPathServIconDirectory = new File(internalDir, mServIconDirectory);
+        String mRelIconPath = pIconName.replaceAll("\\s+", "_").toLowerCase()+"_.*\\.png"; // Ruta al archivo del icono
+        Bitmap mIconBitmap = null;
 
+        File directory = new File(String.valueOf(mFullPathServIconDirectory));
+        File[] files = directory.listFiles();
+        List<File> patternFiles = new ArrayList<>();
 
-        // Cargar el icono como un Bitmap
-        Bitmap mIconBitmap = BitmapFactory.decodeFile(mIconPath);
-        if(mIconBitmap==null) mIconBitmap = BitmapFactory.decodeFile(mMapIconsDirectory+"/varios_24.png");
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+               String FileName= files[i].getName();
+                if (FileName.matches(mRelIconPath)) {
+                    patternFiles.add(files[i]);
+                }
+            }
+        }
 
+        if (!patternFiles.isEmpty()) {
+            long mDate;
+            long mAuxDate=0L;
+            for (File auxFile : patternFiles) {
+                mDate = Long.parseLong(auxFile.getName().substring(auxFile.getName().length()-12,auxFile.getName().length()-4));
+                if (mDate > mAuxDate) {
+                    mAuxDate = Long.parseLong(auxFile.getName().substring(auxFile.getName().length()-12,auxFile.getName().length()-4));
+                    mIconBitmap = BitmapFactory.decodeFile(mFullPathServIconDirectory+"/"+auxFile.getName());
+                }
+            }
+        }
+
+        if(mIconBitmap==null){
+            mIconBitmap = BitmapFactory.decodeResource(pContext.getResources(), R.drawable.loading_512);
+        }
         Bitmap mScaledIconBitmap = Bitmap.createScaledBitmap(mIconBitmap, 80, 80, false);
         return mScaledIconBitmap;
     }
 
-    public static Bitmap checkWorkOrderIcons (List<String> pService,Context pContext) {
-        File internalDir = pContext.getFilesDir();
-        File mWorkOrderIconsDirectory = new File(internalDir, "WorkOrderIcons");
-        if (!mWorkOrderIconsDirectory.exists()) {
-            mWorkOrderIconsDirectory.mkdir();
-        }
-        return null;
-    }
-
-    public static Bitmap checkSnippetsIcons (List<String> pService,Context pContext) {
-        File internalDir = pContext.getFilesDir();
-        File mSnippetsIconsDirectory = new File(internalDir, "SnippetsIcons");
-        if (!mSnippetsIconsDirectory.exists()) {
-            mSnippetsIconsDirectory.mkdir();
-        }
-
-        
-        return null;
-    }
 }

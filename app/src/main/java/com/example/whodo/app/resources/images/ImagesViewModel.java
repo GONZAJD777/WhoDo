@@ -10,22 +10,38 @@ import java.util.List;
 
 public class ImagesViewModel extends ViewModel {
     private ImagesDao<ImageDTO> mImagesDao ;
-    private final MutableLiveData<List<ImageDTO>> mMapIcons = new MutableLiveData<>();
-    private final MutableLiveData<List<String>> mMapIconsList = new MutableLiveData<>();
-    private final MutableLiveData<List<String>> mLoadedMapIcons = new MutableLiveData<>();
+    private final MutableLiveData<List<ImageDTO>> mServIconImages = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> mServIconNames = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> mStoredServIconNames = new MutableLiveData<>();
 
     public ImagesViewModel(){
         mImagesDao=new FirebaseStorageImageDAO();
 
-        this.setMapIconsList();
+        this.setServIconNames();
 
     }
 
-    public void setMapIconsList () {
-        mImagesDao.getMapIconsList(new Callback<List<String>>() {
+    public void setServIconNames () {
+        mImagesDao.getServIconNames(new Callback<List<String>>() {
             @Override
-            public void onSuccess(List<String> mMapIconList) {
-                mMapIconsList.setValue(mMapIconList);
+            public void onSuccess(List<String> pServIconNames) {
+                mServIconNames.setValue(pServIconNames);
+            }
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+    public LiveData<List<String>> getServIconNames (){
+        return mServIconNames;
+    }
+
+    public void setServIconImages (List<String> pServIconNames) {
+        mImagesDao.getServIconImages(pServIconNames, new Callback<List<ImageDTO>>() {
+            @Override
+            public void onSuccess(List<ImageDTO> pServIconImages) {
+                mServIconImages.setValue(pServIconImages);
             }
 
             @Override
@@ -34,24 +50,9 @@ public class ImagesViewModel extends ViewModel {
             }
         });
     }
-    public LiveData<List<String>> getMapIconList (){
-        return mMapIconsList;
-    }
-    public void setMapIcons (List<String> pMapIconNameList) {
-        mImagesDao.getMapIcons(pMapIconNameList, new Callback<List<ImageDTO>>() {
-            @Override
-            public void onSuccess(List<ImageDTO> pMapIconsList) {
-                mMapIcons.setValue(pMapIconsList);
-            }
+    public LiveData<List<ImageDTO>> getServIconImages(){ return this.mServIconImages; }
 
-            @Override
-            public void onError(Exception e) {
-
-            }
-        });
-    }
-    public LiveData<List<ImageDTO>> getMapIcons(){ return this.mMapIcons; }
-    public void setStorageLoadedMapIcons(List<String> pLoadedMapIcons){ mLoadedMapIcons.setValue(pLoadedMapIcons); }
-    public LiveData<List<String>> getStorageLoadedMapIcons(){return mLoadedMapIcons;}
+    public void setStoredServIconNames(List<String> pStoredServIconNames){ mStoredServIconNames.setValue(pStoredServIconNames); }
+    public LiveData<List<String>> getStoredServIconNames(){return mStoredServIconNames;}
 
 }

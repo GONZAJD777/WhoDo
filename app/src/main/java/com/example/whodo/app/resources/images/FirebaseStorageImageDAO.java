@@ -15,15 +15,14 @@ public class FirebaseStorageImageDAO implements ImagesDao<ImageDTO>{
 
     private final String TAG="FirebaseStorageImageDAO";
     //IMAGES STORAGE REF
-
     private final FirebaseStorage mStorageInstance = FirebaseStorage.getInstance();
     private final StorageReference mStorageReference = mStorageInstance.getReference();
     private final StorageReference mImageStorageRef = mStorageReference.child("WHODO-IMAGES/APP-IMAGES");
 
 
     @Override
-    public void getMapIconsList(Callback<List<String>> callback) {
-        StorageReference mImagesRef = mImageStorageRef.child("MAP-ICONS");
+    public void getServIconNames(Callback<List<String>> callback) {
+        StorageReference mImagesRef = mImageStorageRef.child("SERV-ICON-IMAGES");
 
         // Obtén una lista de referencias a los archivos dentro de la carpeta "MAP-ICONS"
         mImagesRef.listAll().addOnSuccessListener(listResult -> {
@@ -41,8 +40,8 @@ public class FirebaseStorageImageDAO implements ImagesDao<ImageDTO>{
     }
 
     @Override
-    public void getMapIcons(List<String> pFileName, Callback<List<ImageDTO>> callback) {
-        StorageReference mImagesRef = mImageStorageRef.child("MAP-ICONS");
+    public void getServIconImages(List<String> pFileName, Callback<List<ImageDTO>> callback) {
+        StorageReference mImagesRef = mImageStorageRef.child("SERV-ICON-IMAGES");
         List<ImageDTO> bitmapList = new ArrayList<>();
 
         // Itera sobre las referencias y descarga cada imagen
@@ -63,25 +62,7 @@ public class FirebaseStorageImageDAO implements ImagesDao<ImageDTO>{
                 // Maneja el error aquí si es necesario
             });
         }
+
     }
 
-    @Override
-    public void getSnippetsIconsList(Callback<String> callback) {
-        StorageReference mImagesRef = mImageStorageRef.child("MAP-SNIPPETS-ICONS");
-    }
-
-    @Override
-    public void getSnippetsIcons(List<String> pFileName, Callback<List<ImageDTO>> callback) {
-        StorageReference mImagesRef = mImageStorageRef.child("MAP-SNIPPETS-ICONS");
-    }
-
-    @Override
-    public void getWorkOrderIconsList(Callback<String> callback) {
-        StorageReference mImagesRef = mImageStorageRef.child("WORKORDER-LIST-ICONS");
-    }
-
-    @Override
-    public void getWorkOrderIcons(List<String> pFileName, Callback<List<ImageDTO>> callback) {
-        StorageReference mImagesRef = mImageStorageRef.child("WORKORDER-LIST-ICONS");
-    }
 }
