@@ -49,5 +49,15 @@ public class DoneState extends RelativeLayout {
     public void setRejectButtonOCL(OnClickListener OCL) {
         rejectWorkOrder_button.setOnClickListener(OCL);
     }
+    public void disableEdition(){
+        providerAppereance_ratingBar.setEnabled(false);
+        providerCleanliness_ratingBar.setEnabled(false);
+        providerSpeed_ratingBar.setEnabled(false);
+        providerQualityScore_ratingBar.setEnabled(false);
+
+        providerReview_value.setEnabled(false);
+        acceptWorkOrder_button.setEnabled(false);
+        rejectWorkOrder_button.setEnabled(false);
+    }
 
 }

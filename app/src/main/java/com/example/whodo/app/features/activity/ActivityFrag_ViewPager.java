@@ -98,12 +98,12 @@ public class ActivityFrag_ViewPager extends Fragment {
         mActivityWorkOrderItem.setLastUpdate("Ultima Actualizacion: " + Utils.setLongToDate(pWorkOrder.getStateChangeDate()));
 
         if (mWorkOrderType.equals("CUSTOMER")) {
-            Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_64", 210, 210);
+            Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_64", 64, 64);
             Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
             mActivityWorkOrderItem.setCategoryImage(drawable);
 
         }else {
-            Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_orden_64", 205, 205);
+            Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_orden_64", 64, 64);
             Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
             mActivityWorkOrderItem.setCategoryImage(drawable);
         }

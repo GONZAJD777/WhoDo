@@ -3,6 +3,7 @@ package com.example.whodo.app.features.activity.workOrder.workOrderState;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,7 +42,7 @@ public class ClosedState extends RelativeLayout {
     private TextView providerReview_label;
 
     private TextView warrantyEndDate_label;
-
+    private Button closeOrder_button;
 
 
 
@@ -79,6 +80,7 @@ public class ClosedState extends RelativeLayout {
         providerReview_label=root.findViewById(R.id.providerReview_label);
 
         warrantyEndDate_label=root.findViewById(R.id.warrantyEndDate_label);
+        closeOrder_button=root.findViewById(R.id.closeOrder_button);
     }
 
     public void setCustomerName(String pCustomerName){this.customerName_label.setText(pCustomerName);}
@@ -108,5 +110,9 @@ public class ClosedState extends RelativeLayout {
 
     public void setProviderReview(String pProviderReview) { this.providerReview_label.setText(pProviderReview); }
     public void setWarrantyEndDate(String pWarrantyEndDate) { this.warrantyEndDate_label.setText(pWarrantyEndDate); }
+
+    public void disableEdition(){
+        closeOrder_button.setEnabled(false);
+    }
 
 }

@@ -272,6 +272,8 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         pGoogleMap.setOnInfoWindowClickListener(marker -> {
             PickedUser= (User) marker.getTag();
             mHireFragmentViewModel.setPickedProvider(PickedUser);
+            ProviderDetailBottomSheetBehavior.setDraggable(false);
+            ProviderDetailBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
         pGoogleMap.setOnMapClickListener(arg0 -> {
@@ -311,6 +313,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                 break;
             case R.id.Hire_Button:
                 mMainActivityViewModel.setPickedWorkOrder(null);
+                ProviderDetailBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 openFragment ();
                 break;
         }
@@ -444,13 +447,12 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         mHireItem.setOnClickListener(view -> {
             PickedUser=mHireItem.getProvider();
             mHireFragmentViewModel.setPickedProvider(PickedUser);
-
+            ProviderDetailBottomSheetBehavior.setDraggable(false);
+            ProviderDetailBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             //Log.d(TAG, "click"+view);
-
         });
         ReelItemsLinearLayout.addView(mHireItem);
     }
-    //***************************************************************************//
     @SuppressLint("NonConstantResourceId")
     public void setMarkerSnippet(GoogleMap pGoogleMap){
         pGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -550,10 +552,9 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             CleanlinessScore.setRating(0.0F);
             //CleanlinessScore.setLeftTextView(PickedUser.getUserScore().getCleanlinessScore());
         }
-
-        ProviderDetailBottomSheetBehavior.setDraggable(false);
-        ProviderDetailBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
+    //***************************************************************************//
+
     private void getLocationPermission(){
         Log.d("getLocationPermission()", "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -646,7 +647,6 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         pGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
 
     }
-
     private void ReelBehavior(){
         if (!isCons2Active){
             ReelBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);

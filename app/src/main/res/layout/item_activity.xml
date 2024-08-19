@@ -6,25 +6,18 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView_Sender"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/general_horizontal_margin"
+    <ImageView
+        android:id="@+id/category_imageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        app:cardCornerRadius="30dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/category_imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="fitStart"
-            app:srcCompat="@drawable/carpinteria_64" />
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/loading_512" />
 
     <TextView
         android:id="@+id/actionIndicator_label"
@@ -43,8 +36,8 @@
         android:layout_marginStart="16dp"
         android:text="Orden Abierta"
         android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@+id/cardView_Sender"
-        app:layout_constraintTop_toTopOf="@+id/cardView_Sender" />
+        app:layout_constraintStart_toEndOf="@+id/category_imageView"
+        app:layout_constraintTop_toTopOf="@+id/category_imageView" />
 
     <TextView
         android:id="@+id/limitDate_label"

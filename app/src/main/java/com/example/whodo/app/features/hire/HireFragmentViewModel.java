@@ -136,7 +136,7 @@ public class HireFragmentViewModel extends ViewModel {
                     ProvidersList.add(pProviders.get(i));
                 } else {
                     if (CheckRange(pProviders.get(i))) {
-                        if (!pServiceFilter.isEmpty()) {
+                        if (!(pServiceFilter==null || pServiceFilter.isEmpty())) {
                             for (int j = 0; j < pServiceFilter.size(); j++) {
                                 if (pProviders.get(i).getSpecialization().contains(pServiceFilter.get(j))) {
                                     if (!ProvidersList.contains(pProviders.get(i))) {

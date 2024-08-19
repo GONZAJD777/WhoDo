@@ -1,6 +1,7 @@
 package com.example.whodo.app.features.activity.workOrder;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +37,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class WorkOrderFragment extends Fragment {
-    private final String TAG1 = "WORK-ORDER-FRAG";
+    private final String TAG1 = "WORK-ORDER-LIFECYCLE-FRAG";
     private HireFragmentViewModel mHireFragmentViewModel;
     private MainActivityViewModel mMainActivityViewModel;
     private NestedScrollView work0rderStates_scrollView;
@@ -193,6 +194,20 @@ public class WorkOrderFragment extends Fragment {
     private void onEvalStateWorkOrder(WorkOrder pWorkOrder) {
         OnEvalState mOnEvalStateItem = new OnEvalState(requireContext());
 
+        if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
+                if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
+                    mOnEvalStateItem.disableEdition();
+                }
+        }else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Información Importante")
+                        .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
+                        .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                        .show();
+            closeWorkOrderLifeCycle();
+        }
+
+
         mOnEvalStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mOnEvalStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
         mOnEvalStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
@@ -236,6 +251,19 @@ public class WorkOrderFragment extends Fragment {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
         String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
 
+        if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
+            if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
+                mPlannedStateItem.disableEdition();
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Información Importante")
+                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
+                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                    .show();
+            closeWorkOrderLifeCycle();
+        }
+
         mPlannedStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
         mPlannedStateItem.setProviderAddress("Direccion: "+ pWorkOrder.getProviderAddress());
         mPlannedStateItem.setProviderPhone("Telefono: "+ pWorkOrder.getProviderPhoneNumber());
@@ -270,6 +298,19 @@ public class WorkOrderFragment extends Fragment {
     private void confStateWorkOrder(WorkOrder pWorkOrder) {
         ConfState mConfStateItem = new ConfState(requireContext());
         String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
+
+        if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
+            if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
+                mConfStateItem.disableEdition();
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Información Importante")
+                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
+                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                    .show();
+            closeWorkOrderLifeCycle();
+        }
 
         mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mConfStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
@@ -319,6 +360,19 @@ public class WorkOrderFragment extends Fragment {
         String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
         String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
 
+        if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
+            if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
+                mDiagStateItem.disableEdition();
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Información Importante")
+                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
+                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                    .show();
+            closeWorkOrderLifeCycle();
+        }
+
 
         mDiagStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
         mDiagStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
@@ -362,6 +416,18 @@ public class WorkOrderFragment extends Fragment {
         OnProgState mOnProgStateItem = new OnProgState(requireContext());
         String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
         String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
+        if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
+            if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
+                mOnProgStateItem.disableEdition();
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Información Importante")
+                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
+                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                    .show();
+            closeWorkOrderLifeCycle();
+        }
 
         mOnProgStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mOnProgStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
@@ -395,6 +461,20 @@ public class WorkOrderFragment extends Fragment {
     //********************************** DONE STATE **********************************//
     private void doneStateWorkOrder(WorkOrder pWorkOrder) {
         DoneState mDoneStateItem = new DoneState(requireContext());
+
+        if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
+            if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
+                mDoneStateItem.disableEdition();
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Información Importante")
+                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
+                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                    .show();
+            closeWorkOrderLifeCycle();
+        }
+
         mDoneStateItem.setAcceptButtonOCL(v -> {
             closeOrder(pWorkOrder.getOrderId(),
                     mDoneStateItem.getProviderAppereanceScore(),
@@ -425,6 +505,18 @@ public class WorkOrderFragment extends Fragment {
     //********************************** CLOSED STATE **********************************//
     private void closedStateWorkOrder(WorkOrder pWorkOrder) {
         ClosedState mClosedStateItem = new ClosedState(requireContext());
+        if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
+            if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
+                mClosedStateItem.disableEdition();
+            }
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Información Importante")
+                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
+                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                    .show();
+            closeWorkOrderLifeCycle();
+        }
         String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
         String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
         String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
@@ -469,8 +561,12 @@ public class WorkOrderFragment extends Fragment {
     private void onClick(View view) {
         switch (view.getId()) {
             case R.id.SaveChangesButton:
-                mMainActivityViewModel.setSelectedFragment(2,View.VISIBLE);
+                closeWorkOrderLifeCycle();
                 break;
         }
     }
+    private void closeWorkOrderLifeCycle(){
+        mMainActivityViewModel.setSelectedFragment(2,View.VISIBLE);
+    }
+
 }

@@ -83,4 +83,12 @@ public class ConfState extends RelativeLayout {
         presentOrder_button.setOnClickListener(OCL);
     }
 
+    public void disableEdition(){
+        workStartDate_value.setEnabled(false);;
+        workEndDate_value.setEnabled(false);;
+        workMaterialCost_value.setEnabled(false);;
+        workJobCost_value.setEnabled(false);;
+        workTaskDetail_value.setEnabled(false);;
+        presentOrder_button.setEnabled(false);
+    }
 }

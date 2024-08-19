@@ -81,4 +81,10 @@ public class PlannedState extends RelativeLayout {
         rejectWorkOrder_button.setOnClickListener(OCL);
     }
 
+    public void disableEdition(){
+        invoice_inputLayout.setEndIconActivated(false);
+        genPaymentOrder_button.setEnabled(false);
+        acceptWorkOrder_button.setEnabled(false);
+        rejectWorkOrder_button.setEnabled(false);
+    }
 }

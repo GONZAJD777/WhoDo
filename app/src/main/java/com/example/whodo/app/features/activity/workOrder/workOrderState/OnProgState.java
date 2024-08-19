@@ -59,7 +59,9 @@ public class OnProgState extends RelativeLayout {
     public void setFinishWorkOrderButtonOCL(OnClickListener OCL) {
         finishWorkOrder_button.setOnClickListener(OCL);
     }
-
+    public void disableEdition(){
+        finishWorkOrder_button.setEnabled(false);
+    }
 
 
 }

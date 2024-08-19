@@ -76,5 +76,14 @@ public class OnEvalState extends RelativeLayout {
     public void setRejectButtonOCL(OnClickListener OCL) {
         rejectWorkOrder_button.setOnClickListener(OCL);
     }
+    public void disableEdition(){
+
+        meetDate_value.setEnabled(false);
+        meetTime_value.setEnabled(false);
+        meetTariff_value.setEnabled(false);
+        acceptWorkOrder_button.setEnabled(false);
+        rejectWorkOrder_button.setEnabled(false);
+    }
+
 
 }
