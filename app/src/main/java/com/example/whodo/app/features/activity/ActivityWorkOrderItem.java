@@ -16,6 +16,7 @@ import com.example.whodo.R;
 public class ActivityWorkOrderItem extends RelativeLayout {
     private final ImageView mCategory_imageView;
     private final TextView mActionIndicator_label;
+    private final TextView mUserName_label;
     private final TextView mOrderState_label;
     private final TextView mLimitDate_label;
     private final TextView mLastUpdate_label;
@@ -28,6 +29,7 @@ public class ActivityWorkOrderItem extends RelativeLayout {
 
         mCategory_imageView = root.findViewById(R.id.category_imageView);
         mActionIndicator_label = root.findViewById(R.id.actionIndicator_label);
+        mUserName_label = root.findViewById(R.id.userName_label);
         mOrderState_label = root.findViewById(R.id.orderState_label);
         mLimitDate_label = root.findViewById(R.id.limitDate_label);
         mLastUpdate_label = root.findViewById(R.id.lastUpdate_label);
@@ -38,6 +40,7 @@ public class ActivityWorkOrderItem extends RelativeLayout {
 
     public void setCategoryImage(Drawable pDrawableImage) { mCategory_imageView.setImageDrawable(pDrawableImage); }
     public void setActionIndicator(Drawable pDrawableImage) { this.mActionIndicator_label.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,pDrawableImage,null); }
+    public void setUserName(String pUserName) { this.mUserName_label.setText(pUserName); }
     public void setOrderState(String pOrderState) { this.mOrderState_label.setText(pOrderState); }
     public void setLimitDate(String pLimitDate) { this.mLimitDate_label.setText(pLimitDate); }
     public void setLastUpdate(String pLastUpdate) { this.mLastUpdate_label.setText(pLastUpdate); }

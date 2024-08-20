@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class HireFragment extends Fragment implements OnMapReadyCallback {
-    private static final String TAG = "MAIN-HIRE-FRAGMENT";
+    private static final String TAG = "HIRE-FRAGMENT";
     boolean mLocationPermissionsGranted = false;
     private final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -439,7 +439,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             LinearLayout.LayoutParams ImageViewLP=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
             ImageViewLP.gravity=Gravity.CENTER;
             Spec.setLayoutParams(ImageViewLP);
-            Log.d(TAG, "addHireItem --> Se agrego el icono al item: "+SpecArrayList.get(i));
+            //Log.d(TAG, "addHireItem --> Se agrego el icono al item: "+SpecArrayList.get(i));
 
             mHireItem.addSpecItem(Spec);
         }

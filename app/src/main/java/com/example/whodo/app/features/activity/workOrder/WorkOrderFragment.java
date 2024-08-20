@@ -3,6 +3,7 @@ package com.example.whodo.app.features.activity.workOrder;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,7 +60,8 @@ public class WorkOrderFragment extends Fragment {
     private View doneStateDetail_vertLine;
     private View closedStateDetail_vertLine;
     private TextView orderId_label;
-
+    private Drawable mVertLineBackGround;
+    private PorterDuff.Mode mVertLineBackTintMode;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -101,11 +103,13 @@ public class WorkOrderFragment extends Fragment {
         closedStateDetail_LinearLayout=root.findViewById(R.id.closedStateDetail_LinearLayout);
         closedStateDetail_vertLine=root.findViewById(R.id.closedStateDetail_vertLine);
 
+        mVertLineBackGround = closedStateDetail_vertLine.getBackground();
+        mVertLineBackTintMode = closedStateDetail_vertLine.getBackgroundTintMode();
 
         return root;
     }
-    
     private void setWorkOrderView(WorkOrder pWorkOrder){
+        clearWorkOrder();
         View fila;
         if(pWorkOrder==null) {
             openStateWorkOrder();
@@ -153,6 +157,19 @@ public class WorkOrderFragment extends Fragment {
             work0rderStates_scrollView.smoothScrollTo(0, fila.getTop());
         });
     }
+    private void clearWorkOrder(){
+        ViewGroup celdaEspecifica;
+        for(int i = 1; i < 16; i += 2){
+            celdaEspecifica = (ViewGroup) workOrderStates_LinearLayout.getChildAt(i);
+            if(celdaEspecifica.getChildCount()>1) {
+                celdaEspecifica.removeViewAt(1);
+                celdaEspecifica.getChildAt(0).setBackground(mVertLineBackGround);
+                celdaEspecifica.getChildAt(0).setBackgroundTintMode(mVertLineBackTintMode);
+            }
+            //Log.d(TAG1, "Iteracion -->"+i);
+        }
+
+    }
     //********************************** OPEN STATE **********************************//
     private void openStateWorkOrder () {
         String[] mProviderServices = Objects.requireNonNull(mHireFragmentViewModel.getPickedProvider().getValue()).getSpecialization().split(",");
@@ -188,6 +205,7 @@ public class WorkOrderFragment extends Fragment {
                                      pProvider.getUid(),pProvider.getName(),pProvider.getAddress(),pProvider.getLatitude(),pProvider.getLongitude(),mProviderPhoneNumber,
                                      pCategory, pDescription, mCreationDate,mTimeLimitDate,mStateChangeDate);
         mMainActivityViewModel.createWorkOrder(WO);
+        mMainActivityViewModel.setSelectedTab(2);
         Log.d(TAG1, "BOTON CREAR ORDEN PRESIONADO");
     }
     //********************************** ON EVALUATION STATE **********************************//
@@ -207,7 +225,6 @@ public class WorkOrderFragment extends Fragment {
             closeWorkOrderLifeCycle();
         }
 
-
         mOnEvalStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mOnEvalStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
         mOnEvalStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
@@ -221,12 +238,15 @@ public class WorkOrderFragment extends Fragment {
         mOnEvalStateItem.setMeetFee("Comision Plataforma: 500sat");
 
         mOnEvalStateItem.setAcceptButtonOCL(v -> {
-            Long mInspectionDate = Utils.setDateToLong(Utils.setStringToDate(mOnEvalStateItem.getMeetDate() +" "+ mOnEvalStateItem.getmeetTime()));
+            Long mInspectionDate = Utils.setDateToLong(Utils.setStringToDate(mOnEvalStateItem.getMeetDate() +" "+ mOnEvalStateItem.getmeetTime()+ "hs"));
             Integer mInspectionCharges = Integer.valueOf(mOnEvalStateItem.getmeetTariff());
 
-            planDate(pWorkOrder.getOrderId(),
-                       mInspectionDate,
-                       mInspectionCharges);
+//            planDate(pWorkOrder.getOrderId(),
+//                       mInspectionDate,
+//                       mInspectionCharges);
+
+            Log.d(TAG1, "mInspectionDate: "+mInspectionDate);
+            Log.d(TAG1, "mInspectionCharges: "+mInspectionCharges);
             Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
         });
         mOnEvalStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
@@ -275,8 +295,11 @@ public class WorkOrderFragment extends Fragment {
 
         mPlannedStateItem.setGenPaymentOrderButtonOCL(v -> { Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
         mPlannedStateItem.setAcceptButtonOCL(v -> {
-            confirmDate(pWorkOrder.getOrderId(),pWorkOrder.getInspectionPaymentOrder());
-            Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    } );
+            confirmDate(pWorkOrder.getOrderId(),
+                    pWorkOrder.getInspectionPaymentOrder());
+            Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
+        });
+
         mPlannedStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
         mPlannedStateItem.setInputLayoutEndIconOCL(v -> {  Log.d(TAG1, "BOTON COPIAR INVOICE PRESIONADO");   });
 
@@ -329,8 +352,8 @@ public class WorkOrderFragment extends Fragment {
         mConfStateItem.setJobFee("Comision Plataforma: 500sat");
 
         mConfStateItem.setPresentOrderButtonOCL(v -> {
-            Long mWorkStartDate =  Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkStartDate() +"00:00"));
-            Long mWorkEndDate = Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkEndDate() +"00:00"));
+            Long mWorkStartDate =  Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkStartDate() +" 00:00hs"));
+            Long mWorkEndDate = Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkEndDate() +" 00:00hs"));
             Integer mWorkJobCost = Integer.valueOf(mConfStateItem.getWorkJobCost()+Integer.valueOf(mConfStateItem.getWorkMaterialCost()));
             String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
 
@@ -566,7 +589,12 @@ public class WorkOrderFragment extends Fragment {
         }
     }
     private void closeWorkOrderLifeCycle(){
-        mMainActivityViewModel.setSelectedFragment(2,View.VISIBLE);
+        Integer mSelectedTab = mMainActivityViewModel.getSelectedTab().getValue();
+        if (mSelectedTab == 0) {
+            mMainActivityViewModel.setSelectedFragment(0, View.VISIBLE);
+        } else {
+            mMainActivityViewModel.setSelectedFragment(2, View.VISIBLE);
+        }
     }
 
 }

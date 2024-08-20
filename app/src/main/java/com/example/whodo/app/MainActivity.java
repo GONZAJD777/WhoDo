@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity  {
 
         mMainActivityViewModel = new ViewModelProvider(this,factory).get(MainActivityViewModel.class);
         mMainActivityViewModel.getSelectedFragment().observe(this,this::setSelectedFragment);
-        mMainActivityViewModel.getFragmentVisibility().observe(this,this::setTabLayoutVisibility);
+        mMainActivityViewModel.getTabLayoutVisibility().observe(this,this::setTabLayoutVisibility);
+        mMainActivityViewModel.getSelectedTab().observe(this,this::setSelectedTab);
 
         mImagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
         mImagesViewModel.getServIconNames().observe(this,this::LoadImages);
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity  {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
                         mMainActivityViewModel.setSelectedFragment(tab.getPosition(), View.VISIBLE);
+                        mMainActivityViewModel.setSelectedTab(tab.getPosition());
                     }
                     @Override
                     public void onTabUnselected(TabLayout.Tab tab) {
@@ -87,12 +89,13 @@ public class MainActivity extends AppCompatActivity  {
 
         }
 
+        private void setSelectedTab(int pTab) {
+            Objects.requireNonNull(Main_TabLayout.getTabAt(pTab)).select();
+       }
         private void setTabLayoutVisibility(int pVisibility){
-        Main_TabLayout.setVisibility(pVisibility);
+            Main_TabLayout.setVisibility(pVisibility);
         }
-
-        private void setSelectedFragment(Fragment pFragment)
-        {
+        private void setSelectedFragment(Fragment pFragment){
             FragmentTransaction mFragmentTransaction = mFragmentManager.beginTransaction();
             mFragmentTransaction.replace(R.id.FrameLayout, pFragment);
             mFragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

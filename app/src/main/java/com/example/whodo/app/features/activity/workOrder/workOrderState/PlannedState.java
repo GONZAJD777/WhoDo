@@ -82,7 +82,7 @@ public class PlannedState extends RelativeLayout {
     }
 
     public void disableEdition(){
-        invoice_inputLayout.setEndIconActivated(false);
+        invoice_inputLayout.setEndIconVisible(false);
         genPaymentOrder_button.setEnabled(false);
         acceptWorkOrder_button.setEnabled(false);
         rejectWorkOrder_button.setEnabled(false);

@@ -29,7 +29,7 @@ public class Utils {
 
     @SuppressLint("SimpleDateFormat")
     public static Date setStringToDate (String mString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm'hs'");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm'hs'");
         Date parsedDate = new Date();
         try {
             parsedDate = dateFormat.parse(mString);

@@ -93,7 +93,7 @@ public class ActivityFrag_ViewPager extends Fragment {
         {mWorkOrderType="CUSTOMER";}
         else {mWorkOrderType="PROVIDER";}
 
-        mActivityWorkOrderItem.setOrderState("Orden "+pWorkOrder.getState());
+        mActivityWorkOrderItem.setOrderState("Estado de Orden: "+pWorkOrder.getState());
         mActivityWorkOrderItem.setLimitDate("Fecha Limite: " + Utils.setLongToDate(pWorkOrder.getTimeLimit()));
         mActivityWorkOrderItem.setLastUpdate("Ultima Actualizacion: " + Utils.setLongToDate(pWorkOrder.getStateChangeDate()));
 
@@ -101,11 +101,14 @@ public class ActivityFrag_ViewPager extends Fragment {
             Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_64", 64, 64);
             Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
             mActivityWorkOrderItem.setCategoryImage(drawable);
+            mActivityWorkOrderItem.setUserName("Usuario: "+pWorkOrder.getProviderName());
 
         }else {
             Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_orden_64", 64, 64);
             Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
             mActivityWorkOrderItem.setCategoryImage(drawable);
+            mActivityWorkOrderItem.setUserName("Usuario: "+pWorkOrder.getCustomerName());
+
         }
 
         if (mWorkOrderType.equals("CUSTOMER") && mCustomerStates.contains(pWorkOrder.getState())){

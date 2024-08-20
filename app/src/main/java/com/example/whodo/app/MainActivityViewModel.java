@@ -50,8 +50,10 @@ public class MainActivityViewModel extends ViewModel {
     private final MutableLiveData<List<WorkOrder>> mWorkOrders = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<String>> mServices = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<String>> mLanguages= new MutableLiveData<>();
-    private final MutableLiveData<Fragment> mFragmentSelected = new MutableLiveData<>(new HireFragment());
-    private final MutableLiveData<Integer> mFragmentVisibility = new MutableLiveData<>(View.VISIBLE);
+    private final MutableLiveData<Fragment> mFragmentSelected = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mTabLayoutVisibility = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mSeletedTab = new MutableLiveData<>();
+
 
     private final MutableLiveData <WorkOrder> mPickedWorkOrder = new MutableLiveData<>();
     private final WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
@@ -60,6 +62,9 @@ public class MainActivityViewModel extends ViewModel {
     public MainActivityViewModel(UserDao<UserDTO> pUserDao) {
         mUserDao=pUserDao;
         mWorkOrderDao = new FirebaseWorkOrderDAO();
+        mSeletedTab.setValue(0);
+        mTabLayoutVisibility.setValue(View.VISIBLE);
+        mFragmentSelected.setValue(new HireFragment());
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         User currentUser = new User(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
@@ -100,6 +105,16 @@ public class MainActivityViewModel extends ViewModel {
                             AuxWorkOrderList.add(workOrder); // Agregar el objeto User a la lista
                         }
                         mWorkOrders.setValue(AuxWorkOrderList);
+                        Log.d(TAG1, "WorkOrderObserver --> a cambiado el dataset ");
+
+                        if(mWorkOrders.isInitialized() && mPickedWorkOrder.isInitialized()) {
+                                for (WorkOrder pWorkOrder : Objects.requireNonNull(mWorkOrders.getValue())) {
+                                    if(mPickedWorkOrder.getValue()!=null && Objects.equals(mPickedWorkOrder.getValue().getOrderId(), pWorkOrder.getOrderId())) {
+                                        mPickedWorkOrder.setValue(pWorkOrder);
+                                    }
+                                }
+                        }
+
                     }
                 });
                 //*************************** WORKORDERS ***************************//
@@ -124,10 +139,12 @@ public class MainActivityViewModel extends ViewModel {
     public LiveData<List<User>> getProviders() { return this.mProviders; }
     public LiveData<ArrayList<String>> getServices() { return this.mServices; }
     public LiveData<ArrayList<String>> getLanguages() { return this.mLanguages; }
-    public LiveData<Fragment> getSelectedFragment() { return mFragmentSelected; }
-    public LiveData<Integer> getFragmentVisibility() { return mFragmentVisibility; }
+    public LiveData<Fragment> getSelectedFragment() { return this.mFragmentSelected; }
+    public LiveData<Integer> getTabLayoutVisibility() { return this.mTabLayoutVisibility; }
+    public LiveData<Integer> getSelectedTab(){ return this.mSeletedTab;}
     //**************************************************************
-    public void setSelectedFragment (int pTab,int pVisibility){
+    public void setSelectedTab (int pTab){this.mSeletedTab.setValue(pTab);}
+    public void setSelectedFragment (int pTab,int pTabLayoutVisibility){
         switch (pTab)
         {
             case 0:  mFragmentSelected.setValue(new HireFragment()); break;
@@ -147,7 +164,7 @@ public class MainActivityViewModel extends ViewModel {
             case 14:  mFragmentSelected.setValue(new PrivacyPoliticsFragment()); break;
             case 15:  mFragmentSelected.setValue(new WorkOrderFragment()); break;
         }
-        mFragmentVisibility.setValue(pVisibility);
+        mTabLayoutVisibility.setValue(pTabLayoutVisibility);
     }
     public void updateLoggedUser(User pUser){ this.mUser.setValue(pUser); }
     private void StartUserUpdateThread () {
@@ -265,33 +282,8 @@ public class MainActivityViewModel extends ViewModel {
             }
         });
     }
-
     public LiveData<List<WorkOrder>> getWorkOrder () {return mWorkOrders;}
     public void setPickedWorkOrder(WorkOrder pPickedWorkOrder){ mPickedWorkOrder.setValue(pPickedWorkOrder); }
     public LiveData<WorkOrder> getPickedWorkOrder(){ return mPickedWorkOrder; }
-
-
-    public LiveData<User> getCustomerWorkOrder (String pCustomerId){
-        if (mWorkOrdersCustomer.getValue()==null || !Objects.equals(pCustomerId, mWorkOrdersCustomer.getValue().getUid())){
-            for (User provider : Objects.requireNonNull(mProviders.getValue())) {
-                if (Objects.equals(pCustomerId, provider.getUid())) {
-                    mWorkOrdersCustomer.setValue(provider);
-                }
-            }
-        }
-        if (mWorkOrdersCustomer.getValue()==null || !Objects.equals(pCustomerId, mWorkOrdersCustomer.getValue().getUid())){
-            UserDTO mUserDTO = new UserDTO();
-            mUserDTO.setUid(pCustomerId);
-            mUserDao.findCustomer(mUserDTO, new Callback<UserDTO>() {
-                @Override
-                public void onSuccess(UserDTO pUserDTO) {
-                    mWorkOrdersCustomer.setValue(UserMapper.toEntity(pUserDTO));
-                }
-                @Override
-                public void onError(Exception e) { }
-            });
-        }
-       return mWorkOrdersCustomer;
-    }
 
 }

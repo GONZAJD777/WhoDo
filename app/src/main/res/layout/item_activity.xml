@@ -34,30 +34,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
         android:text="Orden Abierta"
         android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@+id/category_imageView"
-        app:layout_constraintTop_toTopOf="@+id/category_imageView" />
+        app:layout_constraintBottom_toTopOf="@+id/userName_label"
+        app:layout_constraintStart_toEndOf="@+id/category_imageView" />
+
+    <TextView
+        android:id="@+id/userName_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Usuario: "
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@+id/limitDate_label"
+        app:layout_constraintStart_toStartOf="@+id/orderState_label" />
 
     <TextView
         android:id="@+id/limitDate_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
+        android:layout_marginBottom="8dp"
         android:text="Fecha Limite - 23 de febrero de 2020"
         android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="@+id/orderState_label"
-        app:layout_constraintTop_toBottomOf="@+id/orderState_label" />
+        app:layout_constraintBottom_toTopOf="@+id/lastUpdate_label"
+        app:layout_constraintStart_toStartOf="@+id/orderState_label" />
 
     <TextView
         android:id="@+id/lastUpdate_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="Updated - 24 de feb. 2020 13:46"
         android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="@+id/limitDate_label"
-        app:layout_constraintTop_toBottomOf="@+id/limitDate_label" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/limitDate_label" />
 
     <Button
         android:id="@+id/openWorkOrderDetail_button"
