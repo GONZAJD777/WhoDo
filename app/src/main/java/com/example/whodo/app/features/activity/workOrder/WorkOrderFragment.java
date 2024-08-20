@@ -34,6 +34,7 @@ import com.example.whodo.app.features.hire.HireFragmentViewModel;
 import com.example.whodo.app.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -180,6 +181,7 @@ public class WorkOrderFragment extends Fragment {
         mOpenStateItem.setProviderAddress("Direccion: "+mPickedProvider.getAddress());
         mOpenStateItem.setProviderPhone("Telefono: "+mPickedProvider.getPhone_ccn()+" "+mPickedProvider.getPhone());
         mOpenStateItem.setSpinnerValues(mProviderServices);
+
         mOpenStateItem.setOnClickListener(v -> {
             assert mLoggedUser != null;
             assignOrder(mLoggedUser,
@@ -188,13 +190,14 @@ public class WorkOrderFragment extends Fragment {
                     mOpenStateItem.getDescriptionValue(),
                     mOpenStateItem.getTimeLimitValue());
         });
+
         openStateDetail_LinearLayout.addView(mOpenStateItem);
         openStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         openStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** OPEN STATE **********************************//
     private void assignOrder(User pCustomer,User pProvider ,String pCategory,String pDescription,Integer pLimitValue){
-        Long mTimeLimitDate = Utils.setDateToLong(Utils.increseDate(pLimitValue,new Date()));
+        Long mTimeLimitDate = Utils.setDateToLong(Utils.increseDate(pLimitValue, new Date()));
         Long mCreationDate= Utils.setDateToLong(new Date());
         Long mStateChangeDate=Utils.setDateToLong(new Date());
 
@@ -214,7 +217,7 @@ public class WorkOrderFragment extends Fragment {
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
                 if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                    mOnEvalStateItem.disableEdition();
+                    //mOnEvalStateItem.disableEdition();
                 }
         }else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -273,7 +276,7 @@ public class WorkOrderFragment extends Fragment {
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                mPlannedStateItem.disableEdition();
+                //mPlannedStateItem.disableEdition();
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -324,7 +327,7 @@ public class WorkOrderFragment extends Fragment {
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                mConfStateItem.disableEdition();
+               // mConfStateItem.disableEdition();
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -357,8 +360,13 @@ public class WorkOrderFragment extends Fragment {
             Integer mWorkJobCost = Integer.valueOf(mConfStateItem.getWorkJobCost()+Integer.valueOf(mConfStateItem.getWorkMaterialCost()));
             String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
 
-            diagnoseOrder(pWorkOrder.getOrderId(),mWorkStartDate,mWorkEndDate,mWorkJobCost,mWorkTaskDetail);
-            Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");    } );
+            Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
+            Log.d(TAG1, "mWorkEndDate :" + mWorkEndDate );
+            Log.d(TAG1, "Current Date :" + Utils.setDateToLong(new Date()));
+
+            //diagnoseOrder(pWorkOrder.getOrderId(),mWorkStartDate,mWorkEndDate,mWorkJobCost,mWorkTaskDetail);
+            Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");
+        } );
 
         confStateDetail_LinearLayout.addView(mConfStateItem);
         confStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
@@ -385,7 +393,7 @@ public class WorkOrderFragment extends Fragment {
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                mDiagStateItem.disableEdition();
+                //mDiagStateItem.disableEdition();
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -441,7 +449,7 @@ public class WorkOrderFragment extends Fragment {
         String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                mOnProgStateItem.disableEdition();
+                //mOnProgStateItem.disableEdition();
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -487,7 +495,7 @@ public class WorkOrderFragment extends Fragment {
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                mDoneStateItem.disableEdition();
+                //mDoneStateItem.disableEdition();
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -530,7 +538,7 @@ public class WorkOrderFragment extends Fragment {
         ClosedState mClosedStateItem = new ClosedState(requireContext());
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                mClosedStateItem.disableEdition();
+                //mClosedStateItem.disableEdition();
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
