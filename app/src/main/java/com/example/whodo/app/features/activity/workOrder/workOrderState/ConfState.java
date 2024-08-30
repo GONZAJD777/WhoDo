@@ -26,7 +26,9 @@ public class ConfState extends RelativeLayout {
     private TextView meetFee_label;
 
     private EditText workStartDate_value;
+    private EditText workStartDateTime_value;
     private EditText workEndDate_value;
+    private EditText workEndDateTime_value;
     private EditText workMaterialCost_value;
     private EditText workJobCost_value;
     private TextView jobFee_label;
@@ -51,7 +53,9 @@ public class ConfState extends RelativeLayout {
         meetFee_label= root.findViewById(R.id.meetFee_label);
 
         workStartDate_value= root.findViewById(R.id.workStartDate_value);
+        workStartDateTime_value=root.findViewById(R.id.workStartDateTime_value);
         workEndDate_value= root.findViewById(R.id.workEndDate_value);
+        workEndDateTime_value=root.findViewById(R.id.workEndDateTime_value);
         workMaterialCost_value= root.findViewById(R.id.workMaterialCost_value);
         workJobCost_value= root.findViewById(R.id.workJobCost_value);
         jobFee_label= root.findViewById(R.id.jobFee_label);
@@ -74,8 +78,15 @@ public class ConfState extends RelativeLayout {
 
     public String getWorkStartDate(){ return workStartDate_value.getText().toString(); }
     public void setWorkStartDate(String pWorkStartDate){workStartDate_value.setText(pWorkStartDate);}
+    public String getWorkStartDateTime(){ return workStartDateTime_value.getText().toString();}
+    public void setWorkStartDateTime(String pWorkStartDateTime){workStartDateTime_value.setText(pWorkStartDateTime);}
+
     public String getWorkEndDate(){ return workEndDate_value.getText().toString(); }
     public void setWorkEndDate(String pWorkEndDate){workEndDate_value.setText(pWorkEndDate);}
+    public String getWorkEndDateTime(){ return workEndDateTime_value.getText().toString();}
+    public void setWorkEndDateTime(String pWorkEndDateTime){workEndDateTime_value.setText(pWorkEndDateTime);}
+
+
     public String getWorkMaterialCost(){ return workMaterialCost_value.getText().toString(); }
     public String getWorkJobCost(){ return workJobCost_value.getText().toString(); }
     public String getWorkTaskDetail(){ return workTaskDetail_value.getText().toString(); }
@@ -91,10 +102,15 @@ public class ConfState extends RelativeLayout {
     public void setWorkStartDateOCL(OnClickListener OCL) {
         workStartDate_value.setOnClickListener(OCL);
     }
+    public void setWorkStartDateTimeOCL(OnClickListener OCL) {
+        workStartDateTime_value.setOnClickListener(OCL);
+    }
     public void setWorkEndDateOCL(OnClickListener OCL) {
         workEndDate_value.setOnClickListener(OCL);
     }
-
+    public void setWorkEndDateTimeOCL(OnClickListener OCL) {
+        workEndDateTime_value.setOnClickListener(OCL);
+    }
     public void setPresentOrderButtonOCL(OnClickListener OCL) {
         presentOrder_button.setOnClickListener(OCL);
     }

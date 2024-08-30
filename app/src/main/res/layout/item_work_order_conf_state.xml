@@ -153,7 +153,7 @@
                 android:id="@+id/workStartDate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fecha Inicio" />
+                android:text="Fecha y Hora Inicio" />
 
             <EditText
                 android:id="@+id/workStartDate_value"
@@ -165,6 +165,17 @@
                 android:cursorVisible="false"
                 android:inputType="date"
                 android:textSize="14sp" />
+            <EditText
+                android:id="@+id/workStartDateTime_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="HH:mm"
+                android:focusable="false"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:inputType="time"
+                android:gravity="center_horizontal"
+                android:textSize="14sp" />
 
         </TableRow>
         <TableRow
@@ -175,7 +186,7 @@
                 android:id="@+id/workEndDate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fecha Finalizacion" />
+                android:text="Fecha y Hora Finalizacion" />
 
             <EditText
                 android:id="@+id/workEndDate_value"
@@ -186,6 +197,18 @@
                 android:clickable="false"
                 android:cursorVisible="false"
                 android:inputType="date"
+                android:gravity="center_horizontal"
+                android:textSize="14sp" />
+            <EditText
+                android:id="@+id/workEndDateTime_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="HH:mm"
+                android:focusable="false"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:inputType="time"
+                android:gravity="center_horizontal"
                 android:textSize="14sp" />
 
         </TableRow>

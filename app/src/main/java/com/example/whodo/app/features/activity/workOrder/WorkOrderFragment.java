@@ -324,6 +324,7 @@ public class WorkOrderFragment extends Fragment {
                 int mInspectionFee = (int) (mInspectionCharges*(mFeePercent/100.0));
 
                 String mNow= Utils.getISOLocalDate();
+
                 Log.d(TAG1, "mNow: "+mNow);
                 Log.d(TAG1, "mInspectionDate: "+ mInspectionDate);
                 if (Utils.isAfter(mInspectionDate,mNow) ) {
@@ -431,7 +432,8 @@ public class WorkOrderFragment extends Fragment {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
                //mConfStateItem.disableEdition();
             }
-        }else {
+        }
+        else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Información Importante")
                     .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
@@ -491,10 +493,26 @@ public class WorkOrderFragment extends Fragment {
             @Override
             public void onError(Exception e) { }
         }));
+        mConfStateItem.setWorkStartDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mConfStateItem.setWorkStartDateTime(s);
+            }
+            @Override
+            public void onError(Exception e) { }
+        }));
         mConfStateItem.setWorkEndDateOCL(v -> showDatePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
                 mConfStateItem.setWorkEndDate(s);
+            }
+            @Override
+            public void onError(Exception e) { }
+        }));
+        mConfStateItem.setWorkEndDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mConfStateItem.setWorkEndDateTime(s);
             }
             @Override
             public void onError(Exception e) { }
@@ -512,12 +530,20 @@ public class WorkOrderFragment extends Fragment {
                 if (!mConfStateItem.getWorkMaterialCost().isEmpty()){
                     mWorkMaterialsCost= Integer.parseInt(mConfStateItem.getWorkMaterialCost());
                 }
-                String mWorkStartDate =  Utils.getISOLocalDateFromString(mConfStateItem.getWorkStartDate(),"00:00:00");
-                String mWorkEndDate = Utils.getISOLocalDateFromString(mConfStateItem.getWorkEndDate(),"00:00:00");
+                String mWorkStartDate =  Utils.getISOLocalDateFromString(mConfStateItem.getWorkStartDate(),mConfStateItem.getWorkStartDateTime());
+                String mWorkEndDate = Utils.getISOLocalDateFromString(mConfStateItem.getWorkEndDate(),mConfStateItem.getWorkEndDateTime());
                 int mWorkLaborCost = Integer.parseInt(mConfStateItem.getWorkJobCost());
                 int mWorkFee= (int) ((mWorkLaborCost + mWorkMaterialsCost)*(mFeePercent/100.0));
                 String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
-                String mToday= Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000"+Utils.getISOLocalDate().substring(23,29);
+
+                String mToday;
+                try {
+                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000"+Utils.getISOLocalDate().substring(23,29);
+                } catch (Exception e){
+                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000Z";
+                    Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
+                }
+
                 Log.d(TAG1, "mToday :" + mToday );
 
                 if (Utils.isAfter(mWorkStartDate,mToday) && Utils.isAfter(mWorkEndDate,mToday) && Utils.isAfter(mWorkEndDate,mWorkStartDate) ) {
