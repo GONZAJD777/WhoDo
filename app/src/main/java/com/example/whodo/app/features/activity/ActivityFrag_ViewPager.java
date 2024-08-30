@@ -94,8 +94,8 @@ public class ActivityFrag_ViewPager extends Fragment {
         else {mWorkOrderType="PROVIDER";}
 
         mActivityWorkOrderItem.setOrderState("Estado de Orden: "+pWorkOrder.getState());
-        mActivityWorkOrderItem.setLimitDate("Fecha Limite: " + Utils.setLongToDate(pWorkOrder.getTimeLimit()));
-        mActivityWorkOrderItem.setLastUpdate("Ultima Actualizacion: " + Utils.setLongToDate(pWorkOrder.getStateChangeDate()));
+        mActivityWorkOrderItem.setLimitDate("Fecha Limite: " + Utils.getISOtoDate(pWorkOrder.getTimeLimit()));
+        mActivityWorkOrderItem.setLastUpdate("Ultima Actualizacion: " + Utils.getISOtoDate(pWorkOrder.getStateChangeDate()));
 
         if (mWorkOrderType.equals("CUSTOMER")) {
             Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_64", 64, 64);

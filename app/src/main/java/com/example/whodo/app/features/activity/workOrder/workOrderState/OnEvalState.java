@@ -1,6 +1,7 @@
 package com.example.whodo.app.features.activity.workOrder.workOrderState;
 
 import android.content.Context;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -65,17 +66,29 @@ public class OnEvalState extends RelativeLayout {
     public void setDescription(String pDescription){this.description_label.setText(pDescription);}
 
     public String getMeetDate(){ return meetDate_value.getText().toString(); }
-    public String getmeetTime(){ return meetTime_value.getText().toString(); }
-    public String getmeetTariff(){ return meetTariff_value.getText().toString(); }
+    public void setMeetDate (String pMeetDate) {meetDate_value.setText(pMeetDate);}
+    public String getMeetTime(){ return meetTime_value.getText().toString(); }
+    public void setMeetTime (String pMeetTime) {meetTime_value.setText(pMeetTime);}
+    public String getMeetTariff(){ return meetTariff_value.getText().toString(); }
     public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
 
-
+    public void setMeetDateTCL(TextWatcher TW) {
+        meetTariff_value.addTextChangedListener(TW);
+    }
+    public void setMeetDateOCL(OnClickListener OCL) {
+        meetDate_value.setOnClickListener(OCL);
+    }
+    public void setMeetTimeOCL(OnClickListener OCL) {
+        meetTime_value.setOnClickListener(OCL);
+    }
     public void setAcceptButtonOCL(OnClickListener OCL) {
         acceptWorkOrder_button.setOnClickListener(OCL);
     }
     public void setRejectButtonOCL(OnClickListener OCL) {
         rejectWorkOrder_button.setOnClickListener(OCL);
     }
+
+
     public void disableEdition(){
 
         meetDate_value.setEnabled(false);

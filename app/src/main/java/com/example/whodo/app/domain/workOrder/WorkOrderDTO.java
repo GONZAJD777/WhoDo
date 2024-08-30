@@ -23,20 +23,23 @@ public class WorkOrderDTO {
     private String Specialization; //Categoria del trabajo demandado
     private String Description;// Descripcion del trabajo a realizar por el cliente
     private String Detail; // Bitacora de tareas y comentarios del proveedor
-    private Long CreationDate; //Fecha y hora de creacion de la orden en formato YYYYMMDD24HHMMSS
-    private Long TimeLimit; // dias desde la fecha de creacion en los cuales la orden estara disponible para ser tomada por un proveedor
+    private String CreationDate; //Fecha y hora de creacion de la orden en formato YYYYMMDD24HHMMSS
+    private String TimeLimit; // dias desde la fecha de creacion en los cuales la orden estara disponible para ser tomada por un proveedor
     private String State; //esta variable ira marcando el ciclo de vida de la orden, desde q se crea hasta q es cerrada el cambio de estado requerira acciones de Customer y provider.
-    private Long StateChangeDate; //Fecha y hora del ultimo cambio de estado en formato YYYYMMDD24HHMMSS
+    private String StateChangeDate; //Fecha y hora del ultimo cambio de estado en formato YYYYMMDD24HHMMSS
     //INSPECTION INFO
-    private Long InspectionDate; //Fecha y hora de cita de inspeccion en formato YYYYMMDD24HHMMSS
+    private String InspectionDate; //Fecha y hora de cita de inspeccion en formato YYYYMMDD24HHMMSS
     private Integer InspectionCharges; //Cargo por la visita para inspeccion, es opcional
     private String InspectionPaymentOrder; // ID de la orden de pago generada como registro del pago de la inspeccion
+    private Integer InspectionFee;
     //WORK INFO
-    private Long WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
-    private Long WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
-    private Integer WorkCost;
+    private String WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
+    private String WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
+    private Integer WorkLaborCost;
+    private Integer WorkMaterialsCost;
+    private Integer WorkFee;
     private String WorkPaymentOrder;
-    private Long WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
+    private String WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
     //SCORES
     private String Impressions;
     private Integer AppereanceScore;
@@ -121,17 +124,17 @@ public class WorkOrderDTO {
         Detail=pDetail;
     }
 
-    public Long getCreationDate() {
+    public String getCreationDate() {
         return CreationDate;
     }
-    public void setCreationDate(Long pCreationDate){
+    public void setCreationDate(String pCreationDate){
         CreationDate=pCreationDate;
     }
 
-    public Long getTimeLimit() {
+    public String getTimeLimit() {
         return TimeLimit;
     }
-    public void setTimeLimit(Long pTimeLimit){
+    public void setTimeLimit(String pTimeLimit){
         TimeLimit=pTimeLimit;
     }
 
@@ -142,25 +145,29 @@ public class WorkOrderDTO {
         State=pState;
     }
 
-    public Long getStateChangeDate() {
+    public String getStateChangeDate() {
         return StateChangeDate;
     }
-    public void setStateChangeDate(Long pStateChangeDate){
+    public void setStateChangeDate(String pStateChangeDate){
         StateChangeDate=pStateChangeDate;
     }
 
     //INSPECTION INFO
-    public Long getInspectionDate() {
+    public String getInspectionDate() {
         return InspectionDate;
     }
-    public void setInspectionDate(Long pInspectionDate){
+    public void setInspectionDate(String pInspectionDate){
         InspectionDate=pInspectionDate;
     }
 
     public Integer getInspectionCharges() {
         return InspectionCharges;
     }
+
     public void setInspectionCharges(Integer pInspectionCharges){ InspectionCharges=pInspectionCharges; }
+
+    public Integer getInspectionFee() { return InspectionFee; }
+    public void setInspectionFee(Integer pInspectionFee){ InspectionFee=pInspectionFee; }
 
     public String getInspectionPaymentOrder() {
         return InspectionPaymentOrder;
@@ -168,30 +175,38 @@ public class WorkOrderDTO {
     public void setInspectionPaymentOrder(String pInspectionPaymentOrder){ InspectionPaymentOrder=pInspectionPaymentOrder; }
 
     //WORK INFO
-    public Long getWorkStartDate() {
+    public String getWorkStartDate() {
         return WorkStartDate;
     }
-    public void setWorkStartDate(Long pWorkStartDate){ WorkStartDate=pWorkStartDate; }
+    public void setWorkStartDate(String pWorkStartDate){ WorkStartDate=pWorkStartDate; }
 
-    public Long getWorkEndDate() {
+    public String getWorkEndDate() {
         return WorkEndDate;
     }
-    public void setWorkEndDate(Long pWorkEndDate){ WorkEndDate=pWorkEndDate; }
+    public void setWorkEndDate(String pWorkEndDate){ WorkEndDate=pWorkEndDate; }
 
-    public Integer getWorkCost() {
-        return WorkCost;
+    public Integer getWorkLaborCost() { return WorkLaborCost; }
+    public void setWorkLaborCost(Integer pWorkCost){ WorkLaborCost=pWorkCost; }
+
+    public Integer getWorkMaterialsCost() {
+        return WorkMaterialsCost;
     }
-    public void setWorkCost(Integer pWorkCost){ WorkCost=pWorkCost; }
+    public void setWorkMaterialsCost(Integer pWorkMaterialsCost){ WorkMaterialsCost=pWorkMaterialsCost; }
+
+    public Integer getWorkFee() {
+        return WorkFee;
+    }
+    public void setWorkFee(Integer pWorkFee){ WorkFee=pWorkFee; }
 
     public String getWorkPaymentOrder() {
         return WorkPaymentOrder;
     }
     public void setWorkPaymentOrder(String pWorkPaymentOrder){ WorkPaymentOrder=pWorkPaymentOrder; }
 
-    public Long getWorkWarrantyEndDate() {
+    public String getWorkWarrantyEndDate() {
         return WorkWarrantyEndDate;
     }
-    public void setWorkWarrantyEndDate(Long pWorkWarrantyEndDate){ WorkWarrantyEndDate=pWorkWarrantyEndDate; }
+    public void setWorkWarrantyEndDate(String pWorkWarrantyEndDate){ WorkWarrantyEndDate=pWorkWarrantyEndDate; }
 
     //SCORES
     public String getImpressions() {

@@ -41,9 +41,11 @@ public class OpenState extends RelativeLayout {
     public void setProviderAddress(String providerValue) { this.providerAddress_label.setText(providerValue); }
     public void setProviderPhone(String providerValue) { this.providerPhone_label.setText(providerValue); }
 
-    public Integer getTimeLimitValue() {
-        if (timeLimit_value.getText().toString().isEmpty()) {return 1;}
-        else {return Integer.valueOf(timeLimit_value.getText().toString());}
+    public String getTimeLimit() { return timeLimit_value.getText().toString();}
+    public void setTimeLimit(String pTimeLimit) { timeLimit_value.setText(pTimeLimit);}
+
+    public void setLimitDateListener (OnClickListener OCL) {
+        timeLimit_value.setOnClickListener(OCL);
     }
 
     //Metodo para asignar valores al spinner

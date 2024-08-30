@@ -15,6 +15,53 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+        <View
+            android:id="@+id/reviewWarning_topDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/general_horizontal_margin"
+            android:layout_marginEnd="@dimen/general_horizontal_margin"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/providerRatingInfo_label"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="Cierre de Orden"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/reviewWarning1_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:text="En este punto tu proveedor ha indicado que finalizo el trabajo, por favor verifica que el trabajo haya sido realizado segun los requerimientos y deja una reseña. " />
+
+        <TextView
+            android:id="@+id/reviewWarning2_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:text="Si hay fallas evidentes, no dudes en rechazar la orden para que el proveedor revise el trabajo y corrija." />
+
+        <TextView
+            android:id="@+id/reviewWarning3_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:text="No te preocupes, si aceptas y encuentras fallas mas tarde, tienes tiempo hasta dd/mm/yyyy hh:mm hs para como garantia luego de cerrada la orden." />
+
+        <TextView
+            android:id="@+id/reviewWarning4_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:text="Tienes tiempo hasta el dd/mm/yyyy hh:mmhs, luego de esta fecha la orden se cerrara, se liberara el pago al proveedor y no podras iniciar reclamos por fallas." />
 
         <View
             android:id="@+id/providerRating_topDivider"
@@ -31,6 +78,7 @@
             android:gravity="center"
             android:text="Califica a tu Trabajador"
             android:textStyle="bold" />
+
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">

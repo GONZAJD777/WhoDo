@@ -7,10 +7,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.whodo.R;
 
 public class DoneState extends RelativeLayout {
+
+    private TextView mReviewWarrantyWarning_label;
+    private TextView mReviewClosingWarning_label;
 
     private RatingBar providerAppereance_ratingBar;
     private RatingBar providerCleanliness_ratingBar;
@@ -25,6 +29,9 @@ public class DoneState extends RelativeLayout {
         super(context);
         View root=inflate(context, R.layout.item_work_order_done_state,(ViewGroup) getRootView());
 
+        mReviewWarrantyWarning_label=root.findViewById(R.id.reviewWarning3_label);
+        mReviewClosingWarning_label=root.findViewById(R.id.reviewWarning4_label);
+
         providerAppereance_ratingBar=root.findViewById(R.id.providerAppereance_ratingBar);
         providerCleanliness_ratingBar=root.findViewById(R.id.providerCleanliness_ratingBar);
         providerSpeed_ratingBar=root.findViewById(R.id.providerSpeed_ratingBar);
@@ -35,6 +42,9 @@ public class DoneState extends RelativeLayout {
         rejectWorkOrder_button=root.findViewById(R.id.rejectWorkOrder_button);
 
     }
+
+    public void setReviewWarrantyWarning (String pReviewWarrantyWarning) {mReviewWarrantyWarning_label.setText(pReviewWarrantyWarning);}
+    public void setReviewClosingWarning (String pReviewClosingWarning) {mReviewClosingWarning_label.setText(pReviewClosingWarning);}
 
     public int getProviderAppereanceScore () { return (int) providerAppereance_ratingBar.getRating(); }
     public int getProviderCleanlinessScore () { return (int) providerCleanliness_ratingBar.getRating(); }

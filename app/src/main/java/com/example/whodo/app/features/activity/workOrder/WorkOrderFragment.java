@@ -2,9 +2,13 @@ package com.example.whodo.app.features.activity.workOrder;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +23,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.whodo.R;
+import com.example.whodo.app.Callback;
+import com.example.whodo.app.MainActivity;
 import com.example.whodo.app.MainActivityViewModel;
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
@@ -35,6 +41,9 @@ import com.example.whodo.app.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -63,6 +72,12 @@ public class WorkOrderFragment extends Fragment {
     private TextView orderId_label;
     private Drawable mVertLineBackGround;
     private PorterDuff.Mode mVertLineBackTintMode;
+    //***************************************** Parametria, deberia levantarse de base de datos ********************//
+    private Integer mWarrantyDays=7;
+    private Integer mAutoClosingDays=2;
+    private Integer mFeePercent=10;
+    //**************************************************************************************************************//
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -76,6 +91,7 @@ public class WorkOrderFragment extends Fragment {
         orderId_label = root.findViewById(R.id.orderId_label);
         FloatingActionButton saveChangesButton = root.findViewById(R.id.SaveChangesButton);
         saveChangesButton.setOnClickListener(this::onClick);
+
 
         work0rderStates_scrollView=root.findViewById(R.id.work0rderStates_scrollView);
         workOrderStates_LinearLayout=root.findViewById(R.id.workOrderStates_LinearLayout);
@@ -173,22 +189,38 @@ public class WorkOrderFragment extends Fragment {
     }
     //********************************** OPEN STATE **********************************//
     private void openStateWorkOrder () {
+        OpenState mOpenStateItem = new OpenState(requireContext());
         String[] mProviderServices = Objects.requireNonNull(mHireFragmentViewModel.getPickedProvider().getValue()).getSpecialization().split(",");
         User mPickedProvider  = mHireFragmentViewModel.getPickedProvider().getValue();
         User mLoggedUser = mMainActivityViewModel.getLoggedUser().getValue();
-        OpenState mOpenStateItem = new OpenState(requireContext());
+
         mOpenStateItem.setProviderName("Nombre: "+mPickedProvider.getName());
         mOpenStateItem.setProviderAddress("Direccion: "+mPickedProvider.getAddress());
         mOpenStateItem.setProviderPhone("Telefono: "+mPickedProvider.getPhone_ccn()+" "+mPickedProvider.getPhone());
         mOpenStateItem.setSpinnerValues(mProviderServices);
 
+        mOpenStateItem.setLimitDateListener(v -> showDatePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mOpenStateItem.setTimeLimit(s);
+            }
+            @Override
+            public void onError(Exception e) { }
+        }));
+
+
         mOpenStateItem.setOnClickListener(v -> {
+
+            String mTimeLimitDate = Utils.getISOLocalDateFromString(mOpenStateItem.getTimeLimit(),"00:00:00");
+            String mCreationDate= Utils.getISOLocalDate();
+
             assert mLoggedUser != null;
             assignOrder(mLoggedUser,
                     mPickedProvider,
                     mOpenStateItem.getCategoryValue(),
                     mOpenStateItem.getDescriptionValue(),
-                    mOpenStateItem.getTimeLimitValue());
+                    mCreationDate,
+                    mTimeLimitDate);
         });
 
         openStateDetail_LinearLayout.addView(mOpenStateItem);
@@ -196,17 +228,16 @@ public class WorkOrderFragment extends Fragment {
         openStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** OPEN STATE **********************************//
-    private void assignOrder(User pCustomer,User pProvider ,String pCategory,String pDescription,Integer pLimitValue){
-        Long mTimeLimitDate = Utils.setDateToLong(Utils.increseDate(pLimitValue, new Date()));
-        Long mCreationDate= Utils.setDateToLong(new Date());
-        Long mStateChangeDate=Utils.setDateToLong(new Date());
+    private void assignOrder(User pCustomer,User pProvider ,String pCategory,String pDescription,String pCreationDate ,String pLimitDate){
+
+        String mStateChangeDate= Utils.getISOLocalDate();
 
         String mCustomerPhoneNumber = pCustomer.getPhone_ccn() + pCustomer.getPhone();
         String mProviderPhoneNumber = pProvider.getPhone_ccn() + pProvider.getPhone();
 
         WorkOrder WO = new WorkOrder(pCustomer.getUid(),pCustomer.getName(),pCustomer.getAddress(),pCustomer.getLatitude(),pCustomer.getLongitude(),mCustomerPhoneNumber,
                                      pProvider.getUid(),pProvider.getName(),pProvider.getAddress(),pProvider.getLatitude(),pProvider.getLongitude(),mProviderPhoneNumber,
-                                     pCategory, pDescription, mCreationDate,mTimeLimitDate,mStateChangeDate);
+                                     pCategory, pDescription,pCreationDate,pLimitDate,mStateChangeDate);
         mMainActivityViewModel.createWorkOrder(WO);
         mMainActivityViewModel.setSelectedTab(2);
         Log.d(TAG1, "BOTON CREAR ORDEN PRESIONADO");
@@ -215,11 +246,20 @@ public class WorkOrderFragment extends Fragment {
     private void onEvalStateWorkOrder(WorkOrder pWorkOrder) {
         OnEvalState mOnEvalStateItem = new OnEvalState(requireContext());
 
+        mOnEvalStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
+        mOnEvalStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
+        mOnEvalStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
+
+        mOnEvalStateItem.setLimitDate("Fecha limite: "+ Utils.getISOtoDate(pWorkOrder.getTimeLimit()));
+        mOnEvalStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
+        mOnEvalStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
+
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
                 if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
                     //mOnEvalStateItem.disableEdition();
                 }
-        }else {
+        }
+        else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle("Información Importante")
                         .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
@@ -228,29 +268,78 @@ public class WorkOrderFragment extends Fragment {
             closeWorkOrderLifeCycle();
         }
 
-        mOnEvalStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
-        mOnEvalStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
-        mOnEvalStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
+        final int[] mInspectionFeeValue = {0};
+        mOnEvalStateItem.setMeetDateTCL(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-        mOnEvalStateItem.setLimitDate("Fecha limite: "+Utils.setLongToDate(pWorkOrder.getTimeLimit()));
-        mOnEvalStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
-        mOnEvalStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
-
-        //Esto debe cambiar dinamicamente cuando se ingresa un valor en los campos
-        //configurar OnTextChangeListener
-        mOnEvalStateItem.setMeetFee("Comision Plataforma: 500sat");
-
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                int mSValue;
+                if(s.toString().isEmpty()){
+                    mSValue=0;
+                } else {
+                    mSValue=Integer.parseInt(s.toString());
+                }
+                Log.d(TAG1, "Comision Fee: "+(mFeePercent/100.0));
+                Log.d(TAG1, "Comision : "+ mSValue *(mFeePercent/100.0));
+                mInspectionFeeValue[0] = (int) (mSValue*(mFeePercent/100.0));
+                mOnEvalStateItem.setMeetFee("Comision Plataforma: "+mInspectionFeeValue[0]+"sat");
+            }
+        });
+        mOnEvalStateItem.setMeetDateOCL(v -> showDatePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mOnEvalStateItem.setMeetDate(s);
+            }
+            @Override
+            public void onError(Exception e) { }
+        }));
+        mOnEvalStateItem.setMeetTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mOnEvalStateItem.setMeetTime(s);
+            }
+            @Override
+            public void onError(Exception e) { }
+        }));
         mOnEvalStateItem.setAcceptButtonOCL(v -> {
-            Long mInspectionDate = Utils.setDateToLong(Utils.setStringToDate(mOnEvalStateItem.getMeetDate() +" "+ mOnEvalStateItem.getmeetTime()+ "hs"));
-            Integer mInspectionCharges = Integer.valueOf(mOnEvalStateItem.getmeetTariff());
 
-//            planDate(pWorkOrder.getOrderId(),
-//                       mInspectionDate,
-//                       mInspectionCharges);
+            if(mOnEvalStateItem.getMeetDate().isEmpty() || mOnEvalStateItem.getMeetTime().isEmpty() ) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Información Requerida")
+                        .setMessage("Es necesario cargar todos los campos, excepto aquellos marcados como Opcional")
+                        .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                        .show();
+            }
+            else {
+                int mInspectionCharges=0;
+                if (!mOnEvalStateItem.getMeetTariff().isEmpty()){
+                    mInspectionCharges= Integer.parseInt(mOnEvalStateItem.getMeetTariff());
+                }
+                String mInspectionDate = Utils.getISOLocalDateFromString(mOnEvalStateItem.getMeetDate(),mOnEvalStateItem.getMeetTime());
+                int mInspectionFee = (int) (mInspectionCharges*(mFeePercent/100.0));
 
-            Log.d(TAG1, "mInspectionDate: "+mInspectionDate);
-            Log.d(TAG1, "mInspectionCharges: "+mInspectionCharges);
-            Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
+                String mNow= Utils.getISOLocalDate();
+                Log.d(TAG1, "mNow: "+mNow);
+                Log.d(TAG1, "mInspectionDate: "+ mInspectionDate);
+                if (Utils.isAfter(mInspectionDate,mNow) ) {
+                    Log.d(TAG1, "mInspectionCharges: "+mInspectionCharges);
+                    Log.d(TAG1, "mInspectionFee: "+ mInspectionFee);
+                    Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
+                    planDate(pWorkOrder.getOrderId(), mInspectionDate, mInspectionCharges, mInspectionFee);
+                }else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                    builder.setTitle("Información Importante")
+                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY y la fecha de FIN no puede ser menor a la fecha de INICIO.")
+                            .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                            .show();
+                }
+            }
+
         });
         mOnEvalStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
 
@@ -259,12 +348,13 @@ public class WorkOrderFragment extends Fragment {
         onEvalStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** ON EVALUATION STATE **********************************//
-    private void planDate(String pWorkOrderID,Long pInspectionDate,Integer pInspectionCharges){
-        Long mStateChangeDate=Utils.setDateToLong(new Date());
+    private void planDate(String pWorkOrderID,String pInspectionDate,Integer pInspectionCharges,Integer pInspectionFee){
+        String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setInspectionDate(pInspectionDate);
         WO.setInspectionCharges(pInspectionCharges);
+        WO.setInspectionFee(pInspectionFee);
         WO.setState("PLANNED");
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
@@ -272,7 +362,7 @@ public class WorkOrderFragment extends Fragment {
     //********************************** PLANNED STATE **********************************//
     private void plannedStateWorkOrder(WorkOrder pWorkOrder) {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
-        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
+        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate()) ;
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
@@ -291,15 +381,14 @@ public class WorkOrderFragment extends Fragment {
         mPlannedStateItem.setProviderAddress("Direccion: "+ pWorkOrder.getProviderAddress());
         mPlannedStateItem.setProviderPhone("Telefono: "+ pWorkOrder.getProviderPhoneNumber());
 
-        mPlannedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
-        mPlannedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
+        mPlannedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
+        mPlannedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
         mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
-        mPlannedStateItem.setMeetFee("Comision Plataforma: 500sat");
+        mPlannedStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspectionFee()+"sat");
 
         mPlannedStateItem.setGenPaymentOrderButtonOCL(v -> { Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
         mPlannedStateItem.setAcceptButtonOCL(v -> {
-            confirmDate(pWorkOrder.getOrderId(),
-                    pWorkOrder.getInspectionPaymentOrder());
+            confirmDate(pWorkOrder.getOrderId(),pWorkOrder.getInspectionPaymentOrder());
             Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
         });
 
@@ -312,7 +401,7 @@ public class WorkOrderFragment extends Fragment {
     }
     //********************************** PLANNED STATE **********************************//
     private void confirmDate(String pWorkOrderID,String pPaymentOrderID){
-        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setInspectionPaymentOrder("pPaymentOrderID-123");
@@ -323,11 +412,24 @@ public class WorkOrderFragment extends Fragment {
     //********************************** CONFIRMED STATE **********************************//
     private void confStateWorkOrder(WorkOrder pWorkOrder) {
         ConfState mConfStateItem = new ConfState(requireContext());
-        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
+        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate()) ;
+
+        mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
+        mConfStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
+        mConfStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
+
+        mConfStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
+        mConfStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
+
+        mConfStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
+        mConfStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
+
+        mConfStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
+        mConfStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspectionFee()+"sat");
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-               // mConfStateItem.disableEdition();
+               //mConfStateItem.disableEdition();
             }
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -338,34 +440,103 @@ public class WorkOrderFragment extends Fragment {
             closeWorkOrderLifeCycle();
         }
 
-        mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
-        mConfStateItem.setCustomerAddress("Direccion: "+ pWorkOrder.getCustomerAddress());
-        mConfStateItem.setCustomerPhone("Telefono: "+ pWorkOrder.getCustomerPhoneNumber());
+        final Integer[] mWorkFeeValue = {0};
+        final Integer[] mWorkLaborCostValue = {0};
+        final Integer[] mWorkMaterialsCostValue={0};
 
-        mConfStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
-        mConfStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
+        mConfStateItem.setWorkLaborCostTCL(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    mWorkLaborCostValue[0]=0;
+                } else {
+                    mWorkLaborCostValue[0] = Integer.parseInt(s.toString());
+                }
+                Log.d(TAG1, "Comision Fee: "+(mFeePercent/100.0));
+                Log.d(TAG1, "Comision Mano de obra : "+ mWorkLaborCostValue[0] *(mFeePercent/100.0));
 
-        mConfStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
-        mConfStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
-        mConfStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
-        mConfStateItem.setMeetFee("Comision Plataforma: 500sat");
+                mWorkFeeValue[0] = (int) ((mWorkLaborCostValue[0]+mWorkMaterialsCostValue[0])*(mFeePercent/100.0));
+                mConfStateItem.setJobFee("Comision Plataforma: "+ mWorkFeeValue[0] +"sat");
+            }
+        });
+        mConfStateItem.setWorkMaterialsCostTCL(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    mWorkMaterialsCostValue[0]=0;
+                } else {
+                    mWorkMaterialsCostValue[0] = Integer.parseInt(s.toString());
+                }
+                Log.d(TAG1, "Comision Fee: "+(mFeePercent/100.0));
+                Log.d(TAG1, "Comision Materiales : "+ mWorkMaterialsCostValue[0] *(mFeePercent/100.0));
 
-        //Esto debe cambiar dinamicamente cuando se ingresa un valor en los campos
-        //configurar OnTextChangeListener
-        mConfStateItem.setJobFee("Comision Plataforma: 500sat");
+                mWorkFeeValue[0] = (int) ((mWorkLaborCostValue[0]+mWorkMaterialsCostValue[0])*(mFeePercent/100.0));
+
+                mConfStateItem.setJobFee("Comision Plataforma: "+ mWorkFeeValue[0] +"sat");
+            }
+        });
+        mConfStateItem.setWorkStartDateOCL(v -> showDatePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mConfStateItem.setWorkStartDate(s);
+            }
+            @Override
+            public void onError(Exception e) { }
+        }));
+        mConfStateItem.setWorkEndDateOCL(v -> showDatePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mConfStateItem.setWorkEndDate(s);
+            }
+            @Override
+            public void onError(Exception e) { }
+        }));
 
         mConfStateItem.setPresentOrderButtonOCL(v -> {
-            Long mWorkStartDate =  Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkStartDate() +" 00:00hs"));
-            Long mWorkEndDate = Utils.setDateToLong(Utils.setStringToDate(mConfStateItem.getWorkEndDate() +" 00:00hs"));
-            Integer mWorkJobCost = Integer.valueOf(mConfStateItem.getWorkJobCost()+Integer.valueOf(mConfStateItem.getWorkMaterialCost()));
-            String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
+            if(mConfStateItem.getWorkStartDate().isEmpty() || mConfStateItem.getWorkEndDate().isEmpty() || mConfStateItem.getWorkJobCost().isEmpty() || mConfStateItem.getWorkTaskDetail().isEmpty() ) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Información Requerida")
+                        .setMessage("Es necesario cargar todos los campos, excepto aquellos marcados como Opcional")
+                        .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                        .show();
+            }else{
+                int mWorkMaterialsCost=0;
+                if (!mConfStateItem.getWorkMaterialCost().isEmpty()){
+                    mWorkMaterialsCost= Integer.parseInt(mConfStateItem.getWorkMaterialCost());
+                }
+                String mWorkStartDate =  Utils.getISOLocalDateFromString(mConfStateItem.getWorkStartDate(),"00:00:00");
+                String mWorkEndDate = Utils.getISOLocalDateFromString(mConfStateItem.getWorkEndDate(),"00:00:00");
+                int mWorkLaborCost = Integer.parseInt(mConfStateItem.getWorkJobCost());
+                int mWorkFee= (int) ((mWorkLaborCost + mWorkMaterialsCost)*(mFeePercent/100.0));
+                String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
+                String mToday= Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000"+Utils.getISOLocalDate().substring(23,29);
+                Log.d(TAG1, "mToday :" + mToday );
 
-            Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
-            Log.d(TAG1, "mWorkEndDate :" + mWorkEndDate );
-            Log.d(TAG1, "Current Date :" + Utils.setDateToLong(new Date()));
+                if (Utils.isAfter(mWorkStartDate,mToday) && Utils.isAfter(mWorkEndDate,mToday) && Utils.isAfter(mWorkEndDate,mWorkStartDate) ) {
+                    Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
+                    Log.d(TAG1, "mWorkEndDate :" + mWorkEndDate );
+                    Log.d(TAG1, "Current Date :" + Utils.getISOLocalDate());
+                    Log.d(TAG1, "mWorkFee :" + mWorkFee);
+                    Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");
+                    diagnoseOrder(pWorkOrder.getOrderId(),mWorkStartDate,mWorkEndDate,mWorkLaborCost,mWorkMaterialsCost,mWorkFee,mWorkTaskDetail);
+                }else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                    builder.setTitle("Información Importante")
+                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY y la fecha de FIN no puede ser menor a la fecha de INICIO.")
+                            .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                            .show();
+                }
 
-            //diagnoseOrder(pWorkOrder.getOrderId(),mWorkStartDate,mWorkEndDate,mWorkJobCost,mWorkTaskDetail);
-            Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");
+            }
+
         } );
 
         confStateDetail_LinearLayout.addView(mConfStateItem);
@@ -373,23 +544,25 @@ public class WorkOrderFragment extends Fragment {
         confStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** CONFIRMED STATE **********************************//
-    private void diagnoseOrder(String pWorkOrderID,Long pWorkStartDate, Long pWorkEndDate, Integer pWorkCost, String pWorkDetail){
-        Long mStateChangeDate=Utils.setDateToLong(new Date());
+    private void diagnoseOrder(String pWorkOrderID,String pWorkStartDate, String pWorkEndDate, Integer pWorkLaborCost,Integer pWorkMaterialsCost,Integer pWorkFee, String pWorkDetail){
+        String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setState("DIAGNOSED");
         WO.setStateChangeDate(mStateChangeDate);
         WO.setWorkStartDate(pWorkStartDate);
         WO.setWorkEndDate(pWorkEndDate);
-        WO.setWorkCost(pWorkCost);
+        WO.setWorkLaborCost(pWorkLaborCost);
+        WO.setWorkMaterialsCost(pWorkMaterialsCost);
+        WO.setWorkFee(pWorkFee);
         WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
     //********************************** DIAGNOSE STATE **********************************//
     private void diagStateWorkOrder(WorkOrder pWorkOrder) {
         DiagState mDiagStateItem = new DiagState(requireContext());
-        String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
-        String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
+        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
+        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
@@ -404,17 +577,16 @@ public class WorkOrderFragment extends Fragment {
             closeWorkOrderLifeCycle();
         }
 
-
         mDiagStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
         mDiagStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
         mDiagStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProviderPhoneNumber());
 
-        mDiagStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate.substring(0, 10));
-        mDiagStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate.substring(0, 10));
+        mDiagStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate);
+        mDiagStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate);
         mDiagStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
-        mDiagStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkCost()+"sat");
-        mDiagStateItem.setJobCost("Costo Mano de Obra: ");
-        mDiagStateItem.setJobFee("Tarifa de Plataforma: ");
+        mDiagStateItem.setJobCost("Costo Mano de Obra: "+ pWorkOrder.getWorkLaborCost()+"sat");
+        mDiagStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkMaterialsCost()+"sat");
+        mDiagStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee()+"sat");
 
         mDiagStateItem.setAcceptButtonOCL(v -> {
             acceptContract(pWorkOrder.getOrderId(),
@@ -431,7 +603,7 @@ public class WorkOrderFragment extends Fragment {
     }
     //********************************** DIAGNOSE STATE **********************************//
     private void acceptContract(String pWorkOrderID, String pWorkPaymentOrderID){
-        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setState("ONPROGRESS");
@@ -445,8 +617,8 @@ public class WorkOrderFragment extends Fragment {
     //********************************** ON PROGRESS STATE **********************************//
     private void onProgStateWorkOrder(WorkOrder pWorkOrder) {
         OnProgState mOnProgStateItem = new OnProgState(requireContext());
-        String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
-        String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
+        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
+        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
                 //mOnProgStateItem.disableEdition();
@@ -464,16 +636,22 @@ public class WorkOrderFragment extends Fragment {
         mOnProgStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
         mOnProgStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
 
-        mOnProgStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate.substring(0, 10));
-        mOnProgStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate.substring(0, 10));
+        mOnProgStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate);
+        mOnProgStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate);
         mOnProgStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
-        mOnProgStateItem.setMaterialCost("Costo de Materiales" + pWorkOrder.getWorkCost()+"sat");
-        mOnProgStateItem.setJobCost("Costo de Trabajo: 122sat");
-        mOnProgStateItem.setJobFee("Comision Plataforma: 500sat");
+
+        mOnProgStateItem.setJobCost("Costo Mano de Obra: "+ pWorkOrder.getWorkLaborCost()+"sat");
+        mOnProgStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkMaterialsCost()+"sat");
+        mOnProgStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee()+"sat");
 
 
         mOnProgStateItem.setFinishWorkOrderButtonOCL(v -> {
-            finishOrder(pWorkOrder.getOrderId());
+            String mClosingDate = Utils.getISOLocalDate();
+            String mBiggerDate = Utils.getBiggerISODate(pWorkOrder.getWorkEndDate(),mClosingDate);
+            String mWarrantyDate = Utils.getISOLocalDatePlus(mWarrantyDays,mBiggerDate);
+
+            finishOrder(pWorkOrder.getOrderId(),
+                        mWarrantyDate);
             Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
 
         onProgStateDetail_LinearLayout.addView(mOnProgStateItem);
@@ -481,17 +659,21 @@ public class WorkOrderFragment extends Fragment {
         onProgStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** ON PROGRESS STATE **********************************//
-    private void finishOrder(String pWorkOrderID){
-        Long mStateChangeDate=Utils.setDateToLong(new Date());
+    private void finishOrder(String pWorkOrderID,String pWarrantyEndDate){
+        String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setState("DONE");
         WO.setStateChangeDate(mStateChangeDate);
+        WO.setWorkWarrantyEndDate(pWarrantyEndDate);
+
         mMainActivityViewModel.updateWorkOrder(WO);
     }
+
     //********************************** DONE STATE **********************************//
     private void doneStateWorkOrder(WorkOrder pWorkOrder) {
         DoneState mDoneStateItem = new DoneState(requireContext());
+
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
@@ -505,7 +687,22 @@ public class WorkOrderFragment extends Fragment {
                     .show();
             closeWorkOrderLifeCycle();
         }
+        String mWorkWarrantyEndDate = Utils.getISOtoDate(pWorkOrder.getWorkWarrantyEndDate());
+        String mAutoClosingDate = Utils.getISOLocalDatePlus(mAutoClosingDays,pWorkOrder.getStateChangeDate());
+        String mReviewWarrantyWarning = getString(R.string.WorkOrderLifeCycleFrag_DoneState_ReviewWarrantyWarning,mWorkWarrantyEndDate);
+        String mReviewClosingWarning = getString(R.string.WorkOrderLifeCycleFrag_DoneState_ReviewClosingWarning,Utils.getISOtoDate(mAutoClosingDate));
 
+        String mNowDate = Utils.getISOLocalDate();
+        String mCheckDate = Utils.getBiggerISODate(mNowDate,mAutoClosingDate);
+        //Se verifica si la fecha de autocierre aun esta vigente, de lo contrario se bloquea la orden
+        //Al final del dia, un proceso batch colocara la orden en estado cerrado finalizando el proceso automaticamente
+        if (Objects.equals(mCheckDate, mNowDate)) {
+            mDoneStateItem.disableEdition();
+            mReviewClosingWarning = getString(R.string.WorkOrderLifeCycleFrag_DoneState_ReviewClosingWarning_OutOfDate,Utils.getISOtoDate(mAutoClosingDate));
+        }
+        mDoneStateItem.setReviewClosingWarning(mReviewClosingWarning);
+        mDoneStateItem.setReviewWarrantyWarning(mReviewWarrantyWarning);
+        
         mDoneStateItem.setAcceptButtonOCL(v -> {
             closeOrder(pWorkOrder.getOrderId(),
                     mDoneStateItem.getProviderAppereanceScore(),
@@ -521,7 +718,7 @@ public class WorkOrderFragment extends Fragment {
     }
     //********************************** DONE STATE **********************************//
     private void closeOrder(String pWorkOrderID,Integer pAppereanceScore ,Integer pCleanlinessScore,Integer pSpeedScore,Integer pQualityScore,String pImpressions){
-        Long mStateChangeDate=Utils.setDateToLong(new Date());
+        String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setState("CLOSED");
@@ -548,10 +745,10 @@ public class WorkOrderFragment extends Fragment {
                     .show();
             closeWorkOrderLifeCycle();
         }
-        String mWorkStartDate = Utils.setLongToDate(pWorkOrder.getWorkStartDate());
-        String mWorkEndDate = Utils.setLongToDate(pWorkOrder.getWorkEndDate());
-        String mInspectionDate = Utils.setLongToDate(pWorkOrder.getInspectionDate());
-        String mWarrantyDate = Utils.setDateFormat(Utils.increseDate(7,Utils.setStringToDate(Utils.setLongToDate(pWorkOrder.getWorkEndDate()))), "dd-MM-yyyy HH:mm'hs'");
+        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
+        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
+        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
+        String mWarrantyDate = Utils.getISOtoDate(pWorkOrder.getWorkWarrantyEndDate());
 
         mClosedStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mClosedStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
@@ -564,22 +761,30 @@ public class WorkOrderFragment extends Fragment {
         mClosedStateItem.setCategory("Categoria: "+pWorkOrder.getSpecialization());
         mClosedStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
 
-        mClosedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 10));
-        mClosedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(11, 18));
-        mClosedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
-        mClosedStateItem.setMeetFee("Comision Plataforma: 500sat");
+        mClosedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
+        mClosedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
 
-        mClosedStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate.substring(0, 10));
-        mClosedStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate.substring(0, 10));
+        mClosedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges()+"sat");
+        mClosedStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspectionFee()+"sat");
+
+        mClosedStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate);
+        mClosedStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate);
         mClosedStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
-        mClosedStateItem.setMaterialCost("Costo TOTAL a pagar: " + pWorkOrder.getWorkCost()+"sat");
-        mClosedStateItem.setJobCost("Costo de Trabajo: 122sat");
-        mClosedStateItem.setJobFee("Comision Plataforma: 500sat");
+
+        mClosedStateItem.setJobCost("Costo Mano de Obra: "+ pWorkOrder.getWorkLaborCost()+"sat");
+        mClosedStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkMaterialsCost()+"sat");
+        mClosedStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee()+"sat");
+
+
+        mClosedStateItem.setProviderAppereanceScore(pWorkOrder.getAppereanceScore());
+        mClosedStateItem.setProviderCleanlinessScore(pWorkOrder.getCleanlinessScore());
+        mClosedStateItem.setProviderSpeedScore(pWorkOrder.getSpeedScore());
+        mClosedStateItem.setProviderQualityScore(pWorkOrder.getQualityScore());
 
         mClosedStateItem.setProviderReview("Reseña del cliente:\n" + pWorkOrder.getImpressions());
         mClosedStateItem.setWarrantyEndDate("Fecha limite de Garantia: " + mWarrantyDate);
 
-        //mClosedStateItem.setAcceptButtonOCL(v -> { Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
+        mClosedStateItem.setComplainButtonOCL(v -> { Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
 
         closedStateDetail_LinearLayout.addView(mClosedStateItem);
         closedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
@@ -604,5 +809,39 @@ public class WorkOrderFragment extends Fragment {
             mMainActivityViewModel.setSelectedFragment(2, View.VISIBLE);
         }
     }
+
+    private void showDatePickerDialog(Callback<String> pCallback) {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String mDate = "01/01/1900";
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year1, month1, dayOfMonth) -> {
+                    // Formatear la fecha seleccionada y mostrarla en el EditText
+                    String fechaSeleccionada = String.format("%02d/%02d/%04d", dayOfMonth, month1 + 1, year1);
+                    pCallback.onSuccess(fechaSeleccionada);},
+                year, month, day);
+
+        datePickerDialog.show();
+    }
+    private void showTimePickerDialog(Callback<String> pCallback) {
+        final Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                requireContext(),
+                (view, hourOfDay, minute1) -> {
+                    // Formatear la hora seleccionada y mostrarla en el EditText
+                    String horaSeleccionada = String.format("%02d:%02d", hourOfDay, minute1);
+                    pCallback.onSuccess(horaSeleccionada);
+                },
+                hour, minute, true // true para formato de 24 horas
+        );
+
+        timePickerDialog.show();
+    }
+
 
 }

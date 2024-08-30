@@ -32,10 +32,13 @@ public class WorkOrderMapper {
         mWorkOrderDTO.setInspectionDate(pEntity.getInspectionDate());
         mWorkOrderDTO.setInspectionCharges(pEntity.getInspectionCharges());
         mWorkOrderDTO.setInspectionPaymentOrder(pEntity.getInspectionPaymentOrder());
+        mWorkOrderDTO.setInspectionFee(pEntity.getInspectionFee());
 
         mWorkOrderDTO.setWorkStartDate(pEntity.getWorkStartDate());
         mWorkOrderDTO.setWorkEndDate(pEntity.getWorkEndDate());
-        mWorkOrderDTO.setWorkCost(pEntity.getWorkCost());
+        mWorkOrderDTO.setWorkLaborCost(pEntity.getWorkLaborCost());
+        mWorkOrderDTO.setWorkMaterialsCost(pEntity.getWorkMaterialsCost());
+        mWorkOrderDTO.setWorkFee(pEntity.getWorkFee());
         mWorkOrderDTO.setWorkPaymentOrder(pEntity.getWorkPaymentOrder());
         mWorkOrderDTO.setWorkWarrantyEndDate(pEntity.getWorkWarrantyEndDate());
 
@@ -73,14 +76,22 @@ public class WorkOrderMapper {
         mEntity.setCreationDate(pWorkOrderDTO.getCreationDate());
         mEntity.setState(pWorkOrderDTO.getState());
         mEntity.setStateChangeDate(pWorkOrderDTO.getStateChangeDate());
+
         mEntity.setInspectionDate(pWorkOrderDTO.getInspectionDate());
         mEntity.setInspectionCharges(pWorkOrderDTO.getInspectionCharges());
+        mEntity.setInspectionFee(pWorkOrderDTO.getInspectionFee());
         mEntity.setInspectionPaymentOrder(pWorkOrderDTO.getInspectionPaymentOrder());
+
         mEntity.setWorkStartDate(pWorkOrderDTO.getWorkStartDate());
         mEntity.setWorkEndDate(pWorkOrderDTO.getWorkEndDate());
-        mEntity.setWorkCost(pWorkOrderDTO.getWorkCost());
+
+        mEntity.setWorkLaborCost(pWorkOrderDTO.getWorkLaborCost());
+        mEntity.setWorkMaterialsCost(pWorkOrderDTO.getWorkMaterialsCost());
+        mEntity.setWorkFee(pWorkOrderDTO.getWorkFee());
+
         mEntity.setWorkPaymentOrder(pWorkOrderDTO.getWorkPaymentOrder());
         mEntity.setWorkWarrantyEndDate(pWorkOrderDTO.getWorkWarrantyEndDate());
+
         mEntity.setImpressions(pWorkOrderDTO.getImpressions());
         mEntity.setAppereanceScore(pWorkOrderDTO.getAppereanceScore());
         mEntity.setCleanlinessScore(pWorkOrderDTO.getCleanlinessScore());

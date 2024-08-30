@@ -35,14 +35,14 @@ public class ClosedState extends RelativeLayout {
     private TextView jobFee_label;
     private TextView workDetail_label;
 
-    private RatingBar providerAppereance_ratingBar;
-    private RatingBar providerCleanliness_ratingBar;
-    private RatingBar providerSpeed_ratingBar;
+    private RatingBar providerAppereanceScore_ratingBar;
+    private RatingBar providerCleanlinessScore_ratingBar;
+    private RatingBar providerSpeedScore_ratingBar;
     private RatingBar providerQualityScore_ratingBar;
     private TextView providerReview_label;
 
     private TextView warrantyEndDate_label;
-    private Button closeOrder_button;
+    private Button complainOrder_button;
 
 
 
@@ -73,14 +73,15 @@ public class ClosedState extends RelativeLayout {
         jobFee_label=root.findViewById(R.id.jobFee_label);
         workDetail_label=root.findViewById(R.id.workDetail_label);
 
-        providerAppereance_ratingBar=root.findViewById(R.id.providerAppereance_ratingBar);
-        providerCleanliness_ratingBar=root.findViewById(R.id.providerCleanliness_ratingBar);
-        providerSpeed_ratingBar=root.findViewById(R.id.providerSpeed_ratingBar);
+        providerAppereanceScore_ratingBar=root.findViewById(R.id.providerAppereanceScore_ratingBar);
+        providerCleanlinessScore_ratingBar=root.findViewById(R.id.providerCleanlinessScore_ratingBar);
+        providerSpeedScore_ratingBar=root.findViewById(R.id.providerSpeedScore_ratingBar);
         providerQualityScore_ratingBar=root.findViewById(R.id.providerQualityScore_ratingBar);
+
         providerReview_label=root.findViewById(R.id.providerReview_label);
 
         warrantyEndDate_label=root.findViewById(R.id.warrantyEndDate_label);
-        closeOrder_button=root.findViewById(R.id.closeOrder_button);
+        complainOrder_button=root.findViewById(R.id.complainOrder_button);
     }
 
     public void setCustomerName(String pCustomerName){this.customerName_label.setText(pCustomerName);}
@@ -108,11 +109,21 @@ public class ClosedState extends RelativeLayout {
     public void setWorkDetail(String pWorkDetail) { this.workDetail_label.setText(pWorkDetail); }
 
 
+    public void setProviderAppereanceScore (int pProviderAppereanceScore){this.providerAppereanceScore_ratingBar.setRating(pProviderAppereanceScore);}
+    public void setProviderCleanlinessScore (int pProviderCleanlinessScore){this.providerCleanlinessScore_ratingBar.setRating(pProviderCleanlinessScore);}
+    public void setProviderSpeedScore (int pProviderSpeedScore){this.providerSpeedScore_ratingBar.setRating(pProviderSpeedScore);}
+    public void setProviderQualityScore (int pProviderQualityScore){this.providerQualityScore_ratingBar.setRating(pProviderQualityScore);}
+
+
     public void setProviderReview(String pProviderReview) { this.providerReview_label.setText(pProviderReview); }
     public void setWarrantyEndDate(String pWarrantyEndDate) { this.warrantyEndDate_label.setText(pWarrantyEndDate); }
 
+    public void setComplainButtonOCL(OnClickListener OCL) {
+        complainOrder_button.setOnClickListener(OCL);
+    }
+
     public void disableEdition(){
-        closeOrder_button.setEnabled(false);
+        complainOrder_button.setEnabled(false);
     }
 
 }

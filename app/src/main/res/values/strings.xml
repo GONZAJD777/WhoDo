@@ -116,7 +116,12 @@
     <string name="WorkOrderLifeCycleFrag_DiagnosedStateLabel">DIAGNOSTICADA</string>
     <string name="WorkOrderLifeCycleFrag_OnProgressStateLabel">EN PROGRESO</string>
     <string name="WorkOrderLifeCycleFrag_DoneStateLabel">FINALIZADA</string>
+    <string name="WorkOrderLifeCycleFrag_DoneState_ReviewWarrantyWarning">No te preocupes, si aceptas y encuentras fallas mas tarde, tienes tiempo hasta %1$s como garantia para inciar un reclamo si no acuerdas con el proveedor.</string>
+    <string name="WorkOrderLifeCycleFrag_DoneState_ReviewClosingWarning">Tienes tiempo hasta el %1$s, luego de esta fecha la orden se cerrara, se liberara el pago al proveedor y no podras iniciar reclamos por fallas.</string>
+    <string name="WorkOrderLifeCycleFrag_DoneState_ReviewClosingWarning_OutOfDate">Tenias tiempo hasta el %1$s, la orden ya no esta disponible para reclamos y cerra cerrada automaticamente.</string>
+
     <string name="WorkOrderLifeCycleFrag_ClosedStateLabel">CERRADA</string>
+
 
 
     <string-array name="ServicesArray">

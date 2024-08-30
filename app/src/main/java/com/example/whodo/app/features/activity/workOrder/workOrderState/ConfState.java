@@ -1,6 +1,7 @@
 package com.example.whodo.app.features.activity.workOrder.workOrderState;
 
 import android.content.Context;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -72,12 +73,27 @@ public class ConfState extends RelativeLayout {
     public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
 
     public String getWorkStartDate(){ return workStartDate_value.getText().toString(); }
+    public void setWorkStartDate(String pWorkStartDate){workStartDate_value.setText(pWorkStartDate);}
     public String getWorkEndDate(){ return workEndDate_value.getText().toString(); }
+    public void setWorkEndDate(String pWorkEndDate){workEndDate_value.setText(pWorkEndDate);}
     public String getWorkMaterialCost(){ return workMaterialCost_value.getText().toString(); }
     public String getWorkJobCost(){ return workJobCost_value.getText().toString(); }
     public String getWorkTaskDetail(){ return workTaskDetail_value.getText().toString(); }
     public void setJobFee(String pJobFee) { this.jobFee_label.setText(pJobFee); }
 
+    public void setWorkLaborCostTCL(TextWatcher TW) {
+        workJobCost_value.addTextChangedListener(TW);
+    }
+    public void setWorkMaterialsCostTCL(TextWatcher TW) {
+        workMaterialCost_value.addTextChangedListener(TW);
+    }
+
+    public void setWorkStartDateOCL(OnClickListener OCL) {
+        workStartDate_value.setOnClickListener(OCL);
+    }
+    public void setWorkEndDateOCL(OnClickListener OCL) {
+        workEndDate_value.setOnClickListener(OCL);
+    }
 
     public void setPresentOrderButtonOCL(OnClickListener OCL) {
         presentOrder_button.setOnClickListener(OCL);

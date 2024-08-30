@@ -244,14 +244,14 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/providerAppereance_label"
+                android:id="@+id/providerAppereanceScore_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="Presentacion personal" />
 
             <RatingBar
-                android:id="@+id/providerAppereance_ratingBar"
+                android:id="@+id/providerAppereanceScore_ratingBar"
                 style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -269,14 +269,14 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/providerCleanliness_label"
+                android:id="@+id/providerCleanlinessScore_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="Limpieza del trabajo" />
 
             <RatingBar
-                android:id="@+id/providerCleanliness_ratingBar"
+                android:id="@+id/providerCleanlinessScore_ratingBar"
                 style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -291,14 +291,14 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/providerSpeed_label"
+                android:id="@+id/providerSpeedScore_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="Calidad del trabajo" />
 
             <RatingBar
-                android:id="@+id/providerSpeed_ratingBar"
+                android:id="@+id/providerSpeedScore_ratingBar"
                 style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -380,11 +380,11 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/closeOrder_button"
+                android:id="@+id/complainOrder_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="cerrar orden" />
+                android:text="Reclamar" />
 
 
         </LinearLayout>

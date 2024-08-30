@@ -183,6 +183,9 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
         if (workOrderDTO.getInspectionCharges() != null) {
             updates.put("inspectionCharges", workOrderDTO.getInspectionCharges());
         }
+        if (workOrderDTO.getInspectionFee() != null) {
+            updates.put("inspectionFee", workOrderDTO.getInspectionFee());
+        }
         if (workOrderDTO.getInspectionPaymentOrder() != null) {
             updates.put("inspectionPaymentOrder", workOrderDTO.getInspectionPaymentOrder());
         }
@@ -194,8 +197,14 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
         if (workOrderDTO.getWorkEndDate() != null) {
             updates.put("workEndDate", workOrderDTO.getWorkEndDate());
         }
-        if (workOrderDTO.getWorkCost() != null) {
-            updates.put("workCost", workOrderDTO.getWorkCost());
+        if (workOrderDTO.getWorkLaborCost() != null) {
+            updates.put("workLaborCost", workOrderDTO.getWorkLaborCost());
+        }
+        if (workOrderDTO.getWorkMaterialsCost() != null) {
+            updates.put("workMaterialsCost", workOrderDTO.getWorkMaterialsCost());
+        }
+        if (workOrderDTO.getWorkFee() != null) {
+            updates.put("workFee", workOrderDTO.getWorkFee());
         }
         if (workOrderDTO.getWorkPaymentOrder() != null) {
             updates.put("workPaymentOrder", workOrderDTO.getWorkPaymentOrder());
