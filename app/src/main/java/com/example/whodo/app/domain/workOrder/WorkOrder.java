@@ -33,6 +33,8 @@ public class WorkOrder {
     private Integer InspectionCharges; //Cargo por la visita para inspeccion, es opcional
     private String InspectionPaymentOrder; // ID de la orden de pago generada como registro del pago de la inspeccion
     private Integer InspectionFee;
+    private String InspectionFullfilment;
+    private String InspectionRescheduled;
     //WORK INFO
     private String WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
     private String WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
@@ -234,6 +236,16 @@ public class WorkOrder {
         return InspectionPaymentOrder;
     }
     public void setInspectionPaymentOrder(String pInspectionPaymentOrder){ InspectionPaymentOrder=pInspectionPaymentOrder; }
+
+    public String getInspectionFullfilment() {
+        return InspectionFullfilment;
+    }
+    public void setInspectionFullfilment(String pInspectionFullfilment){ InspectionFullfilment=pInspectionFullfilment; }
+
+    public String getInspectionRescheduled() {
+        return InspectionRescheduled;
+    }
+    public void setInspectionRescheduled(String pInspectionRescheduled){ InspectionRescheduled=pInspectionRescheduled; }
 
     //WORK INFO
     public String getWorkStartDate() {

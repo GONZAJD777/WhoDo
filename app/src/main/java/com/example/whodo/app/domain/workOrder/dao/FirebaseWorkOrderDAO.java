@@ -189,6 +189,12 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
         if (workOrderDTO.getInspectionPaymentOrder() != null) {
             updates.put("inspectionPaymentOrder", workOrderDTO.getInspectionPaymentOrder());
         }
+        if (workOrderDTO.getInspectionFullfilment() != null) {
+            updates.put("inspectionFullfilment", workOrderDTO.getInspectionFullfilment());
+        }
+        if (workOrderDTO.getInspectionRescheduled() != null) {
+            updates.put("inspectionRescheduled", workOrderDTO.getInspectionRescheduled());
+        }
         //*********************************************************************//
 
         if (workOrderDTO.getWorkStartDate() != null) {

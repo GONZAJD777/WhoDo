@@ -33,6 +33,8 @@ public class WorkOrderMapper {
         mWorkOrderDTO.setInspectionCharges(pEntity.getInspectionCharges());
         mWorkOrderDTO.setInspectionPaymentOrder(pEntity.getInspectionPaymentOrder());
         mWorkOrderDTO.setInspectionFee(pEntity.getInspectionFee());
+        mWorkOrderDTO.setInspectionFullfilment(pEntity.getInspectionFullfilment());
+        mWorkOrderDTO.setInspectionRescheduled(pEntity.getInspectionRescheduled());
 
         mWorkOrderDTO.setWorkStartDate(pEntity.getWorkStartDate());
         mWorkOrderDTO.setWorkEndDate(pEntity.getWorkEndDate());
@@ -81,6 +83,8 @@ public class WorkOrderMapper {
         mEntity.setInspectionCharges(pWorkOrderDTO.getInspectionCharges());
         mEntity.setInspectionFee(pWorkOrderDTO.getInspectionFee());
         mEntity.setInspectionPaymentOrder(pWorkOrderDTO.getInspectionPaymentOrder());
+        mEntity.setInspectionFullfilment(pWorkOrderDTO.getInspectionFullfilment());
+        mEntity.setInspectionRescheduled(pWorkOrderDTO.getInspectionRescheduled());
 
         mEntity.setWorkStartDate(pWorkOrderDTO.getWorkStartDate());
         mEntity.setWorkEndDate(pWorkOrderDTO.getWorkEndDate());

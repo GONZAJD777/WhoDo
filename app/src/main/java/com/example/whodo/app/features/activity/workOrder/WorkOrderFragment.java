@@ -1,9 +1,12 @@
 package com.example.whodo.app.features.activity.workOrder;
 
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -43,6 +46,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -76,12 +80,10 @@ public class WorkOrderFragment extends Fragment {
     private Integer mWarrantyDays=7;
     private Integer mAutoClosingDays=2;
     private Integer mFeePercent=10;
+    private Integer mInspectionCostMax=2000;
     //**************************************************************************************************************//
 
-
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_work_order_lifecycle, container, false);
         mHireFragmentViewModel = new ViewModelProvider(requireActivity()).get(HireFragmentViewModel.class);
@@ -173,7 +175,57 @@ public class WorkOrderFragment extends Fragment {
             assert fila != null;
             work0rderStates_scrollView.smoothScrollTo(0, fila.getTop());
         });
+
+        validateInspectionStatus(pWorkOrder);
     }
+    //********************************** Validacion de Inspeccion **********************************//
+    private void validateInspectionStatus(WorkOrder pWorkOrder){
+
+        if (pWorkOrder!=null && pWorkOrder.getInspectionDate()!=null ){
+            String mNow= Utils.getISOLocalDate();
+            String mInspectionDate=pWorkOrder.getInspectionDate();
+            String[] validStates = {"PLANNED", "CONFIRMED", "DIAGNOSED"};
+
+            if(Utils.isAfter(mNow,mInspectionDate) && Arrays.asList(validStates).contains(pWorkOrder.getState()) && pWorkOrder.getInspectionFullfilment()==null ) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Consulta Sobre Inspeccion")
+                        .setMessage("El proveedor se presento a la cita para inspeccionar el trabajo a realizar? \n Si respondes que NO, esto se vera reflejado en su perfil para otros usuarios tengan referencia sobre su responsabilidad.")
+                        .setPositiveButton("SI", (dialog, which) -> {setInspectionStatus(pWorkOrder.getOrderId(),which);}) // Botón "Aceptar"
+                        .setNegativeButton("NO",(dialog, which) -> {setInspectionStatus(pWorkOrder.getOrderId(),which);})
+                        .setCancelable(false)
+                        .show();
+            }
+        }
+    }
+    private void setInspectionStatus(String pWorkOrderId, int pStatus){
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderId);
+        if (pStatus==BUTTON_POSITIVE){
+            WO.setInspectionFullfilment("Y");
+            mMainActivityViewModel.updateWorkOrder(WO);
+        } else {
+            WO.setInspectionFullfilment("N");
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Consulta Reprogramacion de Inspeccion")
+                    .setMessage("El proveedor se reprogramo la inspeccion? \n Si respondes que NO esto se vera reflejado en el perfil del proveedor y la orden se CERRARA definitivamente.")
+                    .setPositiveButton("SI", (dialog, which) -> {setInspectionReschStatus(WO,which);}) // Botón "Aceptar"
+                    .setNegativeButton("NO",(dialog, which) -> {setInspectionReschStatus(WO,which);})
+                    .setCancelable(false)
+                    .show();
+        }
+    }
+    private void setInspectionReschStatus(WorkOrder pWorkOrder, int pStatus){
+        if (pStatus==BUTTON_POSITIVE){
+            pWorkOrder.setInspectionRescheduled("Y");
+        } else {
+            pWorkOrder.setInspectionRescheduled("N");
+            pWorkOrder.setStateChangeDate(Utils.getISOLocalDate());
+            pWorkOrder.setState("CLOSED_FAILED_INSPECTION");
+        }
+        mMainActivityViewModel.updateWorkOrder(pWorkOrder);
+        closeWorkOrderLifeCycle();
+    }
+    //********************************** Validacion de Inspeccion **********************************//
     private void clearWorkOrder(){
         ViewGroup celdaEspecifica;
         for(int i = 1; i < 16; i += 2){
@@ -227,7 +279,6 @@ public class WorkOrderFragment extends Fragment {
         openStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         openStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-    //********************************** OPEN STATE **********************************//
     private void assignOrder(User pCustomer,User pProvider ,String pCategory,String pDescription,String pCreationDate ,String pLimitDate){
 
         String mStateChangeDate= Utils.getISOLocalDate();
@@ -348,7 +399,6 @@ public class WorkOrderFragment extends Fragment {
         onEvalStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         onEvalStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-    //********************************** ON EVALUATION STATE **********************************//
     private void planDate(String pWorkOrderID,String pInspectionDate,Integer pInspectionCharges,Integer pInspectionFee){
         String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -400,7 +450,6 @@ public class WorkOrderFragment extends Fragment {
         plannedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         plannedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-    //********************************** PLANNED STATE **********************************//
     private void confirmDate(String pWorkOrderID,String pPaymentOrderID){
         String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -569,7 +618,6 @@ public class WorkOrderFragment extends Fragment {
         confStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         confStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-    //********************************** CONFIRMED STATE **********************************//
     private void diagnoseOrder(String pWorkOrderID,String pWorkStartDate, String pWorkEndDate, Integer pWorkLaborCost,Integer pWorkMaterialsCost,Integer pWorkFee, String pWorkDetail){
         String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -627,7 +675,6 @@ public class WorkOrderFragment extends Fragment {
         diagStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         diagStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-    //********************************** DIAGNOSE STATE **********************************//
     private void acceptContract(String pWorkOrderID, String pWorkPaymentOrderID){
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -684,7 +731,6 @@ public class WorkOrderFragment extends Fragment {
         onProgStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         onProgStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-    //********************************** ON PROGRESS STATE **********************************//
     private void finishOrder(String pWorkOrderID,String pWarrantyEndDate){
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -695,7 +741,6 @@ public class WorkOrderFragment extends Fragment {
 
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //********************************** DONE STATE **********************************//
     private void doneStateWorkOrder(WorkOrder pWorkOrder) {
         DoneState mDoneStateItem = new DoneState(requireContext());
@@ -742,7 +787,6 @@ public class WorkOrderFragment extends Fragment {
         doneStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
         doneStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-    //********************************** DONE STATE **********************************//
     private void closeOrder(String pWorkOrderID,Integer pAppereanceScore ,Integer pCleanlinessScore,Integer pSpeedScore,Integer pQualityScore,String pImpressions){
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -818,24 +862,6 @@ public class WorkOrderFragment extends Fragment {
     }
     //********************************** CLOSED STATE **********************************//
 
-
-    @SuppressLint("NonConstantResourceId")
-    private void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.SaveChangesButton:
-                closeWorkOrderLifeCycle();
-                break;
-        }
-    }
-    private void closeWorkOrderLifeCycle(){
-        Integer mSelectedTab = mMainActivityViewModel.getSelectedTab().getValue();
-        if (mSelectedTab == 0) {
-            mMainActivityViewModel.setSelectedFragment(0, View.VISIBLE);
-        } else {
-            mMainActivityViewModel.setSelectedFragment(2, View.VISIBLE);
-        }
-    }
-
     private void showDatePickerDialog(Callback<String> pCallback) {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -844,9 +870,9 @@ public class WorkOrderFragment extends Fragment {
         String mDate = "01/01/1900";
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year1, month1, dayOfMonth) -> {
-                    // Formatear la fecha seleccionada y mostrarla en el EditText
-                    String fechaSeleccionada = String.format("%02d/%02d/%04d", dayOfMonth, month1 + 1, year1);
-                    pCallback.onSuccess(fechaSeleccionada);},
+            // Formatear la fecha seleccionada y mostrarla en el EditText
+            String fechaSeleccionada = String.format("%02d/%02d/%04d", dayOfMonth, month1 + 1, year1);
+            pCallback.onSuccess(fechaSeleccionada);},
                 year, month, day);
 
         datePickerDialog.show();
@@ -865,8 +891,23 @@ public class WorkOrderFragment extends Fragment {
                 },
                 hour, minute, true // true para formato de 24 horas
         );
-
         timePickerDialog.show();
+    }
+    private void closeWorkOrderLifeCycle(){
+        Integer mSelectedTab = mMainActivityViewModel.getSelectedTab().getValue();
+        if (mSelectedTab == 0) {
+            mMainActivityViewModel.setSelectedFragment(0, View.VISIBLE);
+        } else {
+            mMainActivityViewModel.setSelectedFragment(2, View.VISIBLE);
+        }
+    }
+    @SuppressLint("NonConstantResourceId")
+    private void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.SaveChangesButton:
+                closeWorkOrderLifeCycle();
+                break;
+        }
     }
 
 

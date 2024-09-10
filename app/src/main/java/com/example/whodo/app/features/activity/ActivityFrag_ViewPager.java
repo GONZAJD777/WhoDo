@@ -84,6 +84,8 @@ public class ActivityFrag_ViewPager extends Fragment {
         }
     }
 
+
+
     private void addActivityItem (WorkOrder pWorkOrder){
         ActivityWorkOrderItem mActivityWorkOrderItem = new ActivityWorkOrderItem(requireContext());
         String mWorkOrderType;

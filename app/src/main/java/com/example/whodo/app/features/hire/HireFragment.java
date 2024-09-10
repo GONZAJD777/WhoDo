@@ -670,19 +670,19 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+       //mapView.onPause();
         //clearReel(this.ReelLinearLayout);
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
+        //mapView.onDestroy();
         //clearReel(this.ReelLinearLayout);
     }
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapView.onLowMemory();
+        //mapView.onLowMemory();
         //clearReel(this.ReelLinearLayout);
     }
 }
