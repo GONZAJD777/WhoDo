@@ -34,6 +34,7 @@ public class ConfState extends RelativeLayout {
     private TextView jobFee_label;
     private EditText workTaskDetail_value;
     private Button presentOrder_button;
+    private Button rejectOrder_button;
 
 
     public ConfState(Context context) {
@@ -62,6 +63,7 @@ public class ConfState extends RelativeLayout {
         workTaskDetail_value= root.findViewById(R.id.workTaskDetail_value);
 
         presentOrder_button= root.findViewById(R.id.presentOrder_button);
+        rejectOrder_button= root.findViewById(R.id.rejectWorkOrder_button);
     }
 
     public void setCustomerName(String pCustomerName){this.customerName_label.setText(pCustomerName);}
@@ -114,13 +116,17 @@ public class ConfState extends RelativeLayout {
     public void setPresentOrderButtonOCL(OnClickListener OCL) {
         presentOrder_button.setOnClickListener(OCL);
     }
+    public void setRejectButtonOCL(OnClickListener OCL) {
+        rejectOrder_button.setOnClickListener(OCL);
+    }
 
     public void disableEdition(){
-        workStartDate_value.setEnabled(false);;
-        workEndDate_value.setEnabled(false);;
-        workMaterialCost_value.setEnabled(false);;
-        workJobCost_value.setEnabled(false);;
-        workTaskDetail_value.setEnabled(false);;
+        workStartDate_value.setEnabled(false);
+        workEndDate_value.setEnabled(false);
+        workMaterialCost_value.setEnabled(false);
+        workJobCost_value.setEnabled(false);
+        workTaskDetail_value.setEnabled(false);
         presentOrder_button.setEnabled(false);
+        rejectOrder_button.setEnabled(false);
     }
 }

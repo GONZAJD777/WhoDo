@@ -184,7 +184,7 @@ public class WorkOrderFragment extends Fragment {
         if (pWorkOrder!=null && pWorkOrder.getInspectionDate()!=null ){
             String mNow= Utils.getISOLocalDate();
             String mInspectionDate=pWorkOrder.getInspectionDate();
-            String[] validStates = {"PLANNED", "CONFIRMED", "DIAGNOSED"};
+            String[] validStates = {"CONFIRMED", "DIAGNOSED"};
 
             if(Utils.isAfter(mNow,mInspectionDate) && Arrays.asList(validStates).contains(pWorkOrder.getState()) && pWorkOrder.getInspectionFullfilment()==null ) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -410,6 +410,16 @@ public class WorkOrderFragment extends Fragment {
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
+    private void rejectWork(String pWorkOrderID){
+        String mStateChangeDate= Utils.getISOLocalDate();
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+//        WO.setInspectionDate(pInspectionDate);
+//        WO.setInspectionCharges(pInspectionCharges);
+//        WO.setInspectionFee(pInspectionFee);
+        WO.setState("CLOSED");
+        WO.setStateChangeDate(mStateChangeDate);
+        mMainActivityViewModel.updateWorkOrder(WO);}
     //********************************** PLANNED STATE **********************************//
     private void plannedStateWorkOrder(WorkOrder pWorkOrder) {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
@@ -456,6 +466,15 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setInspectionPaymentOrder("pPaymentOrderID-123");
         WO.setState("CONFIRMED");
+        WO.setStateChangeDate(mStateChangeDate);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
+    private void rejectDate(String pWorkOrderID){
+        String mStateChangeDate= Utils.getISOLocalDate();
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+//        WO.setInspectionPaymentOrder("pPaymentOrderID-123");
+        WO.setState("ONEVALUATION");
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
@@ -632,6 +651,20 @@ public class WorkOrderFragment extends Fragment {
         WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
+    private void cancelOrder(String pWorkOrderID){
+        String mStateChangeDate= Utils.getISOLocalDate();
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setState("CANCELED");
+        WO.setStateChangeDate(mStateChangeDate);
+//        WO.setWorkStartDate(pWorkStartDate);
+//        WO.setWorkEndDate(pWorkEndDate);
+//        WO.setWorkLaborCost(pWorkLaborCost);
+//        WO.setWorkMaterialsCost(pWorkMaterialsCost);
+//        WO.setWorkFee(pWorkFee);
+//        WO.setDetail(pWorkDetail);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
     //********************************** DIAGNOSE STATE **********************************//
     private void diagStateWorkOrder(WorkOrder pWorkOrder) {
         DiagState mDiagStateItem = new DiagState(requireContext());
@@ -687,6 +720,7 @@ public class WorkOrderFragment extends Fragment {
 //        WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
+    private void rejectContract (){}
     //********************************** ON PROGRESS STATE **********************************//
     private void onProgStateWorkOrder(WorkOrder pWorkOrder) {
         OnProgState mOnProgStateItem = new OnProgState(requireContext());
@@ -861,7 +895,6 @@ public class WorkOrderFragment extends Fragment {
         closedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** CLOSED STATE **********************************//
-
     private void showDatePickerDialog(Callback<String> pCallback) {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
