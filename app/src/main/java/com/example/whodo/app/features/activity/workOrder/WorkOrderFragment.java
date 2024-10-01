@@ -696,12 +696,12 @@ public class WorkOrderFragment extends Fragment {
         mDiagStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee()+"sat");
 
         mDiagStateItem.setAcceptButtonOCL(v -> {
-            acceptContract(pWorkOrder.getOrderId(),
-                    pWorkOrder.getWorkPaymentOrder()
-                    );
+            this.acceptContract(pWorkOrder.getOrderId(),pWorkOrder.getWorkPaymentOrder());
             Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");    });
         mDiagStateItem.setGenPaymentOrderButtonOCL(v -> {  Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");    } );
-        mDiagStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
+        mDiagStateItem.setRejectButtonOCL(v -> {
+            this.rejectContract(pWorkOrder.getOrderId());
+            Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
         mDiagStateItem.setInputLayoutEndIconOCL(v -> {  Log.d(TAG1, "BOTON COPIAR INVOICE PRESIONADO");   });
 
         diagStateDetail_LinearLayout.addView(mDiagStateItem);
@@ -720,7 +720,18 @@ public class WorkOrderFragment extends Fragment {
 //        WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-    private void rejectContract (){}
+    private void rejectContract (String pWorkOrderID){
+        String mStateChangeDate = Utils.getISOLocalDate();
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setState("CONFIRMED");
+        WO.setStateChangeDate(mStateChangeDate);
+//        WO.setWorkStartDate(pWorkStartDate);
+//        WO.setWorkEndDate(pWorkEndDate);
+//        WO.setWorkCost(pWorkCost);
+//        WO.setDetail(pWorkDetail);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
     //********************************** ON PROGRESS STATE **********************************//
     private void onProgStateWorkOrder(WorkOrder pWorkOrder) {
         OnProgState mOnProgStateItem = new OnProgState(requireContext());
