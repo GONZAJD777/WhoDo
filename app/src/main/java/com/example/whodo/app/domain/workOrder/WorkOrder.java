@@ -56,7 +56,7 @@ public class WorkOrder {
     // assigned OPEN WORK ORDER Constructor setted ONEVALUATION State
     public WorkOrder(String pCustomerId,String pCustomerName,String pCustomerAddress,double pCustomerLat,double pCustomerLng,String pCustomerPhoneNumber,
                      String pProviderId,String pProviderName,String pProviderAddress,double pProviderLat,double pProviderLng,String pProviderPhoneNumber,
-                     String pSpecialization,String pDescription,String pCreationDate,String pTimeLimit,String pStateChangeDate) {
+                     String pState, String pSpecialization,String pDescription,String pCreationDate,String pTimeLimit,String pStateChangeDate) {
 
         //this.OrderId = "orderId";
         this.CustomerId = pCustomerId;
@@ -78,7 +78,7 @@ public class WorkOrder {
         //this.Detail = detail;
         this.CreationDate = pCreationDate;
         this.TimeLimit = pTimeLimit;
-        this.State = "ONEVALUATION";
+        this.State = pState;
         this.StateChangeDate = pStateChangeDate;
         //this.InspectionDate = inspectionDate;
         //this.InspectionCharges = inspectionCharges;

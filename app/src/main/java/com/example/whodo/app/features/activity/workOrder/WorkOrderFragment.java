@@ -172,8 +172,11 @@ public class WorkOrderFragment extends Fragment {
             fila = null;
         }
         work0rderStates_scrollView.post(() -> {
-            assert fila != null;
-            work0rderStates_scrollView.smoothScrollTo(0, fila.getTop());
+            if (fila==null){
+                closeWorkOrderLifeCycle();
+            }else {
+                work0rderStates_scrollView.smoothScrollTo(0, fila.getTop());
+            }
         });
 
         validateInspectionStatus(pWorkOrder);
@@ -285,10 +288,12 @@ public class WorkOrderFragment extends Fragment {
 
         String mCustomerPhoneNumber = pCustomer.getPhone_ccn() + pCustomer.getPhone();
         String mProviderPhoneNumber = pProvider.getPhone_ccn() + pProvider.getPhone();
+        String mState = "ONEVALUATION";
 
         WorkOrder WO = new WorkOrder(pCustomer.getUid(),pCustomer.getName(),pCustomer.getAddress(),pCustomer.getLatitude(),pCustomer.getLongitude(),mCustomerPhoneNumber,
                                      pProvider.getUid(),pProvider.getName(),pProvider.getAddress(),pProvider.getLatitude(),pProvider.getLongitude(),mProviderPhoneNumber,
-                                     pCategory, pDescription,pCreationDate,pLimitDate,mStateChangeDate);
+                                     mState, pCategory, pDescription,pCreationDate,pLimitDate,mStateChangeDate);
+
         mMainActivityViewModel.createWorkOrder(WO);
         mMainActivityViewModel.setSelectedTab(2);
         Log.d(TAG1, "BOTON CREAR ORDEN PRESIONADO");
@@ -393,7 +398,9 @@ public class WorkOrderFragment extends Fragment {
             }
 
         });
-        mOnEvalStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
+        mOnEvalStateItem.setRejectButtonOCL(v -> {
+            this.rejectOrder(pWorkOrder.getOrderId());
+            Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
 
         onEvalStateDetail_LinearLayout.addView(mOnEvalStateItem);
         onEvalStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
@@ -410,14 +417,14 @@ public class WorkOrderFragment extends Fragment {
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-    private void rejectWork(String pWorkOrderID){
+    private void rejectOrder(String pWorkOrderID){
         String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
 //        WO.setInspectionDate(pInspectionDate);
 //        WO.setInspectionCharges(pInspectionCharges);
 //        WO.setInspectionFee(pInspectionFee);
-        WO.setState("CLOSED");
+        WO.setState("CANCELED");
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);}
     //********************************** PLANNED STATE **********************************//
@@ -453,7 +460,9 @@ public class WorkOrderFragment extends Fragment {
             Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
         });
 
-        mPlannedStateItem.setRejectButtonOCL(v -> {  Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
+        mPlannedStateItem.setRejectButtonOCL(v -> {
+            this.rejectDate(pWorkOrder.getOrderId());
+            Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");   });
         mPlannedStateItem.setInputLayoutEndIconOCL(v -> {  Log.d(TAG1, "BOTON COPIAR INVOICE PRESIONADO");   });
 
         plannedStateDetail_LinearLayout.addView(mPlannedStateItem);
@@ -651,6 +660,7 @@ public class WorkOrderFragment extends Fragment {
         WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
+    //at this point provider make the visit to diagnose, customer paid de visit and has accepted the date
     private void cancelOrder(String pWorkOrderID){
         String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -911,14 +921,13 @@ public class WorkOrderFragment extends Fragment {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-        String mDate = "01/01/1900";
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year1, month1, dayOfMonth) -> {
             // Formatear la fecha seleccionada y mostrarla en el EditText
             String fechaSeleccionada = String.format("%02d/%02d/%04d", dayOfMonth, month1 + 1, year1);
             pCallback.onSuccess(fechaSeleccionada);},
                 year, month, day);
-
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
     private void showTimePickerDialog(Callback<String> pCallback) {
