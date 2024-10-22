@@ -641,6 +641,18 @@ public class WorkOrderFragment extends Fragment {
             }
 
         } );
+        mConfStateItem.setRejectButtonOCL(v -> {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Consulta Sobre Inspeccion")
+                    .setMessage("Estas a punto de rechazar la orden, lo que significa que has realizado la inspeccion y no pudiste llegar a un acuerdo con el cliente o consideras que no estas capacitado. La orden parasar a el estado CERRADO y no podras volver a abrirla.Deseas continuar y RECHAZAR?")
+                    .setPositiveButton("SI",(dialog, which) -> { this.cancelOrder(pWorkOrder.getOrderId());
+                                                                      Log.d(TAG1, "CONFIRMED STATE:REJECTION ACCEPTED"); })
+                    .setNegativeButton("NO",(dialog, which) -> { Log.d(TAG1, "CONFIRMED STATE:REJECTION DENIED"); })
+                    .setCancelable(false)
+                    .show();
+
+        });
 
         confStateDetail_LinearLayout.addView(mConfStateItem);
         confStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
@@ -665,7 +677,7 @@ public class WorkOrderFragment extends Fragment {
         String mStateChangeDate= Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
-        WO.setState("CANCELED");
+        WO.setState("CANCELED_REJECTION");
         WO.setStateChangeDate(mStateChangeDate);
 //        WO.setWorkStartDate(pWorkStartDate);
 //        WO.setWorkEndDate(pWorkEndDate);
