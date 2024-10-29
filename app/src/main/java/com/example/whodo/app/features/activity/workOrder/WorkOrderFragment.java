@@ -607,27 +607,37 @@ public class WorkOrderFragment extends Fragment {
                 if (!mConfStateItem.getWorkMaterialCost().isEmpty()){
                     mWorkMaterialsCost= Integer.parseInt(mConfStateItem.getWorkMaterialCost());
                 }
-                String mWorkStartDate =  Utils.getISOLocalDateFromString(mConfStateItem.getWorkStartDate(),mConfStateItem.getWorkStartDateTime());
-                String mWorkEndDate = Utils.getISOLocalDateFromString(mConfStateItem.getWorkEndDate(),mConfStateItem.getWorkEndDateTime());
+
+                String mWorkStartDateTime;
+                String mWorkEndDateTime;
+
+                if (mConfStateItem.getWorkStartDateTime().isEmpty()) {mWorkStartDateTime = "23:59";} else {mWorkStartDateTime=mConfStateItem.getWorkStartDateTime();}
+                if (mConfStateItem.getWorkEndDateTime().isEmpty()) {mWorkEndDateTime = "23:59";} else {mWorkEndDateTime=mConfStateItem.getWorkEndDateTime();}
+
+                String mWorkStartDate =  Utils.getISOLocalDateFromString(mConfStateItem.getWorkStartDate(),mWorkStartDateTime);
+                String mWorkEndDate = Utils.getISOLocalDateFromString(mConfStateItem.getWorkEndDate(),mWorkEndDateTime);
+
                 int mWorkLaborCost = Integer.parseInt(mConfStateItem.getWorkJobCost());
                 int mWorkFee= (int) ((mWorkLaborCost + mWorkMaterialsCost)*(mFeePercent/100.0));
                 String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
 
-                String mToday;
-                try {
-                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000"+Utils.getISOLocalDate().substring(23,29);
-                } catch (Exception e){
-                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000Z";
-                    Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
-                }
+                String mToday=Utils.getISOLocalDate();
+//                try {
+//                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000"+Utils.getISOLocalDate().substring(23,29);
+//                } catch (Exception e){
+//                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000Z";
+//                    Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
+//                }
 
                 Log.d(TAG1, "mToday :" + mToday );
 
+                Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
+                Log.d(TAG1, "mWorkEndDate :" + mWorkEndDate );
+                Log.d(TAG1, "Current Date :" + Utils.getISOLocalDate());
+                Log.d(TAG1, "mWorkFee :" + mWorkFee);
+
                 if (Utils.isAfter(mWorkStartDate,mToday) && Utils.isAfter(mWorkEndDate,mToday) && Utils.isAfter(mWorkEndDate,mWorkStartDate) ) {
-                    Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
-                    Log.d(TAG1, "mWorkEndDate :" + mWorkEndDate );
-                    Log.d(TAG1, "Current Date :" + Utils.getISOLocalDate());
-                    Log.d(TAG1, "mWorkFee :" + mWorkFee);
+
                     Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");
                     diagnoseOrder(pWorkOrder.getOrderId(),mWorkStartDate,mWorkEndDate,mWorkLaborCost,mWorkMaterialsCost,mWorkFee,mWorkTaskDetail);
                 }else {
@@ -848,7 +858,11 @@ public class WorkOrderFragment extends Fragment {
                     mDoneStateItem.getProviderSpeedScore(),
                     mDoneStateItem.getProviderQualityScoreScore(),
                     mDoneStateItem.getProviderReview());
-            Log.d(TAG1, "BOTON FINALIZAR ORDEN DE PAGO PRESIONADO");    });
+            Log.d(TAG1, "BOTON CERRAR ORDEN POR TRABAJO COMPLETADO PRESIONADO");    });
+        mDoneStateItem.setRejectButtonOCL(v -> {
+            workRejected(pWorkOrder.getOrderId());
+            Log.d(TAG1, "BOTON RECHAZAR TRABAJO PRESIONADO");
+        });
 
         doneStateDetail_LinearLayout.addView(mDoneStateItem);
         doneStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(),R.drawable.dotted_line));
@@ -865,6 +879,19 @@ public class WorkOrderFragment extends Fragment {
         WO.setSpeedScore(pSpeedScore);
         WO.setQualityScore(pQualityScore);
         WO.setImpressions(pImpressions);
+        mMainActivityViewModel.updateWorkOrder(WO);
+    }
+    private void workRejected(String pWorkOrderID){
+        String mStateChangeDate = Utils.getISOLocalDate();
+        WorkOrder WO = new WorkOrder();
+        WO.setOrderId(pWorkOrderID);
+        WO.setState("ONPROGRESS");
+        WO.setStateChangeDate(mStateChangeDate);
+//        WO.setAppereanceScore(pAppereanceScore);
+//        WO.setCleanlinessScore(pCleanlinessScore);
+//        WO.setSpeedScore(pSpeedScore);
+//        WO.setQualityScore(pQualityScore);
+//        WO.setImpressions(pImpressions);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
     //********************************** CLOSED STATE **********************************//

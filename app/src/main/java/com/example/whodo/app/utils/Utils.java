@@ -117,7 +117,7 @@ public class Utils {
     public static Boolean isAfter(String mDate1,String mDate2){
         OffsetDateTime offsetDateTime1 = OffsetDateTime.parse(mDate1, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         OffsetDateTime offsetDateTime2 = OffsetDateTime.parse(mDate2, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        if (offsetDateTime1.isAfter(offsetDateTime2)||offsetDateTime1.isEqual(offsetDateTime2)) {
+        if (offsetDateTime1.isAfter(offsetDateTime2)) {
             return true;
         } else {
             return false;
