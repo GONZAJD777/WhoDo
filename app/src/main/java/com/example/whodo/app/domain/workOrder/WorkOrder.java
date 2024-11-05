@@ -37,13 +37,14 @@ public class WorkOrder {
     private String InspectionRescheduled;
     //WORK INFO
     private String WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
-    private String WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
+    private String WorkEndDate;//Fecha y hora de FIN de trabajo en formato YYYYMMDD24HHMMSS
     private Integer WorkLaborCost;
     private Integer WorkMaterialsCost;
     private Integer WorkFee;
     private String Detail; // Bitacora de tareas y comentarios del proveedor
     private String WorkPaymentOrder;
     private String WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
+//    private Integer WorkLimitTimeExtension;
     //SCORES
     private String Impressions; //Review
     private Integer AppereanceScore;
@@ -280,6 +281,11 @@ public class WorkOrder {
         return WorkWarrantyEndDate;
     }
     public void setWorkWarrantyEndDate(String pWorkWarrantyEndDate){ WorkWarrantyEndDate=pWorkWarrantyEndDate; }
+
+//    public Integer getWorkLimitTimeExtension() {
+//        return WorkLimitTimeExtension;
+//    }
+//    public void setWorkLimitTimeExtension(Integer pWorkLimitTimeExtension){ WorkLimitTimeExtension=pWorkLimitTimeExtension; }
 
     //SCORES
     public String getImpressions() {

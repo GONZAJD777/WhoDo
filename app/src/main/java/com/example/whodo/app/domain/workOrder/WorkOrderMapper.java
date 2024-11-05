@@ -43,6 +43,7 @@ public class WorkOrderMapper {
         mWorkOrderDTO.setWorkFee(pEntity.getWorkFee());
         mWorkOrderDTO.setWorkPaymentOrder(pEntity.getWorkPaymentOrder());
         mWorkOrderDTO.setWorkWarrantyEndDate(pEntity.getWorkWarrantyEndDate());
+//        mWorkOrderDTO.setWorkLimitTimeExtension(pEntity.getWorkLimitTimeExtension());
 
         mWorkOrderDTO.setImpressions(pEntity.getImpressions());
         mWorkOrderDTO.setAppereanceScore(pEntity.getAppereanceScore());
@@ -95,6 +96,7 @@ public class WorkOrderMapper {
 
         mEntity.setWorkPaymentOrder(pWorkOrderDTO.getWorkPaymentOrder());
         mEntity.setWorkWarrantyEndDate(pWorkOrderDTO.getWorkWarrantyEndDate());
+//        mEntity.setWorkLimitTimeExtension(pWorkOrderDTO.getWorkLimitTimeExtension());
 
         mEntity.setImpressions(pWorkOrderDTO.getImpressions());
         mEntity.setAppereanceScore(pWorkOrderDTO.getAppereanceScore());

@@ -77,8 +77,8 @@ public class WorkOrderFragment extends Fragment {
     private Drawable mVertLineBackGround;
     private PorterDuff.Mode mVertLineBackTintMode;
     //***************************************** Parametria, deberia levantarse de base de datos ********************//
-    private Integer mWarrantyDays=7;
-    private Integer mAutoClosingDays=2;
+    private Integer mWarrantyDays=7;// dias otorgados como garantia una vez completada la reseña.
+    private Integer mAutoClosingDays=2;//periodo para que el cliente complete la reseña, de lo contrario la orden se cierra y pierde derecho a reclamo
     private Integer mFeePercent=10;
     private Integer mInspectionCostMax=2000;
     //**************************************************************************************************************//

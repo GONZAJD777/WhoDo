@@ -218,6 +218,9 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
         if (workOrderDTO.getWorkWarrantyEndDate() != null) {
             updates.put("workWarrantyEndDate", workOrderDTO.getWorkWarrantyEndDate());
         }
+//        if (workOrderDTO.getWorkLimitTimeExtension() != null) {
+//            updates.put("workLimitTimeExtension", workOrderDTO.getWorkLimitTimeExtension());
+//        }
         //*********************************************************************//
         if (workOrderDTO.getImpressions() != null) {
             updates.put("impressions", workOrderDTO.getImpressions());
