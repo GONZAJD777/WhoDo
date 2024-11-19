@@ -69,8 +69,6 @@ public class PersonalInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_profile_frag_personal_info, container, false);
-        // TODO modificar comportamiento para evitar que las ventanas emergentes pierdan el foco
-        //TODO agregar selector de fechas para la fecha de nacimiento - DONE
 
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
 
@@ -407,7 +405,6 @@ public class PersonalInfoFragment extends Fragment {
     }
 
     private void loadUserData (User pUser) {
-        //TODO Verificar conexion para evitar errores en esta ventana -- DONE
             mLoggedUser=pUser.deepCopy();
             if(mLoggedUser.getName()!=null) {
                 setUserNameText(mLoggedUser.getName(), getString(R.string.PersonalInfoFrag_UserName1), item_UserName);

@@ -44,7 +44,7 @@ public class WorkOrder {
     private String Detail; // Bitacora de tareas y comentarios del proveedor
     private String WorkPaymentOrder;
     private String WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
-//    private Integer WorkLimitTimeExtension;
+    private Integer WorkLimitTimeExtension;
     //SCORES
     private String Impressions; //Review
     private Integer AppereanceScore;
@@ -282,10 +282,10 @@ public class WorkOrder {
     }
     public void setWorkWarrantyEndDate(String pWorkWarrantyEndDate){ WorkWarrantyEndDate=pWorkWarrantyEndDate; }
 
-//    public Integer getWorkLimitTimeExtension() {
-//        return WorkLimitTimeExtension;
-//    }
-//    public void setWorkLimitTimeExtension(Integer pWorkLimitTimeExtension){ WorkLimitTimeExtension=pWorkLimitTimeExtension; }
+    public Integer getWorkLimitTimeExtension() {
+        return WorkLimitTimeExtension;
+    }
+    public void setWorkLimitTimeExtension(Integer pWorkLimitTimeExtension){ WorkLimitTimeExtension=pWorkLimitTimeExtension; }
 
     //SCORES
     public String getImpressions() {

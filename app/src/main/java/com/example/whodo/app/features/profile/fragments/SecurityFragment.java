@@ -71,10 +71,6 @@ public class SecurityFragment extends Fragment {
         View root = inflater.inflate(R.layout.act_profile_frag_security, container, false);
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
 
-        // TODO modificar comportamiento para evitar que las ventanas emergentes pierdan el foco
-        //TODO agregar selector de fechas para la fecha de nacimiento - DONE
-
-
         EmailSimpleEditText = root.findViewById(R.id.EmailSimpleEditText);
         PasswordSimpleEditText = root.findViewById(R.id.PasswordSimpleEditText);
         NewPass1SimpleEditText = root.findViewById(R.id.NewPass1SimpleEditText);
