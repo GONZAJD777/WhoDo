@@ -118,7 +118,6 @@ public class SignInFragment extends Fragment {
         assert user != null;
         if (user.isEmailVerified())
         {
-            //TODO actualizar en la base el estado y fecha de validacion de la cuenta una vez que el usuario logea tomar la variable de validacion y verificar si esta en 1, sino lo esta actualizarla a 1 y actualizar la fecha de validacion - DONE
             //TODO implementar mecanismo para borrar cuentas no validadas
             Log.d(TAG, "LoginUserWithEmail:success");
             // user is verified, so you can finish this activity or send user to activity which you want.

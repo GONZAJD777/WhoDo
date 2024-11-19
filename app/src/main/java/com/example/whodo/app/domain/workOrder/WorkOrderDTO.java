@@ -42,7 +42,7 @@ public class WorkOrderDTO {
     private Integer WorkFee;
     private String WorkPaymentOrder;
     private String WorkWarrantyEndDate;//Fecha y hora de FIN de GARANTIA en formato YYYYMMDD24HHMMSS
-//    private Integer WorkLimitTimeExtension;
+    private Integer WorkLimitTimeExtension;
     //SCORES
     private String Impressions;
     private Integer AppereanceScore;
@@ -221,10 +221,10 @@ public class WorkOrderDTO {
     }
     public void setWorkWarrantyEndDate(String pWorkWarrantyEndDate){ WorkWarrantyEndDate=pWorkWarrantyEndDate; }
 
-//    public Integer getWorkLimitTimeExtension() {
-//        return WorkLimitTimeExtension;
-//    }
-//    public void setWorkLimitTimeExtension(Integer pWorkLimitTimeExtension){ WorkLimitTimeExtension=pWorkLimitTimeExtension; }
+    public Integer getWorkLimitTimeExtension() {
+        return WorkLimitTimeExtension;
+    }
+    public void setWorkLimitTimeExtension(Integer pWorkLimitTimeExtension){ WorkLimitTimeExtension=pWorkLimitTimeExtension; }
 
     //SCORES
     public String getImpressions() {

@@ -69,8 +69,6 @@ public class PersonalInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_profile_frag_personal_info, container, false);
-        // TODO modificar comportamiento para evitar que las ventanas emergentes pierdan el foco
-        //TODO agregar selector de fechas para la fecha de nacimiento - DONE
 
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
 
@@ -131,7 +129,7 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         item_UserName = new ProfileItem(getContext());
         item_UserName.setText(getString(R.string.PersonalInfoFrag_UserName));
-        item_UserName.setImage(R.drawable.lapiz_24);
+        item_UserName.setImage(R.drawable.lapiz_de_usuario_48);
         item_UserName.setOnClickListener(v -> {
             setBottomSheetBehavior(UserNameBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +180,7 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         item_PhoneNumber = new ProfileItem(getContext());
         item_PhoneNumber.setText(getString(R.string.PersonalInfoFrag_PhoneNumber));
-        item_PhoneNumber.setImage(R.drawable.auriculares_24);
+        item_PhoneNumber.setImage(R.drawable.telefono_48);
         item_PhoneNumber.setOnClickListener(v -> {
             setBottomSheetBehavior(PhoneBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -233,7 +231,7 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         item_Email = new ProfileItem(getContext());
         item_Email.setText(getString(R.string.PersonalInfoFrag_Email));
-        item_Email.setImage(R.drawable.camara_24);
+        item_Email.setImage(R.drawable.email_addresss_48);
         item_Email.setOnClickListener(v -> {
             setBottomSheetBehavior(EmailBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -407,7 +405,6 @@ public class PersonalInfoFragment extends Fragment {
     }
 
     private void loadUserData (User pUser) {
-        //TODO Verificar conexion para evitar errores en esta ventana -- DONE
             mLoggedUser=pUser.deepCopy();
             if(mLoggedUser.getName()!=null) {
                 setUserNameText(mLoggedUser.getName(), getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
