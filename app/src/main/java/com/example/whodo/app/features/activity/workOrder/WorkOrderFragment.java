@@ -874,8 +874,22 @@ public class WorkOrderFragment extends Fragment {
                     mDoneStateItem.getProviderReview());
             Log.d(TAG1, "BOTON CERRAR ORDEN POR TRABAJO COMPLETADO PRESIONADO");    });
         mDoneStateItem.setRejectButtonOCL(v -> {
-            workRejected(pWorkOrder.getOrderId(),mWorkLimitTimeExtensionQuantity);
+
+            showDatePickerDialog(new Callback<String>() {
+                @Override
+                public void onSuccess(String s) {
+                    //workRejected(pWorkOrder.getOrderId(),mWorkLimitTimeExtensionQuantity);
+                    Log.d(TAG1, "Fecha Seleccionada:" + s);
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
+
             Log.d(TAG1, "BOTON RECHAZAR TRABAJO PRESIONADO");
+
         });
 
         doneStateDetail_LinearLayout.addView(mDoneStateItem);
@@ -901,6 +915,7 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setState("ONPROGRESS");
         WO.setStateChangeDate(mStateChangeDate);
+        //WO.setWorkEndDate();
         WO.setWorkLimitTimeExtension(pWorkLimitTimeExtensionQuantity);
 //        WO.setAppereanceScore(pAppereanceScore);
 //        WO.setCleanlinessScore(pCleanlinessScore);

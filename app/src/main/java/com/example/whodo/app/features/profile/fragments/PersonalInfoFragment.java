@@ -129,7 +129,7 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         item_UserName = new ProfileItem(getContext());
         item_UserName.setText(getString(R.string.PersonalInfoFrag_UserName));
-        item_UserName.setImage(R.drawable.lapiz_24);
+        item_UserName.setImage(R.drawable.lapiz_de_usuario_48);
         item_UserName.setOnClickListener(v -> {
             setBottomSheetBehavior(UserNameBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -180,7 +180,7 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         item_PhoneNumber = new ProfileItem(getContext());
         item_PhoneNumber.setText(getString(R.string.PersonalInfoFrag_PhoneNumber));
-        item_PhoneNumber.setImage(R.drawable.auriculares_24);
+        item_PhoneNumber.setImage(R.drawable.telefono_48);
         item_PhoneNumber.setOnClickListener(v -> {
             setBottomSheetBehavior(PhoneBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
@@ -231,7 +231,7 @@ public class PersonalInfoFragment extends Fragment {
         //----------------------------------------------------------
         item_Email = new ProfileItem(getContext());
         item_Email.setText(getString(R.string.PersonalInfoFrag_Email));
-        item_Email.setImage(R.drawable.camara_24);
+        item_Email.setImage(R.drawable.email_addresss_48);
         item_Email.setOnClickListener(v -> {
             setBottomSheetBehavior(EmailBottomSheetBehavior,0);
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
