@@ -79,6 +79,12 @@ public class WorkOrderFragment extends Fragment {
     private Integer mFeePercent=10;
     private Integer mInspectionCostMax=2000;
     private Integer mMaxWorkLimitTimeExt=3;//Maxima cantidad de devoluciones de estado DONE a estado ONPROGRESS antes de activar el boton de reclamo para proveedor
+
+    private String mStrDiagTtlOpenState = "Fecha limite para tomar orden" ;
+    private String mStrDiagTtlOnEvalState = "Fecha de Inspeccion" ;
+    private String mStrDiagTtlOnConfStateStartDate = "Fecha INICIO de Trabajo";
+    private String mStrDiagTtlOnConfStateEndDate = "Fecha FIN de Trabajo";
+    private String mStrDiagTtlDone = "Extension de plazo";
     //**************************************************************************************************************//
 
     public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
@@ -273,7 +279,7 @@ public class WorkOrderFragment extends Fragment {
             }
             @Override
             public void onError(Exception e) { }
-        }));
+        },mStrDiagTtlOpenState));
 
 
         mOpenStateItem.setOnClickListener(v -> {
@@ -365,7 +371,7 @@ public class WorkOrderFragment extends Fragment {
             }
             @Override
             public void onError(Exception e) { }
-        }));
+        },mStrDiagTtlOnEvalState));
         mOnEvalStateItem.setMeetTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -581,7 +587,7 @@ public class WorkOrderFragment extends Fragment {
             }
             @Override
             public void onError(Exception e) { }
-        }));
+        },mStrDiagTtlOnConfStateStartDate));
         mConfStateItem.setWorkStartDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -597,7 +603,7 @@ public class WorkOrderFragment extends Fragment {
             }
             @Override
             public void onError(Exception e) { }
-        }));
+        },mStrDiagTtlOnConfStateEndDate));
         mConfStateItem.setWorkEndDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -834,7 +840,6 @@ public class WorkOrderFragment extends Fragment {
     //********************************** DONE STATE **********************************//
     private void doneStateWorkOrder(WorkOrder pWorkOrder) {
         DoneState mDoneStateItem = new DoneState(requireContext());
-        //TODO: agregar el bloque que estendera la fecha limite de trabajo cuando el cliente devuelva la orden a estado ONPROGRESS, a priori se otorgaran 48hs mas
 
         if(mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
@@ -878,15 +883,21 @@ public class WorkOrderFragment extends Fragment {
             showDatePickerDialog(new Callback<String>() {
                 @Override
                 public void onSuccess(String s) {
-                    //workRejected(pWorkOrder.getOrderId(),mWorkLimitTimeExtensionQuantity);
+                    String mExtendedWorkEndDate = Utils.getISOLocalDateFromString(s,"00:00:00");
+                    if (Utils.isAfter(pWorkOrder.getWorkEndDate(),mExtendedWorkEndDate)){
+                        mExtendedWorkEndDate = pWorkOrder.getWorkEndDate();
+                    }
+                    workRejected(pWorkOrder.getOrderId(),mWorkLimitTimeExtensionQuantity,mExtendedWorkEndDate);
                     Log.d(TAG1, "Fecha Seleccionada:" + s);
+                    //TODO: agregar el bloque que estendera la fecha limite de trabajo cuando el cliente devuelva la orden a estado ONPROGRESS, a priori se otorgaran 48hs mas
+
                 }
 
                 @Override
                 public void onError(Exception e) {
 
                 }
-            });
+            },mStrDiagTtlDone);
 
             Log.d(TAG1, "BOTON RECHAZAR TRABAJO PRESIONADO");
 
@@ -909,13 +920,13 @@ public class WorkOrderFragment extends Fragment {
         WO.setImpressions(pImpressions);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-    private void workRejected(String pWorkOrderID,Integer pWorkLimitTimeExtensionQuantity){
+    private void workRejected(String pWorkOrderID,Integer pWorkLimitTimeExtensionQuantity, String pExtendedWorkEndDate){
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setState("ONPROGRESS");
         WO.setStateChangeDate(mStateChangeDate);
-        //WO.setWorkEndDate();
+        WO.setWorkEndDate(pExtendedWorkEndDate);
         WO.setWorkLimitTimeExtension(pWorkLimitTimeExtensionQuantity);
 //        WO.setAppereanceScore(pAppereanceScore);
 //        WO.setCleanlinessScore(pCleanlinessScore);
@@ -985,7 +996,7 @@ public class WorkOrderFragment extends Fragment {
         closedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     //********************************** CLOSED STATE **********************************//
-    private void showDatePickerDialog(Callback<String> pCallback) {
+    private void showDatePickerDialog(Callback<String> pCallback,String pTitle) {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -996,6 +1007,7 @@ public class WorkOrderFragment extends Fragment {
             String fechaSeleccionada = String.format("%02d/%02d/%04d", dayOfMonth, month1 + 1, year1);
             pCallback.onSuccess(fechaSeleccionada);},
                 year, month, day);
+        datePickerDialog.setTitle(pTitle);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
