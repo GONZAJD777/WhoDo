@@ -111,6 +111,28 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/planLimitDate_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha Limite de Confirmacion" />
+
+            <EditText
+                android:id="@+id/planLimitDate_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:hint="dd/mm/yyyy"
+                android:inputType="datetime|date"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
                 android:id="@+id/meetDate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

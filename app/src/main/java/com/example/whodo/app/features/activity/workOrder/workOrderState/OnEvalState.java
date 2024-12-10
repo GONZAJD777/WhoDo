@@ -23,6 +23,7 @@ public class OnEvalState extends RelativeLayout {
     private TextView category_label;
     private TextView description_label;
 
+    private EditText planLimitDate_value;
     private EditText meetDate_value;
     private EditText meetTime_value;
     private EditText meetTariff_value;
@@ -47,6 +48,7 @@ public class OnEvalState extends RelativeLayout {
         description_label=root.findViewById(R.id.description_label);
 
         //********************* Meeting Detail *********************//
+        planLimitDate_value=root.findViewById(R.id.planLimitDate_value);
         meetDate_value=root.findViewById(R.id.meetDate_value);
         meetTime_value=root.findViewById(R.id.meetTime_value);
         meetTariff_value=root.findViewById(R.id.meetTariff_value);
@@ -65,6 +67,8 @@ public class OnEvalState extends RelativeLayout {
     public void setCategory(String pCategory){this.category_label.setText(pCategory);}
     public void setDescription(String pDescription){this.description_label.setText(pDescription);}
 
+    public String getPlanLimitDate(){ return planLimitDate_value.getText().toString(); }
+    public void setPlanLimitDate (String pPlanLimitDate) {planLimitDate_value.setText(pPlanLimitDate);}
     public String getMeetDate(){ return meetDate_value.getText().toString(); }
     public void setMeetDate (String pMeetDate) {meetDate_value.setText(pMeetDate);}
     public String getMeetTime(){ return meetTime_value.getText().toString(); }
@@ -72,14 +76,15 @@ public class OnEvalState extends RelativeLayout {
     public String getMeetTariff(){ return meetTariff_value.getText().toString(); }
     public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
 
-    public void setMeetDateTCL(TextWatcher TW) {
-        meetTariff_value.addTextChangedListener(TW);
-    }
+    public void setPlanLimitDateOCL(OnClickListener OCL) { planLimitDate_value.setOnClickListener(OCL); }
     public void setMeetDateOCL(OnClickListener OCL) {
         meetDate_value.setOnClickListener(OCL);
     }
     public void setMeetTimeOCL(OnClickListener OCL) {
         meetTime_value.setOnClickListener(OCL);
+    }
+    public void setMeetDateTCL(TextWatcher TW) {
+        meetTariff_value.addTextChangedListener(TW);
     }
     public void setAcceptButtonOCL(OnClickListener OCL) {
         acceptWorkOrder_button.setOnClickListener(OCL);
