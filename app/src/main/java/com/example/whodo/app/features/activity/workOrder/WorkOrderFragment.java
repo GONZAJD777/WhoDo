@@ -85,6 +85,7 @@ public class WorkOrderFragment extends Fragment {
     private Integer mMinDaysWorkEndDateExt = 2;//Maxima cantidad de devoluciones de estado DONE a estado ONPROGRESS antes de activar el boton de reclamo para proveedor
     private Integer mMaxDaysLimitOpenState = 7; //Maxima cantidad de dias en los que una orden en estado OPEN y ONEVALUATION estaran disponible para ser aceptada por un proveedor
     private Integer mMaxDaysMeetOnEvalState = 15; //Maxima cantidad de dias para planificar una cita o visita en ONEVALUATION STATE.
+    private Integer mMaxDaysOnConfState = 2; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
 
     private String mStrDiagTtlOpenState = "Fecha limite para tomar orden";
     private String mStrDiagTtlOnEvalState = "Fecha de Inspeccion";
@@ -143,6 +144,7 @@ public class WorkOrderFragment extends Fragment {
     }
 
     private void setWorkOrderView(WorkOrder pWorkOrder) {
+        //TODO: verificar fechas de vencimiento de plazos en cada estado, y desactivar los botones para evitar acciones hasta q el proceso batch las remueva.
         clearWorkOrder();
         View fila;
         if (pWorkOrder == null) {
@@ -487,6 +489,7 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setInspectionDate(pInspectionDate);
         WO.setInspectionCharges(pInspectionCharges);
+        WO.setInspectionTimeLimit(pPlanLimitDate);
         WO.setInspectionFee(pInspectionFee);
         WO.setState("PLANNED");
         WO.setStateChangeDate(mStateChangeDate);
@@ -509,6 +512,7 @@ public class WorkOrderFragment extends Fragment {
     private void plannedStateWorkOrder(WorkOrder pWorkOrder) {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
         String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
+        String mPlanLimitDate = Utils.getISOtoDate(pWorkOrder.getInspectionTimeLimit());
 
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
@@ -527,6 +531,7 @@ public class WorkOrderFragment extends Fragment {
         mPlannedStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
         mPlannedStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProviderPhoneNumber());
 
+        mPlannedStateItem.setPlanLimitDate("Fecha Limite de Aceptacion:" + mPlanLimitDate);
         mPlannedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
         mPlannedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
         mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges() + "sat");
@@ -696,6 +701,8 @@ public class WorkOrderFragment extends Fragment {
             }
         }));
 
+
+
         mConfStateItem.setPresentOrderButtonOCL(v -> {
             if (mConfStateItem.getWorkStartDate().isEmpty() || mConfStateItem.getWorkEndDate().isEmpty() || mConfStateItem.getWorkJobCost().isEmpty() || mConfStateItem.getWorkTaskDetail().isEmpty()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -764,7 +771,7 @@ public class WorkOrderFragment extends Fragment {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Consulta Sobre Inspeccion")
-                    .setMessage("Estas a punto de rechazar la orden, lo que significa que has realizado la inspeccion y no pudiste llegar a un acuerdo con el cliente o consideras que no estas capacitado. La orden parasar a el estado CERRADO y no podras volver a abrirla.Deseas continuar y RECHAZAR?")
+                    .setMessage("Estas a punto de rechazar la orden, lo que significa que has realizado la inspección y no pudiste llegar a un acuerdo con el cliente o consideras que no estas capacitado. La orden pasara a el estado CERRADO y no podrás volver a abrirla.\n ¿Deseas continuar y RECHAZAR?")
                     .setPositiveButton("SI", (dialog, which) -> {
                         this.cancelOrder(pWorkOrder.getOrderId());
                         Log.d(TAG1, "CONFIRMED STATE:REJECTION ACCEPTED");

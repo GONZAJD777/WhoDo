@@ -17,6 +17,7 @@ public class PlannedState extends RelativeLayout {
     private TextView providerAddress_label;
     private TextView providerPhone_label;
 
+    private TextView planLimitDate_label;
     private TextView meetDate_label;
     private TextView meetTime_label;
     private TextView meetTariff_label;
@@ -39,6 +40,7 @@ public class PlannedState extends RelativeLayout {
         providerAddress_label= root.findViewById(R.id.providerAddress_label);
         providerPhone_label= root.findViewById(R.id.providerPhone_label);
 
+        planLimitDate_label= root.findViewById(R.id.planLimitDate_label);
         meetDate_label= root.findViewById(R.id.meetDate_label);
         meetTime_label= root.findViewById(R.id.meetTime_label);
         meetTariff_label= root.findViewById(R.id.meetTariff_label);
@@ -58,6 +60,7 @@ public class PlannedState extends RelativeLayout {
     public void setProviderAddress(String pProviderAddress) { this.providerAddress_label.setText(pProviderAddress); }
     public void setProviderPhone(String pProviderPhoneNumber) { this.providerPhone_label.setText(pProviderPhoneNumber); }
 
+    public void setPlanLimitDate(String pPlanLimitDate) { this.planLimitDate_label.setText(pPlanLimitDate); }
     public void setMeetDate(String pMeetDate) { this.meetDate_label.setText(pMeetDate); }
     public void setMeetTime(String pMeetTime) { this.meetTime_label.setText(pMeetTime); }
     public void setMeetTariff(String pMeetTariff) { this.meetTariff_label.setText(pMeetTariff); }

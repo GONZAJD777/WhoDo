@@ -75,6 +75,11 @@
             android:text="Detalle de Orden"
             android:textStyle="bold" />
         <TextView
+            android:id="@+id/planLimitDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha Limite de Aceptacion: dd/mm/yyyy" />
+        <TextView
             android:id="@+id/meetDate_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

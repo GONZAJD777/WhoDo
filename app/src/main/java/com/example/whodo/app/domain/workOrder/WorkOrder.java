@@ -31,6 +31,7 @@ public class WorkOrder {
     //INSPECTION INFO
     private String InspectionDate; //Fecha y hora de cita de inspeccion en formato YYYYMMDD24HHMMSS
     private Integer InspectionCharges; //Cargo por la visita para inspeccion, es opcional
+    private String InspectionTimeLimit; // Fecha maxima para aceptar la cita de inspeccion del trabajo
     private String InspectionPaymentOrder; // ID de la orden de pago generada como registro del pago de la inspeccion
     private Integer InspectionFee;
     private String InspectionFullfilment;
@@ -227,6 +228,11 @@ public class WorkOrder {
         return InspectionCharges;
     }
     public void setInspectionCharges(Integer pInspectionCharges){ InspectionCharges=pInspectionCharges; }
+
+    public String getInspectionTimeLimit() {
+        return InspectionTimeLimit;
+    }
+    public void setInspectionTimeLimit(String pInspectionTimeLimit){ InspectionTimeLimit=pInspectionTimeLimit; }
 
     public Integer getInspectionFee() {
         return InspectionFee;
