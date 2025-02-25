@@ -25,6 +25,8 @@ public class ConfState extends RelativeLayout {
     private TextView meetTariff_label;
     private TextView meetFee_label;
 
+    private EditText timeLimitDate_value;
+    private EditText timeLimitDateTime_value;
     private EditText workStartDate_value;
     private EditText workStartDateTime_value;
     private EditText workEndDate_value;
@@ -53,6 +55,8 @@ public class ConfState extends RelativeLayout {
         meetTariff_label= root.findViewById(R.id.meetTariff_label);
         meetFee_label= root.findViewById(R.id.meetFee_label);
 
+        timeLimitDate_value= root.findViewById(R.id.timeLimitDate_value);
+        timeLimitDateTime_value= root.findViewById(R.id.timeLimitDateTime_value);
         workStartDate_value= root.findViewById(R.id.workStartDate_value);
         workStartDateTime_value=root.findViewById(R.id.workStartDateTime_value);
         workEndDate_value= root.findViewById(R.id.workEndDate_value);
@@ -78,6 +82,11 @@ public class ConfState extends RelativeLayout {
     public void setMeetTariff(String pMeetTariff) { this.meetTariff_label.setText(pMeetTariff); }
     public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
 
+    public String getTimeLimitDate(){ return timeLimitDate_value.getText().toString(); }
+    public void setTimeLimitDate(String pTimeLimitDate){timeLimitDate_value.setText(pTimeLimitDate);}
+    public String getTimeLimitDateTime(){ return timeLimitDateTime_value.getText().toString();}
+    public void setTimeLimitDateTime(String pTimeLimitDateTime){timeLimitDateTime_value.setText(pTimeLimitDateTime);}
+
     public String getWorkStartDate(){ return workStartDate_value.getText().toString(); }
     public void setWorkStartDate(String pWorkStartDate){workStartDate_value.setText(pWorkStartDate);}
     public String getWorkStartDateTime(){ return workStartDateTime_value.getText().toString();}
@@ -101,6 +110,13 @@ public class ConfState extends RelativeLayout {
         workMaterialCost_value.addTextChangedListener(TW);
     }
 
+    public void setTimeLimitDateOCL(OnClickListener OCL) {
+        timeLimitDate_value.setOnClickListener(OCL);
+    }
+    public void setTimeLimitDateTimeOCL(OnClickListener OCL) {
+        timeLimitDateTime_value.setOnClickListener(OCL);
+    }
+
     public void setWorkStartDateOCL(OnClickListener OCL) {
         workStartDate_value.setOnClickListener(OCL);
     }
@@ -121,6 +137,8 @@ public class ConfState extends RelativeLayout {
     }
 
     public void disableEdition(){
+        timeLimitDate_value.setEnabled(false);
+        timeLimitDateTime_value.setEnabled(false);
         workStartDate_value.setEnabled(false);
         workEndDate_value.setEnabled(false);
         workMaterialCost_value.setEnabled(false);

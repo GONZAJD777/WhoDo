@@ -150,6 +150,39 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/timeLimitDate_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha Limite" />
+
+            <EditText
+                android:id="@+id/timeLimitDate_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="dd/mm/yyyy"
+                android:focusable="false"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:inputType="date"
+                android:textSize="14sp" />
+            <EditText
+                android:id="@+id/timeLimitDateTime_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="HH:mm"
+                android:focusable="false"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:inputType="time"
+                android:gravity="center_horizontal"
+                android:textSize="14sp" />
+
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
                 android:id="@+id/workStartDate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

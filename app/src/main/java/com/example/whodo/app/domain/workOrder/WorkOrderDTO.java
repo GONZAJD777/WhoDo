@@ -36,6 +36,7 @@ public class WorkOrderDTO {
     private String InspectionFullfilment;
     private String InspectionRescheduled;
     //WORK INFO
+    private String ProposalTimeLimitDate;//Fecha y hora limite para aceptar la propuesta de trabajo  YYYYMMDD24HHMMSS
     private String WorkStartDate;//Fecha y hora de INICIO de trabajo en formato YYYYMMDD24HHMMSS
     private String WorkEndDate;//Fecha y hora de FIN de trabajho en formato YYYYMMDD24HHMMSS
     private Integer WorkLaborCost;
@@ -193,6 +194,11 @@ public class WorkOrderDTO {
     public void setInspectionRescheduled(String pInspectionRescheduled){ InspectionRescheduled=pInspectionRescheduled; }
 
     //WORK INFO
+    public String getProposalTimeLimitDate() {
+        return ProposalTimeLimitDate;
+    }
+    public void setProposalTimeLimitDate(String pProposalTimeLimitDate){ ProposalTimeLimitDate=pProposalTimeLimitDate; }
+
     public String getWorkStartDate() {
         return WorkStartDate;
     }

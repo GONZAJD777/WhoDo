@@ -37,6 +37,7 @@ public class WorkOrderMapper {
         mWorkOrderDTO.setInspectionFullfilment(pEntity.getInspectionFullfilment());
         mWorkOrderDTO.setInspectionRescheduled(pEntity.getInspectionRescheduled());
 
+        mWorkOrderDTO.setProposalTimeLimitDate(pEntity.getProposalTimeLimitDate());
         mWorkOrderDTO.setWorkStartDate(pEntity.getWorkStartDate());
         mWorkOrderDTO.setWorkEndDate(pEntity.getWorkEndDate());
         mWorkOrderDTO.setWorkLaborCost(pEntity.getWorkLaborCost());
@@ -89,6 +90,7 @@ public class WorkOrderMapper {
         mEntity.setInspectionFullfilment(pWorkOrderDTO.getInspectionFullfilment());
         mEntity.setInspectionRescheduled(pWorkOrderDTO.getInspectionRescheduled());
 
+        mEntity.setProposalTimeLimitDate(pWorkOrderDTO.getProposalTimeLimitDate());
         mEntity.setWorkStartDate(pWorkOrderDTO.getWorkStartDate());
         mEntity.setWorkEndDate(pWorkOrderDTO.getWorkEndDate());
 

@@ -200,6 +200,9 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
         }
         //*********************************************************************//
 
+        if (workOrderDTO.getProposalTimeLimitDate() != null) {
+            updates.put("proposalTimeLimitDate", workOrderDTO.getProposalTimeLimitDate());
+        }
         if (workOrderDTO.getWorkStartDate() != null) {
             updates.put("workStartDate", workOrderDTO.getWorkStartDate());
         }

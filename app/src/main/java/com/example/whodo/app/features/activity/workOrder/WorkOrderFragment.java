@@ -88,6 +88,7 @@ public class WorkOrderFragment extends Fragment {
     private Integer mMaxDaysOnConfState = 2; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
 
     private String mStrDiagTtlOpenState = "Fecha limite para tomar orden";
+    private String mStrDiagTtlConfState = "Fecha limite para aceptar Contrato";
     private String mStrDiagTtlOnEvalState = "Fecha de Inspeccion";
     private String mStrDiagTtlLimitOnEvalState = "Fecha de Limite";
     private String mStrDiagTtlOnConfStateStartDate = "Fecha INICIO de Trabajo";
@@ -660,6 +661,26 @@ public class WorkOrderFragment extends Fragment {
                 mConfStateItem.setJobFee("Comision Plataforma: " + mWorkFeeValue[0] + "sat");
             }
         });
+        mConfStateItem.setTimeLimitDateOCL(v -> showDatePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mConfStateItem.setTimeLimitDate(s);
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+        }, mStrDiagTtlConfState));
+        mConfStateItem.setTimeLimitDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                mConfStateItem.setTimeLimitDateTime(s);
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+        }));
         mConfStateItem.setWorkStartDateOCL(v -> showDatePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -704,7 +725,7 @@ public class WorkOrderFragment extends Fragment {
 
 
         mConfStateItem.setPresentOrderButtonOCL(v -> {
-            if (mConfStateItem.getWorkStartDate().isEmpty() || mConfStateItem.getWorkEndDate().isEmpty() || mConfStateItem.getWorkJobCost().isEmpty() || mConfStateItem.getWorkTaskDetail().isEmpty()) {
+            if (mConfStateItem.getWorkStartDate().isEmpty() || mConfStateItem.getWorkEndDate().isEmpty() || mConfStateItem.getWorkJobCost().isEmpty() || mConfStateItem.getWorkTaskDetail().isEmpty()||mConfStateItem.getTimeLimitDate().isEmpty()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle("Información Requerida")
                         .setMessage("Es necesario cargar todos los campos, excepto aquellos marcados como Opcional")
@@ -718,6 +739,7 @@ public class WorkOrderFragment extends Fragment {
 
                 String mWorkStartDateTime;
                 String mWorkEndDateTime;
+                String mProposalTimeLimitTime;
 
                 if (mConfStateItem.getWorkStartDateTime().isEmpty()) {
                     mWorkStartDateTime = "23:59";
@@ -729,9 +751,15 @@ public class WorkOrderFragment extends Fragment {
                 } else {
                     mWorkEndDateTime = mConfStateItem.getWorkEndDateTime();
                 }
+                if (mConfStateItem.getTimeLimitDateTime().isEmpty()) {
+                    mProposalTimeLimitTime = "23:59";
+                } else {
+                    mProposalTimeLimitTime = mConfStateItem.getTimeLimitDateTime();
+                }
 
                 String mWorkStartDate = Utils.getISOLocalDateFromString(mConfStateItem.getWorkStartDate(), mWorkStartDateTime);
                 String mWorkEndDate = Utils.getISOLocalDateFromString(mConfStateItem.getWorkEndDate(), mWorkEndDateTime);
+                String mProposalTimeLimitDate = Utils.getISOLocalDateFromString(mConfStateItem.getTimeLimitDate(), mProposalTimeLimitTime);
 
                 int mWorkLaborCost = Integer.parseInt(mConfStateItem.getWorkJobCost());
                 int mWorkFee = (int) ((mWorkLaborCost + mWorkMaterialsCost) * (mFeePercent / 100.0));
@@ -752,14 +780,14 @@ public class WorkOrderFragment extends Fragment {
                 Log.d(TAG1, "Current Date :" + Utils.getISOLocalDate());
                 Log.d(TAG1, "mWorkFee :" + mWorkFee);
 
-                if (Utils.isAfter(mWorkStartDate, mToday) && Utils.isAfter(mWorkEndDate, mToday) && Utils.isAfter(mWorkEndDate, mWorkStartDate)) {
+                if (Utils.isAfter(mWorkStartDate, mToday) && Utils.isAfter(mWorkEndDate, mToday) && Utils.isAfter(mWorkEndDate, mWorkStartDate) && Utils.isAfter(mProposalTimeLimitDate, mWorkStartDate)) {
 
                     Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");
-                    diagnoseOrder(pWorkOrder.getOrderId(), mWorkStartDate, mWorkEndDate, mWorkLaborCost, mWorkMaterialsCost, mWorkFee, mWorkTaskDetail);
+                    diagnoseOrder(pWorkOrder.getOrderId(),mProposalTimeLimitDate, mWorkStartDate, mWorkEndDate, mWorkLaborCost, mWorkMaterialsCost, mWorkFee, mWorkTaskDetail);
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setTitle("Información Importante")
-                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY y la fecha de FIN no puede ser menor a la fecha de INICIO.")
+                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY NI LA FECHA LIMITE y la fecha de FIN no puede ser menor a la fecha de INICIO..")
                             .setPositiveButton("Aceptar", null) // Botón "Aceptar"
                             .show();
                 }
@@ -789,12 +817,13 @@ public class WorkOrderFragment extends Fragment {
         confStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
 
-    private void diagnoseOrder(String pWorkOrderID, String pWorkStartDate, String pWorkEndDate, Integer pWorkLaborCost, Integer pWorkMaterialsCost, Integer pWorkFee, String pWorkDetail) {
+    private void diagnoseOrder(String pWorkOrderID,String pProposalTimeLimit, String pWorkStartDate, String pWorkEndDate, Integer pWorkLaborCost, Integer pWorkMaterialsCost, Integer pWorkFee, String pWorkDetail) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
         WO.setState("DIAGNOSED");
         WO.setStateChangeDate(mStateChangeDate);
+        WO.setProposalTimeLimitDate(pProposalTimeLimit);
         WO.setWorkStartDate(pWorkStartDate);
         WO.setWorkEndDate(pWorkEndDate);
         WO.setWorkLaborCost(pWorkLaborCost);
