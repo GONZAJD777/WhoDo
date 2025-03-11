@@ -25,6 +25,7 @@ public class ConfState extends RelativeLayout {
     private TextView meetTariff_label;
     private TextView meetFee_label;
 
+    private TextView presentationLimitDate_label;
     private EditText timeLimitDate_value;
     private EditText timeLimitDateTime_value;
     private EditText workStartDate_value;
@@ -55,6 +56,7 @@ public class ConfState extends RelativeLayout {
         meetTariff_label= root.findViewById(R.id.meetTariff_label);
         meetFee_label= root.findViewById(R.id.meetFee_label);
 
+        presentationLimitDate_label= root.findViewById(R.id.presentationLimitDate_label);
         timeLimitDate_value= root.findViewById(R.id.timeLimitDate_value);
         timeLimitDateTime_value= root.findViewById(R.id.timeLimitDateTime_value);
         workStartDate_value= root.findViewById(R.id.workStartDate_value);
@@ -81,6 +83,8 @@ public class ConfState extends RelativeLayout {
     public void setMeetTime(String pMeetTime) { this.meetTime_label.setText(pMeetTime); }
     public void setMeetTariff(String pMeetTariff) { this.meetTariff_label.setText(pMeetTariff); }
     public void setMeetFee(String pMeetFee) { this.meetFee_label.setText(pMeetFee); }
+
+    public void setPresentationLimitDate(String pPresentationLimitDate){this.presentationLimitDate_label.setText(pPresentationLimitDate);}
 
     public String getTimeLimitDate(){ return timeLimitDate_value.getText().toString(); }
     public void setTimeLimitDate(String pTimeLimitDate){timeLimitDate_value.setText(pTimeLimitDate);}

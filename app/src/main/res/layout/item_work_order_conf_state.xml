@@ -145,6 +145,16 @@
             android:gravity="center"
             android:text="Diagnostico"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/presentationLimitDate_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Fecha Limita para presentar: dd/mm/yyyy"
+            android:textAlignment="center"
+            android:textColor="#F44336" />
+
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">

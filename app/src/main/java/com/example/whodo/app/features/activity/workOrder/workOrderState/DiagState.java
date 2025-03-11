@@ -17,6 +17,7 @@ public class DiagState extends RelativeLayout {
     private TextView providerAddress_label;
     private TextView providerPhone_label;
 
+    private TextView acceptanceLimitDate_label;
     private TextView workStartDate_label;
     private TextView workEndDate_label;
     private TextView materialCost_label;
@@ -41,6 +42,7 @@ public class DiagState extends RelativeLayout {
         providerAddress_label=root.findViewById(R.id.providerAddress_label);
         providerPhone_label=root.findViewById(R.id.providerPhone_label);
 
+        acceptanceLimitDate_label=root.findViewById(R.id.acceptanceLimitDate_label);
         workStartDate_label=root.findViewById(R.id.workStartDate_label);
         workEndDate_label=root.findViewById(R.id.workEndDate_label);
         materialCost_label=root.findViewById(R.id.materialCost_label);
@@ -61,6 +63,7 @@ public class DiagState extends RelativeLayout {
     public void setProviderAddress(String pProviderAddress) { this.providerAddress_label.setText(pProviderAddress); }
     public void setProviderPhone(String pProviderPhoneNumber) { this.providerPhone_label.setText(pProviderPhoneNumber); }
 
+    public void setAcceptanceLimitDate(String pAcceptanceLimitDate) { this.acceptanceLimitDate_label.setText(pAcceptanceLimitDate); }
     public void setWorkStartDate(String pWorkStartDate) { this.workStartDate_label.setText(pWorkStartDate); }
     public void setWorkEndDate(String pWorkEndDate) { this.workEndDate_label.setText(pWorkEndDate); }
     public void setMaterialCost(String pMaterialCost) { this.materialCost_label.setText(pMaterialCost); }

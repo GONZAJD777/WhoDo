@@ -74,6 +74,8 @@ public class WorkOrderFragment extends Fragment {
     private FloatingActionButton saveChangesButton;
     private FloatingActionButton startComplaintButton;//TODO: crear la pantalla para iniciar la mediacion
     //***************************************** Parametria, deberia levantarse de base de datos ********************//
+    private String[] validStates = {"CONFIRMED", "DIAGNOSED"}; //Estados para validar Inspeccion
+
     private Integer mWarrantyDays = 7;// dias otorgados como garantia una vez completada la reseña.
     private Integer mAutoClosingDays = 2;//periodo para que el cliente complete la reseña, de lo contrario la orden se cierra y pierde derecho a reclamo
     private Integer mFeePercent = 10;
@@ -86,7 +88,8 @@ public class WorkOrderFragment extends Fragment {
     private Integer mMaxDaysLimitOpenState = 7; //Maxima cantidad de dias en los que una orden en estado OPEN y ONEVALUATION estaran disponible para ser aceptada por un proveedor
     private Integer mMaxDaysMeetOnEvalState = 15; //Maxima cantidad de dias para planificar una cita o visita en ONEVALUATION STATE.
     private Integer mMaxDaysOnConfState = 2; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
-
+    private String mSetInspectionStatusMessage="El proveedor se reprogramo la inspeccion? \n Si respondes que NO esto se vera reflejado en el perfil del proveedor y la orden se CERRARA definitivamente." ;
+    private String mValidateInspectionStatusMessage = "El proveedor se presento a la cita para inspeccionar el trabajo a realizar? \n Si respondes que NO, esto se vera reflejado en su perfil para otros usuarios tengan referencia sobre su responsabilidad.";
     private String mStrDiagTtlOpenState = "Fecha limite para tomar orden";
     private String mStrDiagTtlConfState = "Fecha limite para aceptar Contrato";
     private String mStrDiagTtlOnEvalState = "Fecha de Inspeccion";
@@ -218,12 +221,12 @@ public class WorkOrderFragment extends Fragment {
         if (pWorkOrder != null && pWorkOrder.getInspectionDate() != null) {
             String mNow = Utils.getISOLocalDate();
             String mInspectionDate = pWorkOrder.getInspectionDate();
-            String[] validStates = {"CONFIRMED", "DIAGNOSED"};
+            //String[] validStates = {"CONFIRMED", "DIAGNOSED"};
 
             if (Utils.isAfter(mNow, mInspectionDate) && Arrays.asList(validStates).contains(pWorkOrder.getState()) && pWorkOrder.getInspectionFullfilment() == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle("Consulta Sobre Inspeccion")
-                        .setMessage("El proveedor se presento a la cita para inspeccionar el trabajo a realizar? \n Si respondes que NO, esto se vera reflejado en su perfil para otros usuarios tengan referencia sobre su responsabilidad.")
+                        .setMessage(mValidateInspectionStatusMessage)
                         .setPositiveButton("SI", (dialog, which) -> {
                             setInspectionStatus(pWorkOrder.getOrderId(), which);
                         }) // Botón "Aceptar"
@@ -246,7 +249,7 @@ public class WorkOrderFragment extends Fragment {
             WO.setInspectionFullfilment("N");
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Consulta Reprogramacion de Inspeccion")
-                    .setMessage("El proveedor se reprogramo la inspeccion? \n Si respondes que NO esto se vera reflejado en el perfil del proveedor y la orden se CERRARA definitivamente.")
+                    .setMessage(mSetInspectionStatusMessage)
                     .setPositiveButton("SI", (dialog, which) -> {
                         setInspectionReschStatus(WO, which);
                     }) // Botón "Aceptar"
@@ -453,13 +456,15 @@ public class WorkOrderFragment extends Fragment {
                             .setMessage("El costo de la inspeccion no puede superar "+mInspectionMaxCost)
                             .setPositiveButton("Aceptar", null) // Botón "Aceptar"
                             .show();
-                } else if (Utils.isAfter(mNow, mInspectionDate)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setTitle("Información Importante")
-                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY y la fecha de FIN no puede ser menor a la fecha de INICIO.")
-                            .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                            .show();
-                } else if (Utils.isAfter(mPlanLimitDate, mInspectionDate)) {
+                }
+//                else if (Utils.isAfter(mNow, mInspectionDate)) {
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+//                    builder.setTitle("Información Importante")
+//                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY y la fecha de FIN no puede ser menor a la fecha de INICIO.")
+//                            .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+//                            .show();
+//                }
+                else if (Utils.isAfter(mPlanLimitDate, mInspectionDate)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setTitle("Información Importante")
                             .setMessage("La fecha limite para aceptar la inspeccion debe anterior a la fecha de la inspeccion.")
@@ -584,6 +589,7 @@ public class WorkOrderFragment extends Fragment {
         ConfState mConfStateItem = new ConfState(requireContext());
         String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
 
+
         mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mConfStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
         mConfStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
@@ -591,11 +597,14 @@ public class WorkOrderFragment extends Fragment {
         mConfStateItem.setCategory("Categoria: " + pWorkOrder.getSpecialization());
         mConfStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
 
+
         mConfStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
         mConfStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
 
         mConfStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges() + "sat");
         mConfStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspectionFee() + "sat");
+
+        mConfStateItem.setPresentationLimitDate("Fecha limite para presentar la propuesta\n"+ Utils.getISOtoDate(Utils.getISOLocalDatePlus(mMaxDaysOnConfState,pWorkOrder.getInspectionDate())) );
 
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
@@ -670,7 +679,7 @@ public class WorkOrderFragment extends Fragment {
             @Override
             public void onError(Exception e) {
             }
-        }, mStrDiagTtlConfState));
+        }, mStrDiagTtlConfState,0,null));
         mConfStateItem.setTimeLimitDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -690,7 +699,7 @@ public class WorkOrderFragment extends Fragment {
             @Override
             public void onError(Exception e) {
             }
-        }, mStrDiagTtlOnConfStateStartDate));
+        }, mStrDiagTtlOnConfStateStartDate,0,null));
         mConfStateItem.setWorkStartDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -710,7 +719,7 @@ public class WorkOrderFragment extends Fragment {
             @Override
             public void onError(Exception e) {
             }
-        }, mStrDiagTtlOnConfStateEndDate));
+        }, mStrDiagTtlOnConfStateEndDate,0,null));
         mConfStateItem.setWorkEndDateTimeOCL(v -> showTimePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -721,7 +730,6 @@ public class WorkOrderFragment extends Fragment {
             public void onError(Exception e) {
             }
         }));
-
 
 
         mConfStateItem.setPresentOrderButtonOCL(v -> {
@@ -780,7 +788,7 @@ public class WorkOrderFragment extends Fragment {
                 Log.d(TAG1, "Current Date :" + Utils.getISOLocalDate());
                 Log.d(TAG1, "mWorkFee :" + mWorkFee);
 
-                if (Utils.isAfter(mWorkStartDate, mToday) && Utils.isAfter(mWorkEndDate, mToday) && Utils.isAfter(mWorkEndDate, mWorkStartDate) && Utils.isAfter(mProposalTimeLimitDate, mWorkStartDate)) {
+                if (Utils.isAfter(mWorkStartDate, mToday) && Utils.isAfter(mWorkEndDate, mToday) && Utils.isAfter(mWorkEndDate, mWorkStartDate) && Utils.isAfter(mWorkStartDate,mProposalTimeLimitDate )) {
 
                     Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");
                     diagnoseOrder(pWorkOrder.getOrderId(),mProposalTimeLimitDate, mWorkStartDate, mWorkEndDate, mWorkLaborCost, mWorkMaterialsCost, mWorkFee, mWorkTaskDetail);
@@ -878,6 +886,7 @@ public class WorkOrderFragment extends Fragment {
         mDiagStateItem.setJobCost("Costo Mano de Obra: " + pWorkOrder.getWorkLaborCost() + "sat");
         mDiagStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkMaterialsCost() + "sat");
         mDiagStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee() + "sat");
+        mDiagStateItem.setAcceptanceLimitDate("Tienes hasta la fecha indicada para evaluar y aceptar la propuesta\n" + Utils.getISOtoDate(pWorkOrder.getProposalTimeLimitDate()) );
 
         mDiagStateItem.setAcceptButtonOCL(v -> {
             this.acceptContract(pWorkOrder.getOrderId(), pWorkOrder.getWorkPaymentOrder());
@@ -1026,7 +1035,6 @@ public class WorkOrderFragment extends Fragment {
             Log.d(TAG1, "BOTON CERRAR ORDEN POR TRABAJO COMPLETADO PRESIONADO");
         });
         mDoneStateItem.setRejectButtonOCL(v -> {
-
             showDatePickerDialog(new Callback<String>() {
                 @Override
                 public void onSuccess(String s) {
@@ -1036,8 +1044,6 @@ public class WorkOrderFragment extends Fragment {
                     }
                     workRejected(pWorkOrder.getOrderId(), mWorkLimitTimeExtensionQuantity, mExtendedWorkEndDate);
                     Log.d(TAG1, "Fecha Seleccionada:" + s);
-                    //TODO: agregar el bloque que estendera la fecha limite de trabajo cuando el cliente devuelva la orden a estado ONPROGRESS, a priori se otorgaran 48hs mas
-
                 }
 
                 @Override
@@ -1045,7 +1051,6 @@ public class WorkOrderFragment extends Fragment {
 
                 }
             }, mStrDiagTtlDone,mMinDaysWorkEndDateExt,mMaxDaysWorkEndDateExt);
-
             Log.d(TAG1, "BOTON RECHAZAR TRABAJO PRESIONADO");
 
         });
@@ -1161,13 +1166,18 @@ public class WorkOrderFragment extends Fragment {
             pCallback.onSuccess(fechaSeleccionada);},
                 year, month, day);
         datePickerDialog.setTitle(pTitle);
-        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() + (86400*1000*pMinDaysAvailable-1000));
-        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() + (86400*1000*pMaxDaysAvailable-1000));
+        if (pMinDaysAvailable!=null){
+            datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() + (86400*1000*pMinDaysAvailable-1000));
+
+        }
+        if (pMaxDaysAvailable!=null){
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() + (86400*1000*pMaxDaysAvailable-1000));
+        }
 
         datePickerDialog.show();
     }
     private void showDatePickerDialog(Callback<String> pCallback, String pTitle) {
-        showDatePickerDialog(pCallback,pTitle,0,0);
+        showDatePickerDialog(pCallback,pTitle,null,null);
     }
     private void showDatePickerDialog(Callback<String> pCallback, String pTitle, Integer pMaxDaysAvailable) {
         showDatePickerDialog(pCallback,pTitle,0,pMaxDaysAvailable);
