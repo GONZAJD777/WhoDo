@@ -74,7 +74,7 @@ public class WorkOrderFragment extends Fragment {
     private FloatingActionButton saveChangesButton;
     private FloatingActionButton startComplaintButton;//TODO: crear la pantalla para iniciar la mediacion
     //***************************************** Parametria, deberia levantarse de base de datos ********************//
-    private String[] validStates = {"CONFIRMED", "DIAGNOSED"}; //Estados para validar Inspeccion
+    private String[] mValidStates = {"CONFIRMED", "DIAGNOSED"}; //Estados para validar Inspeccion
 
     private Integer mWarrantyDays = 7;// dias otorgados como garantia una vez completada la reseña.
     private Integer mAutoClosingDays = 2;//periodo para que el cliente complete la reseña, de lo contrario la orden se cierra y pierde derecho a reclamo
@@ -88,8 +88,34 @@ public class WorkOrderFragment extends Fragment {
     private Integer mMaxDaysLimitOpenState = 7; //Maxima cantidad de dias en los que una orden en estado OPEN y ONEVALUATION estaran disponible para ser aceptada por un proveedor
     private Integer mMaxDaysMeetOnEvalState = 15; //Maxima cantidad de dias para planificar una cita o visita en ONEVALUATION STATE.
     private Integer mMaxDaysOnConfState = 2; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
+
+    private String mSetInspectionStatusTittle="Consulta Reprogramacion de Inspeccion";
     private String mSetInspectionStatusMessage="El proveedor se reprogramo la inspeccion? \n Si respondes que NO esto se vera reflejado en el perfil del proveedor y la orden se CERRARA definitivamente." ;
+
+    private String mValidateInspectionStatusTittle = "Consulta Sobre Inspeccion";
     private String mValidateInspectionStatusMessage = "El proveedor se presento a la cita para inspeccionar el trabajo a realizar? \n Si respondes que NO, esto se vera reflejado en su perfil para otros usuarios tengan referencia sobre su responsabilidad.";
+
+    private String mNoDataErrorTittle ="Información Importante";
+    private String mNoDataErrorMessage ="Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.";
+
+    private String mEmptyFieldErrorTittle="Información Requerida";
+    private String mEmptyFieldErrorMessage="Es necesario cargar todos los campos, excepto aquellos marcados como Opcional";
+
+    private String mConfStateDatesErrorTitle ="Información Importante";
+    private String mConfStateDatesErrorMessage = "La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY NI LA FECHA LIMITE y la fecha de FIN no puede ser menor a la fecha de INICIO..";
+
+    private String mOnEvalStateDatesErrorTitle ="Información Importante";
+    private String mOnEvalStateDatesErrorMessage = "La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY NI LA FECHA LIMITE y la fecha de FIN no puede ser menor a la fecha de INICIO..";
+
+    private String mRejectWorkAfterInspTittle ="Consulta Sobre Inspeccion";
+    private String mRejectWorkAfterInspMessage = "Estas a punto de rechazar la orden, lo que significa que has realizado la inspección y no pudiste llegar a un acuerdo con el cliente o consideras que no estas capacitado. La orden pasara a el estado CERRADO y no podrás volver a abrirla.\n ¿Deseas continuar y RECHAZAR?";
+
+    private String mReviewWarrantyWarning = "No te preocupes, si aceptas y encuentras fallas mas tarde, tienes tiempo hasta %1$s como garantia para inciar un reclamo si no acuerdas con el proveedor.";
+    private String mReviewClosingWarning = "Tienes tiempo hasta el %1$s, luego de esta fecha la orden se cerrara, se liberara el pago al proveedor y no podras iniciar reclamos por fallas.";
+    private String mReviewClosingWarningOutOfDate = "Tenias tiempo hasta el %1$s, la orden ya no esta disponible para reclamos y será cerrada automaticamente.";
+
+    private String mWarrantyMessage = "Tiene hasta la siguiente fecha para iniciar el reclamo por alguna falla en el servicio prestado, que no pudiera ser resuelto entre las partes.";
+
     private String mStrDiagTtlOpenState = "Fecha limite para tomar orden";
     private String mStrDiagTtlConfState = "Fecha limite para aceptar Contrato";
     private String mStrDiagTtlOnEvalState = "Fecha de Inspeccion";
@@ -98,8 +124,11 @@ public class WorkOrderFragment extends Fragment {
     private String mStrDiagTtlOnConfStateEndDate = "Fecha FIN de Trabajo";
     private String mStrDiagTtlDone = "Extension de plazo";
     private String mStartDayTime = "00:00:00";
-    //**************************************************************************************************************//
 
+    private String mSaveChangesButtonColor = "#3F51B5";
+    private String mStartComplaintButton ="#FFFF0000";
+
+    //**************************************************************************************************************//
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_work_order_lifecycle, container, false);
@@ -110,8 +139,8 @@ public class WorkOrderFragment extends Fragment {
         orderId_label = root.findViewById(R.id.orderId_label);
         saveChangesButton = root.findViewById(R.id.saveChangesButton);
         startComplaintButton = root.findViewById(R.id.startComplaintButton);
-        saveChangesButton.setColorFilter(Color.parseColor("#3F51B5"));
-        startComplaintButton.setColorFilter(Color.parseColor("#FFFF0000"));
+        saveChangesButton.setColorFilter(Color.parseColor(mSaveChangesButtonColor));
+        startComplaintButton.setColorFilter(Color.parseColor(mStartComplaintButton));
         saveChangesButton.setOnClickListener(this::onClick);
 
         work0rderStates_scrollView = root.findViewById(R.id.work0rderStates_scrollView);
@@ -146,7 +175,6 @@ public class WorkOrderFragment extends Fragment {
 
         return root;
     }
-
     private void setWorkOrderView(WorkOrder pWorkOrder) {
         //TODO: verificar fechas de vencimiento de plazos en cada estado, y desactivar los botones para evitar acciones hasta q el proceso batch las remueva.
         clearWorkOrder();
@@ -214,18 +242,17 @@ public class WorkOrderFragment extends Fragment {
 
         validateInspectionStatus(pWorkOrder);
     }
-
     //********************************** Validacion de Inspeccion **********************************//
     private void validateInspectionStatus(WorkOrder pWorkOrder) {
 
         if (pWorkOrder != null && pWorkOrder.getInspectionDate() != null) {
             String mNow = Utils.getISOLocalDate();
             String mInspectionDate = pWorkOrder.getInspectionDate();
-            //String[] validStates = {"CONFIRMED", "DIAGNOSED"};
+            String[] validStates = mValidStates;
 
             if (Utils.isAfter(mNow, mInspectionDate) && Arrays.asList(validStates).contains(pWorkOrder.getState()) && pWorkOrder.getInspectionFullfilment() == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                builder.setTitle("Consulta Sobre Inspeccion")
+                builder.setTitle(mValidateInspectionStatusTittle)
                         .setMessage(mValidateInspectionStatusMessage)
                         .setPositiveButton("SI", (dialog, which) -> {
                             setInspectionStatus(pWorkOrder.getOrderId(), which);
@@ -238,7 +265,6 @@ public class WorkOrderFragment extends Fragment {
             }
         }
     }
-
     private void setInspectionStatus(String pWorkOrderId, int pStatus) {
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderId);
@@ -248,7 +274,7 @@ public class WorkOrderFragment extends Fragment {
         } else {
             WO.setInspectionFullfilment("N");
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Consulta Reprogramacion de Inspeccion")
+            builder.setTitle(mSetInspectionStatusTittle)
                     .setMessage(mSetInspectionStatusMessage)
                     .setPositiveButton("SI", (dialog, which) -> {
                         setInspectionReschStatus(WO, which);
@@ -260,7 +286,6 @@ public class WorkOrderFragment extends Fragment {
                     .show();
         }
     }
-
     private void setInspectionReschStatus(WorkOrder pWorkOrder, int pStatus) {
         if (pStatus == BUTTON_POSITIVE) {
             pWorkOrder.setInspectionRescheduled("Y");
@@ -272,23 +297,9 @@ public class WorkOrderFragment extends Fragment {
         mMainActivityViewModel.updateWorkOrder(pWorkOrder);
         closeWorkOrderLifeCycle();
     }
-
     //********************************** Validacion de Inspeccion **********************************//
-    private void clearWorkOrder() {
-        ViewGroup celdaEspecifica;
-        for (int i = 1; i < 16; i += 2) {
-            celdaEspecifica = (ViewGroup) workOrderStates_LinearLayout.getChildAt(i);
-            if (celdaEspecifica.getChildCount() > 1) {
-                celdaEspecifica.removeViewAt(1);
-                celdaEspecifica.getChildAt(0).setBackground(mVertLineBackGround);
-                celdaEspecifica.getChildAt(0).setBackgroundTintMode(mVertLineBackTintMode);
-            }
-            //Log.d(TAG1, "Iteracion -->"+i);
-        }
 
-    }
-
-    //********************************** OPEN STATE **********************************//
+     //********************************** OPEN STATE **********************************//
     private void openStateWorkOrder() {
         OpenState mOpenStateItem = new OpenState(requireContext());
         String[] mProviderServices = Objects.requireNonNull(mHireFragmentViewModel.getPickedProvider().getValue()).getSpecialization().split(",");
@@ -299,7 +310,6 @@ public class WorkOrderFragment extends Fragment {
         mOpenStateItem.setProviderAddress("Direccion: " + mPickedProvider.getAddress());
         mOpenStateItem.setProviderPhone("Telefono: " + mPickedProvider.getPhone_ccn() + " " + mPickedProvider.getPhone());
         mOpenStateItem.setSpinnerValues(mProviderServices);
-
         mOpenStateItem.setLimitDateListener(v -> showDatePickerDialog(new Callback<String>() {
             @Override
             public void onSuccess(String s) {
@@ -310,27 +320,27 @@ public class WorkOrderFragment extends Fragment {
             public void onError(Exception e) {
             }
         }, mStrDiagTtlOpenState,mMaxDaysLimitOpenState));
-
-
         mOpenStateItem.setOnClickListener(v -> {
+            if (mOpenStateItem.getTimeLimit().isEmpty() || mOpenStateItem.getDescriptionValue().isEmpty()) {
+                emptyFieldsNotificator();
+            } else {
+                String mTimeLimitDate = Utils.getISOLocalDateFromString(mOpenStateItem.getTimeLimit(), mStartDayTime);
+                String mCreationDate = Utils.getISOLocalDate();
 
-            String mTimeLimitDate = Utils.getISOLocalDateFromString(mOpenStateItem.getTimeLimit(), "00:00:00");
-            String mCreationDate = Utils.getISOLocalDate();
-
-            assert mLoggedUser != null;
-            assignOrder(mLoggedUser,
-                    mPickedProvider,
-                    mOpenStateItem.getCategoryValue(),
-                    mOpenStateItem.getDescriptionValue(),
-                    mCreationDate,
-                    mTimeLimitDate);
+                assert mLoggedUser != null;
+                assignOrder(mLoggedUser,
+                        mPickedProvider,
+                        mOpenStateItem.getCategoryValue(),
+                        mOpenStateItem.getDescriptionValue(),
+                        mCreationDate,
+                        mTimeLimitDate);
+            }
         });
 
         openStateDetail_LinearLayout.addView(mOpenStateItem);
         openStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         openStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     private void assignOrder(User pCustomer, User pProvider, String pCategory, String pDescription, String pCreationDate, String pLimitDate) {
 
         String mStateChangeDate = Utils.getISOLocalDate();
@@ -347,7 +357,6 @@ public class WorkOrderFragment extends Fragment {
         mMainActivityViewModel.setSelectedTab(2);
         Log.d(TAG1, "BOTON CREAR ORDEN PRESIONADO");
     }
-
     //********************************** ON EVALUATION STATE **********************************//
     private void onEvalStateWorkOrder(WorkOrder pWorkOrder) {
         OnEvalState mOnEvalStateItem = new OnEvalState(requireContext());
@@ -365,12 +374,7 @@ public class WorkOrderFragment extends Fragment {
                 //mOnEvalStateItem.disableEdition();
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Información Importante")
-                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
-                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                    .show();
-            closeWorkOrderLifeCycle();
+            noDataErrorNotificator();
         }
 
         final int[] mInspectionFeeValue = {0};
@@ -379,7 +383,6 @@ public class WorkOrderFragment extends Fragment {
             public void onSuccess(String s) {
                 mOnEvalStateItem.setPlanLimitDate(s);
             }
-
             @Override
             public void onError(Exception e) {
             }
@@ -389,7 +392,6 @@ public class WorkOrderFragment extends Fragment {
             public void onSuccess(String s) {
                 mOnEvalStateItem.setMeetDate(s);
             }
-
             @Override
             public void onError(Exception e) {
             }
@@ -399,7 +401,6 @@ public class WorkOrderFragment extends Fragment {
             public void onSuccess(String s) {
                 mOnEvalStateItem.setMeetTime(s);
             }
-
             @Override
             public void onError(Exception e) {
             }
@@ -408,12 +409,9 @@ public class WorkOrderFragment extends Fragment {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
-
             @Override
             public void afterTextChanged(Editable s) {
                 int mSValue;
@@ -431,11 +429,7 @@ public class WorkOrderFragment extends Fragment {
         mOnEvalStateItem.setAcceptButtonOCL(v -> {
 
             if (mOnEvalStateItem.getMeetDate().isEmpty() || mOnEvalStateItem.getMeetTime().isEmpty() || mOnEvalStateItem.getPlanLimitDate().isEmpty()) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                builder.setTitle("Información Requerida")
-                        .setMessage("Es necesario cargar todos los campos, excepto aquellos marcados como Opcional")
-                        .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                        .show();
+                emptyFieldsNotificator();
             } else {
                 int mInspectionCharges = 0;
                 if (!mOnEvalStateItem.getMeetTariff().isEmpty()) {
@@ -456,20 +450,8 @@ public class WorkOrderFragment extends Fragment {
                             .setMessage("El costo de la inspeccion no puede superar "+mInspectionMaxCost)
                             .setPositiveButton("Aceptar", null) // Botón "Aceptar"
                             .show();
-                }
-//                else if (Utils.isAfter(mNow, mInspectionDate)) {
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-//                    builder.setTitle("Información Importante")
-//                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY y la fecha de FIN no puede ser menor a la fecha de INICIO.")
-//                            .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-//                            .show();
-//                }
-                else if (Utils.isAfter(mPlanLimitDate, mInspectionDate)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setTitle("Información Importante")
-                            .setMessage("La fecha limite para aceptar la inspeccion debe anterior a la fecha de la inspeccion.")
-                            .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                            .show();
+                } else if (Utils.isAfter(mPlanLimitDate, mInspectionDate)) {
+                    dateCorrelationErrorNotificator(mOnEvalStateDatesErrorTitle,mOnEvalStateDatesErrorMessage);
                 } else {
                     Log.d(TAG1, "mInspectionCharges: " + mInspectionCharges);
                     Log.d(TAG1, "mInspectionFee: " + mInspectionFee);
@@ -488,7 +470,6 @@ public class WorkOrderFragment extends Fragment {
         onEvalStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         onEvalStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     private void planDate(String pWorkOrderID,String pPlanLimitDate, String pInspectionDate, Integer pInspectionCharges, Integer pInspectionFee) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -501,7 +482,6 @@ public class WorkOrderFragment extends Fragment {
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     private void rejectOrder(String pWorkOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -513,8 +493,8 @@ public class WorkOrderFragment extends Fragment {
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //********************************** PLANNED STATE **********************************//
+    //at this point customer should accept the visit and pay the tariff if it was required
     private void plannedStateWorkOrder(WorkOrder pWorkOrder) {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
         String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
@@ -525,12 +505,7 @@ public class WorkOrderFragment extends Fragment {
                 //mPlannedStateItem.disableEdition();
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Información Importante")
-                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
-                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                    .show();
-            closeWorkOrderLifeCycle();
+            noDataErrorNotificator();
         }
 
         mPlannedStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
@@ -547,6 +522,7 @@ public class WorkOrderFragment extends Fragment {
             Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");
         });
         mPlannedStateItem.setAcceptButtonOCL(v -> {
+
             confirmDate(pWorkOrder.getOrderId(), pWorkOrder.getInspectionPaymentOrder());
             Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
         });
@@ -563,7 +539,6 @@ public class WorkOrderFragment extends Fragment {
         plannedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         plannedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     private void confirmDate(String pWorkOrderID, String pPaymentOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -573,7 +548,6 @@ public class WorkOrderFragment extends Fragment {
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     private void rejectDate(String pWorkOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -583,12 +557,10 @@ public class WorkOrderFragment extends Fragment {
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //********************************** CONFIRMED STATE **********************************//
     private void confStateWorkOrder(WorkOrder pWorkOrder) {
         ConfState mConfStateItem = new ConfState(requireContext());
         String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
-
 
         mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
         mConfStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
@@ -596,7 +568,6 @@ public class WorkOrderFragment extends Fragment {
 
         mConfStateItem.setCategory("Categoria: " + pWorkOrder.getSpecialization());
         mConfStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
-
 
         mConfStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
         mConfStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
@@ -611,12 +582,7 @@ public class WorkOrderFragment extends Fragment {
                 //mConfStateItem.disableEdition();
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Información Importante")
-                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
-                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                    .show();
-            closeWorkOrderLifeCycle();
+            noDataErrorNotificator();
         }
 
         final Integer[] mWorkFeeValue = {0};
@@ -730,15 +696,9 @@ public class WorkOrderFragment extends Fragment {
             public void onError(Exception e) {
             }
         }));
-
-
         mConfStateItem.setPresentOrderButtonOCL(v -> {
             if (mConfStateItem.getWorkStartDate().isEmpty() || mConfStateItem.getWorkEndDate().isEmpty() || mConfStateItem.getWorkJobCost().isEmpty() || mConfStateItem.getWorkTaskDetail().isEmpty()||mConfStateItem.getTimeLimitDate().isEmpty()) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                builder.setTitle("Información Requerida")
-                        .setMessage("Es necesario cargar todos los campos, excepto aquellos marcados como Opcional")
-                        .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                        .show();
+                emptyFieldsNotificator();
             } else {
                 int mWorkMaterialsCost = 0;
                 if (!mConfStateItem.getWorkMaterialCost().isEmpty()) {
@@ -774,40 +734,27 @@ public class WorkOrderFragment extends Fragment {
                 String mWorkTaskDetail = mConfStateItem.getWorkTaskDetail();
 
                 String mToday = Utils.getISOLocalDate();
-//                try {
-//                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000"+Utils.getISOLocalDate().substring(23,29);
-//                } catch (Exception e){
-//                    mToday=Utils.getISOLocalDate().substring(0,10)+"T00:00:00.000Z";
-//                    Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate );
-//                }
 
                 Log.d(TAG1, "mToday :" + mToday);
-
                 Log.d(TAG1, "mWorkStartDate :" + mWorkStartDate);
                 Log.d(TAG1, "mWorkEndDate :" + mWorkEndDate);
                 Log.d(TAG1, "Current Date :" + Utils.getISOLocalDate());
                 Log.d(TAG1, "mWorkFee :" + mWorkFee);
 
                 if (Utils.isAfter(mWorkStartDate, mToday) && Utils.isAfter(mWorkEndDate, mToday) && Utils.isAfter(mWorkEndDate, mWorkStartDate) && Utils.isAfter(mWorkStartDate,mProposalTimeLimitDate )) {
-
                     Log.d(TAG1, "BOTON PRESENTAR ORDEN PRESIONADO");
                     diagnoseOrder(pWorkOrder.getOrderId(),mProposalTimeLimitDate, mWorkStartDate, mWorkEndDate, mWorkLaborCost, mWorkMaterialsCost, mWorkFee, mWorkTaskDetail);
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setTitle("Información Importante")
-                            .setMessage("La fecha de INICIO de trabajo no puede ser menor a la fecha de HOY NI LA FECHA LIMITE y la fecha de FIN no puede ser menor a la fecha de INICIO..")
-                            .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                            .show();
+                    dateCorrelationErrorNotificator(mConfStateDatesErrorTitle,mConfStateDatesErrorMessage);
                 }
 
             }
 
         });
         mConfStateItem.setRejectButtonOCL(v -> {
-
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Consulta Sobre Inspeccion")
-                    .setMessage("Estas a punto de rechazar la orden, lo que significa que has realizado la inspección y no pudiste llegar a un acuerdo con el cliente o consideras que no estas capacitado. La orden pasara a el estado CERRADO y no podrás volver a abrirla.\n ¿Deseas continuar y RECHAZAR?")
+            builder.setTitle(mRejectWorkAfterInspTittle)
+                    .setMessage(mRejectWorkAfterInspMessage)
                     .setPositiveButton("SI", (dialog, which) -> {
                         this.cancelOrder(pWorkOrder.getOrderId());
                         Log.d(TAG1, "CONFIRMED STATE:REJECTION ACCEPTED");
@@ -817,14 +764,12 @@ public class WorkOrderFragment extends Fragment {
                     })
                     .setCancelable(false)
                     .show();
-
         });
 
         confStateDetail_LinearLayout.addView(mConfStateItem);
         confStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         confStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     private void diagnoseOrder(String pWorkOrderID,String pProposalTimeLimit, String pWorkStartDate, String pWorkEndDate, Integer pWorkLaborCost, Integer pWorkMaterialsCost, Integer pWorkFee, String pWorkDetail) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -840,7 +785,6 @@ public class WorkOrderFragment extends Fragment {
         WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //at this point provider make the visit to diagnose, customer paid de visit and has accepted the date
     private void cancelOrder(String pWorkOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();
@@ -856,8 +800,8 @@ public class WorkOrderFragment extends Fragment {
 //        WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //********************************** DIAGNOSE STATE **********************************//
+    //at this point customer pay the tariff and accept the diagnose and work schedule
     private void diagStateWorkOrder(WorkOrder pWorkOrder) {
         DiagState mDiagStateItem = new DiagState(requireContext());
         String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
@@ -868,12 +812,7 @@ public class WorkOrderFragment extends Fragment {
                 //mDiagStateItem.disableEdition();
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Información Importante")
-                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
-                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                    .show();
-            closeWorkOrderLifeCycle();
+            noDataErrorNotificator();
         }
 
         mDiagStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
@@ -907,7 +846,6 @@ public class WorkOrderFragment extends Fragment {
         diagStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         diagStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     private void acceptContract(String pWorkOrderID, String pWorkPaymentOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -921,7 +859,6 @@ public class WorkOrderFragment extends Fragment {
 //        WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     private void rejectContract(String pWorkOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -934,7 +871,6 @@ public class WorkOrderFragment extends Fragment {
 //        WO.setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //********************************** ON PROGRESS STATE **********************************//
     private void onProgStateWorkOrder(WorkOrder pWorkOrder) {
         OnProgState mOnProgStateItem = new OnProgState(requireContext());
@@ -945,12 +881,7 @@ public class WorkOrderFragment extends Fragment {
                 //mOnProgStateItem.disableEdition();
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Información Importante")
-                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
-                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                    .show();
-            closeWorkOrderLifeCycle();
+            noDataErrorNotificator();
         }
 
         mOnProgStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
@@ -980,7 +911,6 @@ public class WorkOrderFragment extends Fragment {
         onProgStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         onProgStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     private void finishOrder(String pWorkOrderID, String pWarrantyEndDate) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -991,7 +921,6 @@ public class WorkOrderFragment extends Fragment {
 
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //********************************** DONE STATE **********************************//
     private void doneStateWorkOrder(WorkOrder pWorkOrder) {
         DoneState mDoneStateItem = new DoneState(requireContext());
@@ -1001,37 +930,35 @@ public class WorkOrderFragment extends Fragment {
                 //mDoneStateItem.disableEdition();
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Información Importante")
-                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
-                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                    .show();
-            closeWorkOrderLifeCycle();
+            noDataErrorNotificator();
         }
         String mWorkWarrantyEndDate = Utils.getISOtoDate(pWorkOrder.getWorkWarrantyEndDate());
         String mAutoClosingDate = Utils.getISOLocalDatePlus(mAutoClosingDays, pWorkOrder.getStateChangeDate());
-        String mReviewWarrantyWarning = getString(R.string.WorkOrderLifeCycleFrag_DoneState_ReviewWarrantyWarning, mWorkWarrantyEndDate);
-        String mReviewClosingWarning = getString(R.string.WorkOrderLifeCycleFrag_DoneState_ReviewClosingWarning, Utils.getISOtoDate(mAutoClosingDate));
-        Integer mWorkLimitTimeExtensionQuantity = pWorkOrder.getWorkLimitTimeExtension() + 1;
 
+        Integer mWorkLimitTimeExtensionQuantity = pWorkOrder.getWorkLimitTimeExtension() + 1;
         String mNowDate = Utils.getISOLocalDate();
         String mCheckDate = Utils.getBiggerISODate(mNowDate, mAutoClosingDate);
+        String mAuxReviewClosingWarning = String.format(mReviewClosingWarning, Utils.getISOtoDate(mAutoClosingDate));
+        String mAuxReviewWarrantyWarning = String.format(mReviewWarrantyWarning, mWorkWarrantyEndDate);
         //Se verifica si la fecha de autocierre aun esta vigente, de lo contrario se bloquea la orden
         //Al final del dia, un proceso batch colocara la orden en estado cerrado finalizando el proceso automaticamente
         if (Objects.equals(mCheckDate, mNowDate)) {
             mDoneStateItem.disableEdition();
-            mReviewClosingWarning = getString(R.string.WorkOrderLifeCycleFrag_DoneState_ReviewClosingWarning_OutOfDate, Utils.getISOtoDate(mAutoClosingDate));
+            mAuxReviewClosingWarning = String.format(mReviewClosingWarningOutOfDate, Utils.getISOtoDate(mAutoClosingDate));
         }
-        mDoneStateItem.setReviewClosingWarning(mReviewClosingWarning);
-        mDoneStateItem.setReviewWarrantyWarning(mReviewWarrantyWarning);
-
+        mDoneStateItem.setReviewClosingWarning(mAuxReviewClosingWarning);
+        mDoneStateItem.setReviewWarrantyWarning(mAuxReviewWarrantyWarning);
         mDoneStateItem.setAcceptButtonOCL(v -> {
-            closeOrder(pWorkOrder.getOrderId(),
-                    mDoneStateItem.getProviderAppereanceScore(),
-                    mDoneStateItem.getProviderCleanlinessScore(),
-                    mDoneStateItem.getProviderSpeedScore(),
-                    mDoneStateItem.getProviderQualityScoreScore(),
-                    mDoneStateItem.getProviderReview());
+            if (mDoneStateItem.getProviderReview().isEmpty()) {
+                emptyFieldsNotificator();
+            } else {
+                closeOrder(pWorkOrder.getOrderId(),
+                        mDoneStateItem.getProviderAppereanceScore(),
+                        mDoneStateItem.getProviderCleanlinessScore(),
+                        mDoneStateItem.getProviderSpeedScore(),
+                        mDoneStateItem.getProviderQualityScoreScore(),
+                        mDoneStateItem.getProviderReview());
+            }
             Log.d(TAG1, "BOTON CERRAR ORDEN POR TRABAJO COMPLETADO PRESIONADO");
         });
         mDoneStateItem.setRejectButtonOCL(v -> {
@@ -1059,7 +986,6 @@ public class WorkOrderFragment extends Fragment {
         doneStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         doneStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     private void closeOrder(String pWorkOrderID, Integer pAppereanceScore, Integer pCleanlinessScore, Integer pSpeedScore, Integer pQualityScore, String pImpressions) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -1073,7 +999,6 @@ public class WorkOrderFragment extends Fragment {
         WO.setImpressions(pImpressions);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     private void workRejected(String pWorkOrderID, Integer pWorkLimitTimeExtensionQuantity, String pExtendedWorkEndDate) {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
@@ -1089,7 +1014,6 @@ public class WorkOrderFragment extends Fragment {
 //        WO.setImpressions(pImpressions);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
-
     //********************************** CLOSED STATE **********************************//
     private void closedStateWorkOrder(WorkOrder pWorkOrder) {
         ClosedState mClosedStateItem = new ClosedState(requireContext());
@@ -1098,12 +1022,7 @@ public class WorkOrderFragment extends Fragment {
                 //mClosedStateItem.disableEdition();
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Información Importante")
-                    .setMessage("Aun no hay informacion del usuario logeado,por favor revise su conexion e intente mas tarde.")
-                    .setPositiveButton("Aceptar", null) // Botón "Aceptar"
-                    .show();
-            closeWorkOrderLifeCycle();
+            noDataErrorNotificator();
         }
         String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
         String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
@@ -1142,6 +1061,7 @@ public class WorkOrderFragment extends Fragment {
         mClosedStateItem.setProviderQualityScore(pWorkOrder.getQualityScore());
 
         mClosedStateItem.setProviderReview("Reseña del cliente:\n" + pWorkOrder.getImpressions());
+        mClosedStateItem.setWarrantyMessage(mWarrantyMessage);
         mClosedStateItem.setWarrantyEndDate("Fecha limite de Garantia: " + mWarrantyDate);
 
         mClosedStateItem.setComplainButtonOCL(v -> {
@@ -1152,7 +1072,6 @@ public class WorkOrderFragment extends Fragment {
         closedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         closedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
-
     //********************************** CLOSED STATE **********************************//
     private void showDatePickerDialog(Callback<String> pCallback,String pTitle,Integer pMinDaysAvailable ,Integer pMaxDaysAvailable ) {
         final Calendar calendar = Calendar.getInstance();
@@ -1182,7 +1101,6 @@ public class WorkOrderFragment extends Fragment {
     private void showDatePickerDialog(Callback<String> pCallback, String pTitle, Integer pMaxDaysAvailable) {
         showDatePickerDialog(pCallback,pTitle,0,pMaxDaysAvailable);
     }
-
     private void showTimePickerDialog(Callback<String> pCallback) {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -1206,6 +1124,40 @@ public class WorkOrderFragment extends Fragment {
         } else {
             mMainActivityViewModel.setSelectedFragment(2, View.VISIBLE);
         }
+    }
+    private void dateCorrelationErrorNotificator(String pTitleText, String pMessageText){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(pTitleText)
+                .setMessage(pMessageText)
+                .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                .show();
+    }
+    private void noDataErrorNotificator(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(mNoDataErrorTittle)
+                .setMessage(mNoDataErrorMessage)
+                .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                .show();
+        closeWorkOrderLifeCycle();
+    }
+    private void emptyFieldsNotificator(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(mEmptyFieldErrorTittle)
+                .setMessage(mEmptyFieldErrorMessage)
+                .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                .show();
+    }
+    private void clearWorkOrder() {
+        ViewGroup celdaEspecifica;
+        for (int i = 1; i < 16; i += 2) {
+            celdaEspecifica = (ViewGroup) workOrderStates_LinearLayout.getChildAt(i);
+            if (celdaEspecifica.getChildCount() > 1) {
+                celdaEspecifica.removeViewAt(1);
+                celdaEspecifica.getChildAt(0).setBackground(mVertLineBackGround);
+                celdaEspecifica.getChildAt(0).setBackgroundTintMode(mVertLineBackTintMode);
+            }
+        }
+
     }
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {

@@ -41,6 +41,7 @@ public class ClosedState extends RelativeLayout {
     private RatingBar providerQualityScore_ratingBar;
     private TextView providerReview_label;
 
+    private TextView warrantyMessage_label;
     private TextView warrantyEndDate_label;
     private Button complainOrder_button;
 
@@ -80,6 +81,7 @@ public class ClosedState extends RelativeLayout {
 
         providerReview_label=root.findViewById(R.id.providerReview_label);
 
+        warrantyMessage_label=root.findViewById(R.id.warrantyMessage_label);
         warrantyEndDate_label=root.findViewById(R.id.warrantyEndDate_label);
         complainOrder_button=root.findViewById(R.id.complainOrder_button);
     }
@@ -116,7 +118,9 @@ public class ClosedState extends RelativeLayout {
 
 
     public void setProviderReview(String pProviderReview) { this.providerReview_label.setText(pProviderReview); }
+    public void setWarrantyMessage(String pWarrantyMessage) { this.warrantyMessage_label.setText(pWarrantyMessage); }
     public void setWarrantyEndDate(String pWarrantyEndDate) { this.warrantyEndDate_label.setText(pWarrantyEndDate); }
+
 
     public void setComplainButtonOCL(OnClickListener OCL) {
         complainOrder_button.setOnClickListener(OCL);

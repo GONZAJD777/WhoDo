@@ -367,7 +367,7 @@
             android:id="@+id/warrantyMessage_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Tiene hasta la siguiente fecha para iniciar el reclamo por alguna falla en el servicio prestado, que no pudiera ser resuelto entre las partes." />
+            android:text="" />
 
         <TextView
             android:id="@+id/warrantyEndDate_label"
