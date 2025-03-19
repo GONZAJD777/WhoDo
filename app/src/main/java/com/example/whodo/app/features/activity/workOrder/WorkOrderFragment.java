@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -88,6 +89,9 @@ public class WorkOrderFragment extends Fragment {
     private Integer mMaxDaysLimitOpenState = 7; //Maxima cantidad de dias en los que una orden en estado OPEN y ONEVALUATION estaran disponible para ser aceptada por un proveedor
     private Integer mMaxDaysMeetOnEvalState = 15; //Maxima cantidad de dias para planificar una cita o visita en ONEVALUATION STATE.
     private Integer mMaxDaysOnConfState = 2; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
+    private Integer mActivateUserTypeValidation=1; // Activa = 1 o Desactiva=2 la validacion del tipo de cliente (customer o provider) lo que hara que dependiendo del estado de la orden
+                                                    // la interfaz sea editable o no en funcion de si quien consulta la orden es el cliente o el proveedor. Si se desactiva, cualquier usuario
+                                                    // puede transicionar la orden a travez de todos los estados, destinado al Testeo.
 
     private String mSetInspectionStatusTittle="Consulta Reprogramacion de Inspeccion";
     private String mSetInspectionStatusMessage="El proveedor se reprogramo la inspeccion? \n Si respondes que NO esto se vera reflejado en el perfil del proveedor y la orden se CERRARA definitivamente." ;
@@ -371,7 +375,7 @@ public class WorkOrderFragment extends Fragment {
 
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                //mOnEvalStateItem.disableEdition();
+                if (mActivateUserTypeValidation==1) mOnEvalStateItem.disableEdition();
             }
         } else {
             noDataErrorNotificator();
@@ -502,7 +506,7 @@ public class WorkOrderFragment extends Fragment {
 
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                //mPlannedStateItem.disableEdition();
+                if (mActivateUserTypeValidation==1) mPlannedStateItem.disableEdition();
             }
         } else {
             noDataErrorNotificator();
@@ -579,7 +583,7 @@ public class WorkOrderFragment extends Fragment {
 
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                //mConfStateItem.disableEdition();
+                if (mActivateUserTypeValidation==1) mConfStateItem.disableEdition();
             }
         } else {
             noDataErrorNotificator();
@@ -809,7 +813,7 @@ public class WorkOrderFragment extends Fragment {
 
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                //mDiagStateItem.disableEdition();
+                if (mActivateUserTypeValidation==1) mDiagStateItem.disableEdition();
             }
         } else {
             noDataErrorNotificator();
@@ -878,7 +882,7 @@ public class WorkOrderFragment extends Fragment {
         String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                //mOnProgStateItem.disableEdition();
+                if (mActivateUserTypeValidation==1)mOnProgStateItem.disableEdition();
             }
         } else {
             noDataErrorNotificator();
@@ -927,7 +931,7 @@ public class WorkOrderFragment extends Fragment {
 
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getProviderId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                //mDoneStateItem.disableEdition();
+                if (mActivateUserTypeValidation==1) mDoneStateItem.disableEdition();
             }
         } else {
             noDataErrorNotificator();
@@ -1019,7 +1023,7 @@ public class WorkOrderFragment extends Fragment {
         ClosedState mClosedStateItem = new ClosedState(requireContext());
         if (mMainActivityViewModel.getLoggedUser().isInitialized()) {
             if (Objects.equals(pWorkOrder.getCustomerId(), mMainActivityViewModel.getLoggedUser().getValue().getUid())) {
-                //mClosedStateItem.disableEdition();
+                if (mActivateUserTypeValidation==1) mClosedStateItem.disableEdition();
             }
         } else {
             noDataErrorNotificator();

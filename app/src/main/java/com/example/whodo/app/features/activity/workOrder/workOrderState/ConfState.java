@@ -28,14 +28,18 @@ public class ConfState extends RelativeLayout {
     private TextView presentationLimitDate_label;
     private EditText timeLimitDate_value;
     private EditText timeLimitDateTime_value;
+
     private EditText workStartDate_value;
     private EditText workStartDateTime_value;
+
     private EditText workEndDate_value;
     private EditText workEndDateTime_value;
+
     private EditText workMaterialCost_value;
     private EditText workJobCost_value;
     private TextView jobFee_label;
     private EditText workTaskDetail_value;
+
     private Button presentOrder_button;
     private Button rejectOrder_button;
 
@@ -143,11 +147,18 @@ public class ConfState extends RelativeLayout {
     public void disableEdition(){
         timeLimitDate_value.setEnabled(false);
         timeLimitDateTime_value.setEnabled(false);
+
         workStartDate_value.setEnabled(false);
+        workStartDateTime_value.setEnabled(false);
+
         workEndDate_value.setEnabled(false);
+        workEndDateTime_value.setEnabled(false);
+
         workMaterialCost_value.setEnabled(false);
         workJobCost_value.setEnabled(false);
+
         workTaskDetail_value.setEnabled(false);
+
         presentOrder_button.setEnabled(false);
         rejectOrder_button.setEnabled(false);
     }

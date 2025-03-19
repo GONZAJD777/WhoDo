@@ -96,6 +96,7 @@ public class OnEvalState extends RelativeLayout {
 
     public void disableEdition(){
 
+        planLimitDate_value.setEnabled(false);
         meetDate_value.setEnabled(false);
         meetTime_value.setEnabled(false);
         meetTariff_value.setEnabled(false);
