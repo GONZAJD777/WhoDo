@@ -57,6 +57,8 @@ public class OnEvalState extends RelativeLayout {
 
         acceptWorkOrder_button=root.findViewById(R.id.acceptWorkOrder_button);
         rejectWorkOrder_button=root.findViewById(R.id.rejectWorkOrder_button);
+
+        this.disableEdition();
     }
 
     public void setCustomerName(String pCustomerName){this.customerName_label.setText(pCustomerName);}
@@ -95,13 +97,21 @@ public class OnEvalState extends RelativeLayout {
 
 
     public void disableEdition(){
-
         planLimitDate_value.setEnabled(false);
         meetDate_value.setEnabled(false);
         meetTime_value.setEnabled(false);
         meetTariff_value.setEnabled(false);
         acceptWorkOrder_button.setEnabled(false);
         rejectWorkOrder_button.setEnabled(false);
+    }
+
+    public void enableEdition(){
+        planLimitDate_value.setEnabled(true);
+        meetDate_value.setEnabled(true);
+        meetTime_value.setEnabled(true);
+        meetTariff_value.setEnabled(true);
+        acceptWorkOrder_button.setEnabled(true);
+        rejectWorkOrder_button.setEnabled(true);
     }
 
 

@@ -84,6 +84,9 @@ public class ClosedState extends RelativeLayout {
         warrantyMessage_label=root.findViewById(R.id.warrantyMessage_label);
         warrantyEndDate_label=root.findViewById(R.id.warrantyEndDate_label);
         complainOrder_button=root.findViewById(R.id.complainOrder_button);
+
+        this.disableEdition();
+
     }
 
     public void setCustomerName(String pCustomerName){this.customerName_label.setText(pCustomerName);}
@@ -128,6 +131,9 @@ public class ClosedState extends RelativeLayout {
 
     public void disableEdition(){
         complainOrder_button.setEnabled(false);
+    }
+    public void enableEdition(){
+        complainOrder_button.setEnabled(true);
     }
 
 }

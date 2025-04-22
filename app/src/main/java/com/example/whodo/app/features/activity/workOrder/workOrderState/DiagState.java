@@ -57,6 +57,8 @@ public class DiagState extends RelativeLayout {
         genPaymentOrder_button=root.findViewById(R.id.genPaymentOrder_button);
         acceptWorkOrder_button=root.findViewById(R.id.acceptWorkOrder_button);
         rejectWorkOrder_button=root.findViewById(R.id.rejectWorkOrder_button);
+
+        this.disableEdition();
     }
 
     public void setProviderName(String pProviderName) { this.providerName_label.setText(pProviderName); }
@@ -94,6 +96,13 @@ public class DiagState extends RelativeLayout {
         genPaymentOrder_button.setEnabled(false);
         acceptWorkOrder_button.setEnabled(false);
         rejectWorkOrder_button.setEnabled(false);
+    }
+
+    public void enableEdition(){
+        invoice_inputLayout.setEndIconVisible(true);
+        genPaymentOrder_button.setEnabled(true);
+        acceptWorkOrder_button.setEnabled(true);
+        rejectWorkOrder_button.setEnabled(true);
     }
 
 

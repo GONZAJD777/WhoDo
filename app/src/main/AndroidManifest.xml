@@ -8,15 +8,12 @@
 
 
     <application
-
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:allowBackup="true"
-
-        >
+        android:allowBackup="true">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD6fudFVcF1t0szms6jQTw_S6P_IYi8NFY"/>
@@ -32,8 +29,6 @@
         <activity
             android:name=".app.MainActivity">
         </activity>
-
-
 
     </application>
 

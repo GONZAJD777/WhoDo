@@ -1,20 +1,13 @@
 package com.example.whodo.app.utils;
 
-import android.annotation.SuppressLint;
-import android.util.Log;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 public class Utils {
@@ -38,6 +31,23 @@ public class Utils {
         return fechaFormateada;
     }
 
+    public static String convertToUTC(String localDateTime) {
+        // Parsear la fecha local proporcionada en formato ISO 8601 con zona horaria
+        ZonedDateTime fechaLocal = ZonedDateTime.parse(localDateTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        // Convertir la fecha local a UTC
+        ZonedDateTime fechaUTC = fechaLocal.withZoneSameInstant(ZoneOffset.UTC);
+
+        // Formatear la fecha en formato ISO 8601 para UTC
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        String fechaFormateadaUTC = fechaUTC.format(formatter);
+
+        // Mostrar la fecha UTC formateada
+        System.out.println("Fecha en formato ISO 8601 (UTC): " + fechaFormateadaUTC);
+
+        return fechaFormateadaUTC;
+    }
+
 
     public static String getISOLocalDatePlus(int pDays,String pDate) {
 
@@ -55,28 +65,30 @@ public class Utils {
         return fechaFormateada;
     }
     //***********************************************************
-    public static String getISOLocalDateFromString(String pDate, String pTime){
-        // Parsear las cadenas a LocalDate y LocalTime
-        DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static String getISOLocalDateFromString(String pDate, String pTime) {
+        // Detectar el formato de la fecha ingresada
+        DateTimeFormatter formatterEntrada;
+        if (pDate.contains("-")) {
+            formatterEntrada = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        } else if (pDate.contains("/")) {
+            formatterEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        } else {
+            throw new IllegalArgumentException("Formato de fecha no reconocido: " + pDate);
+        }
+
+        // Parsear la cadena a LocalDate usando el formato detectado
         LocalDate fecha = LocalDate.parse(pDate, formatterEntrada);
 
-        // Formatear la fecha a YYYY-MM-DD
-        DateTimeFormatter formatterSalida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String fechaFormateada = fecha.format(formatterSalida);
-
-        LocalDate mFecha = LocalDate.parse(fechaFormateada);
-        LocalTime mHora = LocalTime.parse(pTime);
-
         // Combinar LocalDate y LocalTime en LocalDateTime
-        LocalDateTime fechaHora = LocalDateTime.of(mFecha, mHora);
+        LocalTime mHora = LocalTime.parse(pTime);
+        LocalDateTime fechaHora = LocalDateTime.of(fecha, mHora);
 
         // Convertir LocalDateTime a ZonedDateTime en la zona horaria local
         ZonedDateTime fechaHoraZoned = fechaHora.atZone(ZoneId.systemDefault());
 
         // Formatear la fecha y hora en formato ISO 8601
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-        String fechaHoraFormateada = fechaHoraZoned.format(formatter);
-        return fechaHoraFormateada;
+        DateTimeFormatter formatterSalida = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        return fechaHoraZoned.format(formatterSalida);
     }
 
     public static String getISOtoDate(String pISODate) {

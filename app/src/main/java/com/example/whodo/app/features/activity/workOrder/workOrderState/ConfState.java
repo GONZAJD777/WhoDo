@@ -74,6 +74,8 @@ public class ConfState extends RelativeLayout {
 
         presentOrder_button= root.findViewById(R.id.presentOrder_button);
         rejectOrder_button= root.findViewById(R.id.rejectWorkOrder_button);
+
+        this.disableEdition();
     }
 
     public void setCustomerName(String pCustomerName){this.customerName_label.setText(pCustomerName);}
@@ -161,5 +163,24 @@ public class ConfState extends RelativeLayout {
 
         presentOrder_button.setEnabled(false);
         rejectOrder_button.setEnabled(false);
+    }
+
+    public void enableEdition(){
+        timeLimitDate_value.setEnabled(true);
+        timeLimitDateTime_value.setEnabled(true);
+
+        workStartDate_value.setEnabled(true);
+        workStartDateTime_value.setEnabled(true);
+
+        workEndDate_value.setEnabled(true);
+        workEndDateTime_value.setEnabled(true);
+
+        workMaterialCost_value.setEnabled(true);
+        workJobCost_value.setEnabled(true);
+
+        workTaskDetail_value.setEnabled(true);
+
+        presentOrder_button.setEnabled(true);
+        rejectOrder_button.setEnabled(true);
     }
 }

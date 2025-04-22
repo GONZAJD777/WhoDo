@@ -41,6 +41,7 @@ public class DoneState extends RelativeLayout {
         acceptWorkOrder_button=root.findViewById(R.id.acceptWorkOrder_button);
         rejectWorkOrder_button=root.findViewById(R.id.rejectWorkOrder_button);
 
+        this.disableEdition();
     }
 
     public void setReviewWarrantyWarning (String pReviewWarrantyWarning) {mReviewWarrantyWarning_label.setText(pReviewWarrantyWarning);}
@@ -68,6 +69,17 @@ public class DoneState extends RelativeLayout {
         providerReview_value.setEnabled(false);
         acceptWorkOrder_button.setEnabled(false);
         rejectWorkOrder_button.setEnabled(false);
+    }
+
+    public void enableEdition(){
+        providerAppereance_ratingBar.setEnabled(true);
+        providerCleanliness_ratingBar.setEnabled(true);
+        providerSpeed_ratingBar.setEnabled(true);
+        providerQualityScore_ratingBar.setEnabled(true);
+
+        providerReview_value.setEnabled(true);
+        acceptWorkOrder_button.setEnabled(true);
+        rejectWorkOrder_button.setEnabled(true);
     }
 
 }

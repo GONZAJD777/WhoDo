@@ -77,7 +77,7 @@ public class ActivityFrag_ViewPager extends Fragment {
         }
         if (FragType==2) {
             for (WorkOrder mWorkOrder : workOrders) {
-                if (Objects.equals(mWorkOrder.getState(), "CLOSED")) {
+                if (Objects.equals(mWorkOrder.getState(), "CLOSED_WARRANTY") || Objects.equals(mWorkOrder.getState(), "CLOSED")) {
                     addActivityItem(mWorkOrder);
                 }
             }
@@ -128,7 +128,5 @@ public class ActivityFrag_ViewPager extends Fragment {
             }
         });
         LinearLayoutItems.addView(mActivityWorkOrderItem);
-
     }
-
 }

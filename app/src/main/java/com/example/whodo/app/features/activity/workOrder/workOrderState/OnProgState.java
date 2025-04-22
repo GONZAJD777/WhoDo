@@ -43,6 +43,7 @@ public class OnProgState extends RelativeLayout {
 
         finishWorkOrder_button= root.findViewById(R.id.finishWorkOrder_button);
 
+        this.disableEdition();
     }
 
     public void setCustomerName(String pCustomerName){this.customerName_label.setText(pCustomerName);}
@@ -62,6 +63,8 @@ public class OnProgState extends RelativeLayout {
     public void disableEdition(){
         finishWorkOrder_button.setEnabled(false);
     }
-
+    public void enableEdition(){
+        finishWorkOrder_button.setEnabled(true);
+    }
 
 }
