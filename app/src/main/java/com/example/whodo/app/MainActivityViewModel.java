@@ -32,6 +32,9 @@ import com.example.whodo.app.features.profile.fragments.RecomendationsFragment;
 import com.example.whodo.app.features.profile.fragments.SecurityFragment;
 import com.example.whodo.app.features.profile.fragments.SupportFragment;
 import com.example.whodo.app.features.profile.fragments.TutorialFragment;
+import com.example.whodo.app.network.SSECallback;
+import com.example.whodo.app.network.SSEUserClient;
+import com.example.whodo.app.network.SSEWorkOrderClient;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -41,6 +44,9 @@ import java.util.Objects;
 
 public class MainActivityViewModel extends ViewModel {
 
+    private final SSEUserClient sseUserClient;
+    private final SSEWorkOrderClient sseWorkOrderClient;
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String TAG1="MAIN-ACTIVITY-VIEWMODEL";
     private UserDao<UserDTO> mUserDao ;
     private User mSnapshotUser; // No es LiveData
@@ -59,14 +65,17 @@ public class MainActivityViewModel extends ViewModel {
     private final WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
 
 
-    public MainActivityViewModel(UserDao<UserDTO> pUserDao) {
+    public MainActivityViewModel() {
+
         mUserDao=pUserDao;
         mWorkOrderDao = new FirebaseWorkOrderDAO();
         mSeletedTab.setValue(0);
         mTabLayoutVisibility.setValue(View.VISIBLE);
         mFragmentSelected.setValue(new HireFragment());
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        this.sseUserClient = new SSEUserClient("http://localhost:8080/users/stream"+"/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+        this.sseWorkOrderClient = new SSEWorkOrderClient("http://localhost:8080/work-orders/stream");
+
         User currentUser = new User(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
         mUserDao.findUser(UserMapper.toDTO(currentUser)).observeForever(userDto -> {
             if (userDto != null) {
@@ -94,8 +103,8 @@ public class MainActivityViewModel extends ViewModel {
 
                 //*************************** WORKORDERS ***************************//
                 WorkOrder mWorkOrder = new WorkOrder();
-                mWorkOrder.setCustomerId(user.getUid());
-                mWorkOrder.setProviderId(user.getUid());
+                mWorkOrder.setCustomerId(user.getId());
+                mWorkOrder.setProviderId(user.getId());
                 mWorkOrderDao.find(WorkOrderMapper.toDto(mWorkOrder)).observeForever( workOrderDTOList -> {
                     if (workOrderDTOList != null) {
                         List<WorkOrder> AuxWorkOrderList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
@@ -185,8 +194,8 @@ public class MainActivityViewModel extends ViewModel {
         }).start();
     }
     private void updateUser(User pUser,User pUserSnapshot){
-        Log.i(TAG1,  "Operacion CRUD.UpdateUser() Se actualizara el usuario:" + "USERS/"+pUser.getUid());
-        User userToUpdate = new User(pUser.getUid());
+        Log.i(TAG1,  "Operacion CRUD.UpdateUser() Se actualizara el usuario:" + "USERS/"+pUser.getId());
+        User userToUpdate = new User(pUser.getId());
         if (!Objects.equals(pUser.getAddress(), pUserSnapshot.getAddress())) {
             Log.i(TAG1,"UpdateUser DIRECCION ANTIGUA: " + pUserSnapshot.getAddress() );
             Log.i(TAG1,"UpdateUser DIRECCION NUEVA: "+ pUser.getAddress());
@@ -217,13 +226,13 @@ public class MainActivityViewModel extends ViewModel {
             Log.i(TAG1,"UpdateUser IDIOMAS NUEVA: "+ pUser.getLanguages());
             userToUpdate.setLanguages(pUser.getLanguages());
         }
-        if (!Objects.equals(pUser.getLatitude(), pUserSnapshot.getLatitude()) || !Objects.equals(pUser.getLongitude(), pUserSnapshot.getLongitude()) ) {
-            Log.i(TAG1,"UpdateUser LATITUD ANTIGUA: " + pUserSnapshot.getLatitude() );
-            Log.i(TAG1,"UpdateUser LATITUD NUEVA: "+ pUser.getLatitude());
-            Log.i(TAG1,"UpdateUser LONGITUD ANTIGUA: " + pUserSnapshot.getLongitude() );
-            Log.i(TAG1,"UpdateUser LONGITUD NUEVA: " + pUser.getLongitude());
-            userToUpdate.setLatitude(pUser.getLatitude());
-            userToUpdate.setLongitude(pUser.getLongitude());
+        if (!Objects.equals(pUser.getLocation().getLatitude(), pUserSnapshot.getLocation().getLatitude()) || !Objects.equals(pUser.getLocation().getLongitude(), pUserSnapshot.getLocation().getLongitude()) ) {
+            Log.i(TAG1,"UpdateUser LATITUD ANTIGUA: " + pUserSnapshot.getLocation().getLatitude() );
+            Log.i(TAG1,"UpdateUser LATITUD NUEVA: "+ pUser.getLocation().getLatitude());
+            Log.i(TAG1,"UpdateUser LONGITUD ANTIGUA: " + pUserSnapshot.getLocation().getLongitude() );
+            Log.i(TAG1,"UpdateUser LONGITUD NUEVA: " + pUser.getLocation().getLongitude());
+            userToUpdate.getLocation().setLatitude(pUser.getLocation().getLatitude());
+            userToUpdate.getLocation().setLongitude(pUser.getLocation().getLongitude());
         }
         if (!Objects.equals(pUser.getName(), pUserSnapshot.getName())) {
             Log.i(TAG1,"UpdateUser NOMBRE ANTIGUA: "+pUserSnapshot.getName() );
@@ -235,15 +244,15 @@ public class MainActivityViewModel extends ViewModel {
             Log.i(TAG1,"UpdateUser PASSWORD NUEVA: "+ pUser.getPassword());
             userToUpdate.setPassword(pUser.getPassword());
         }
-        if (!Objects.equals(pUser.getPhone(), pUserSnapshot.getPhone())) {
-            Log.i(TAG1,"UpdateUser TELEFONO ANTIGUA: "+pUserSnapshot.getPhone() );
-            Log.i(TAG1,"UpdateUser TELEFONO NUEVA: "+ pUser.getPhone());
-            userToUpdate.setPhone(pUser.getPhone());
+        if (!Objects.equals(pUser.getPhone().getNumber(), pUserSnapshot.getPhone().getNumber())) {
+            Log.i(TAG1,"UpdateUser TELEFONO ANTIGUA: "+pUserSnapshot.getPhone().getNumber() );
+            Log.i(TAG1,"UpdateUser TELEFONO NUEVA: "+ pUser.getPhone().getNumber());
+            userToUpdate.getPhone().setNumber(pUser.getPhone().getNumber());
         }
-        if (!Objects.equals(pUser.getPhone_ccn(), pUserSnapshot.getPhone_ccn())) {
-            Log.i(TAG1,"UpdateUser CCN ANTIGUA: "+pUserSnapshot.getPhone_ccn() );
-            Log.i(TAG1,"UpdateUser CCN NUEVA: "+ pUser.getPhone_ccn());
-            userToUpdate.setPhone_ccn(pUser.getPhone_ccn());
+        if (!Objects.equals(pUser.getPhone().getCcn(), pUserSnapshot.getPhone().getCcn())) {
+            Log.i(TAG1,"UpdateUser CCN ANTIGUA: "+pUserSnapshot.getPhone().getCcn() );
+            Log.i(TAG1,"UpdateUser CCN NUEVA: "+ pUser.getPhone().getCcn());
+            userToUpdate.getPhone().setCcn(pUser.getPhone().getCcn());
         }
         if (!Objects.equals(pUser.getType(), pUserSnapshot.getType())) {
             Log.i(TAG1, "UpdateUser TIPO ANTIGUA: "+pUserSnapshot.getType() );
@@ -285,5 +294,12 @@ public class MainActivityViewModel extends ViewModel {
     public LiveData<List<WorkOrder>> getWorkOrder () {return mWorkOrders;}
     public void setPickedWorkOrder(WorkOrder pPickedWorkOrder){ mPickedWorkOrder.setValue(pPickedWorkOrder); }
     public LiveData<WorkOrder> getPickedWorkOrder(){ return mPickedWorkOrder; }
+
+    //SSE Client Starter
+    public void startStreaming() {
+        sseUserClient.startListening(mUser);
+        sseWorkOrderClient.startListening(mWorkOrders);
+    }
+
 
 }

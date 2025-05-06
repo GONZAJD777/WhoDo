@@ -31,6 +31,7 @@ import com.example.whodo.app.features.profile.ProfileItem;
 import com.example.whodo.app.uiClasses.CustomDatePicker;
 import com.example.whodo.R;
 import com.example.whodo.app.MainActivityViewModel;
+import com.example.whodo.app.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -409,8 +410,8 @@ public class PersonalInfoFragment extends Fragment {
             if(mLoggedUser.getName()!=null) {
                 setUserNameText(mLoggedUser.getName(), getString(R.string.PersonalInfoFrag_UserName1), item_UserName);
                 UserNameSimpleEditText.setText(mLoggedUser.getName());
-                setUserPhoneNumber(mLoggedUser.getPhone(), mLoggedUser.getPhone_ccn(), getString(R.string.PersonalInfoFrag_PhoneNumber1), item_PhoneNumber);
-                PhoneNumberSimpleEditText.setText(mLoggedUser.getPhone());
+                setUserPhoneNumber(mLoggedUser.getPhone().getNumber(), mLoggedUser.getPhone().getCcn(), getString(R.string.PersonalInfoFrag_PhoneNumber1), item_PhoneNumber);
+                PhoneNumberSimpleEditText.setText(mLoggedUser.getPhone().getNumber());
                 countryCodeSpinner.setSelection(setCCNIndex());
                 setUserEmailText(mLoggedUser.getEmail(), getString(R.string.PersonalInfoFrag_Email1), item_Email);
                 EmailSimpleEditText.setText(mLoggedUser.getEmail());
@@ -426,10 +427,10 @@ public class PersonalInfoFragment extends Fragment {
         model.getServices().removeObservers(requireActivity());
 
         mLoggedUser.setName(LoggedUserName);
-        mLoggedUser.setPhone(LoggedUserPhoneNumber);
-        mLoggedUser.setPhone_ccn(LoggedUserCCN);
+        mLoggedUser.getPhone().setNumber(LoggedUserPhoneNumber);
+        mLoggedUser.getPhone().setCcn(LoggedUserCCN);
         mLoggedUser.setEmail(LoggedUserEmail);
-        mLoggedUser.setBirthday(Long.parseLong(SetBirthday()));
+        mLoggedUser.setBirthday(Utils.parseISODate(Utils.getISOLocalDateFromString(SetBirthday(),"00:00:00")));
         model.updateLoggedUser(mLoggedUser);
         //model.TabLayoutVisibility(View.VISIBLE);
         model.setSelectedFragment(4,View.VISIBLE);

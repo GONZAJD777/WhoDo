@@ -28,6 +28,7 @@ import com.example.whodo.app.domain.user.UserDTO;
 import com.example.whodo.app.domain.user.UserMapper;
 import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
 import com.example.whodo.app.domain.user.dao.UserDao;
+import com.example.whodo.app.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -232,17 +233,17 @@ public class RegisterUserFragment extends Fragment {
                             String Name=MailSimpleEditText.getText().toString().toUpperCase();
                             String Email=MailSimpleEditText.getText().toString();
                             String Password=ClaveSimpleEditText.getText().toString();
-                            String Uid=currentUser.getUid();
+                            String AuthId=currentUser.getUid();
 
-                            User DefaultUser = new User(Uid,Name,Email,Password);
-                            DefaultUser.setCreateDate(creationDateParse(Objects.requireNonNull(mAuth.getCurrentUser().getMetadata()).getCreationTimestamp()));
+                            User DefaultUser = new User(AuthId,Name,Email,Password);
+                            DefaultUser.setCreateDate(Utils.creationDateParse(Objects.requireNonNull(mAuth.getCurrentUser().getMetadata()).getCreationTimestamp()));
 
                             UserDao<UserDTO> userDao = new FirebaseUserDAO();
                             userDao.create(UserMapper.toDTO(DefaultUser), new Callback<UserDTO>() {
                                 @Override
                                 public void onSuccess(UserDTO userDTO) {
                                     //Luego de la creacion se procede a mostrar un mensaje, llamar a MainActivity y cerrar la actividad de logeo
-                                    Log.d(TAG, "createUserWithEmail:success ///// UID: " + DefaultUser.getUid());
+                                    Log.d(TAG, "createUserWithEmail:success ///// UID: " + DefaultUser.getAuthId());
                                     Toast.makeText(requireContext(), "Authentication Success. Please verify your Email",Toast.LENGTH_SHORT).show();
 
                                     // email sent
@@ -268,14 +269,6 @@ public class RegisterUserFragment extends Fragment {
                         }
                     }
                 });
-    }
-
-    private long creationDateParse ( Long pTimestamp)
-    {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        long dateString = Long.parseLong(formatter.format(new Date(Long.parseLong(String.valueOf(pTimestamp)))));
-        Log.i("DATE", "User Creation Date: "+ dateString);
-        return dateString;
     }
 
     }

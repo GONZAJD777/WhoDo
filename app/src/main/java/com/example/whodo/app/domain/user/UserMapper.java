@@ -10,15 +10,11 @@ public class UserMapper {
             return null;
         }
         User user = new User();
-        user.setUid(userDTO.getUid());
+        user.setId(userDTO.getId());
         user.setName(userDTO.getName());
         user.setBirthday(userDTO.getBirthday());
         user.setEmail(userDTO.getEmail());
         user.setAddress(userDTO.getAddress());
-        user.setLatitude(userDTO.getLatitude());
-        user.setLongitude(userDTO.getLongitude());
-        user.setPhone(userDTO.getPhone());
-        user.setPhone_ccn(userDTO.getPhone_ccn());
         user.setType(userDTO.getType());
         user.setPassword(userDTO.getPassword());
         user.setCreateDate(userDTO.getCreateDate());
@@ -29,8 +25,21 @@ public class UserMapper {
         user.setLanguages(userDTO.getLanguages());
         user.setDescription(userDTO.getDescription());
         user.setSpecialization(userDTO.getSpecialization());
-        // Asumiendo que tienes un método para convertir UserSpecRating a la entidad correspondiente
-        user.setUserScore(UserSpecRatingMapper.toEntity(userDTO.getUserScore()));
+
+        user.getLocation().setLatitude(userDTO.getLocation().getLatitude());
+        user.getLocation().setLongitude(userDTO.getLocation().getLongitude());
+
+        user.getPhone().setCcn(userDTO.getPhone().getCcn());
+        user.getPhone().setNumber(userDTO.getPhone().getNumber());
+
+        user.getUserScore().setAppearanceScore(userDTO.getUserScore().getAppearanceScore());
+        user.getUserScore().setCleanlinessScore(userDTO.getUserScore().getCleanlinessScore());
+        user.getUserScore().setQualityScore(userDTO.getUserScore().getQualityScore());
+        user.getUserScore().setSpeedScore(userDTO.getUserScore().getSpeedScore());
+        user.getUserScore().setOverallScore(userDTO.getUserScore().getOverallScore());
+        user.getUserScore().setAvgCompletionTime(userDTO.getUserScore().getAvgCompletionTime());
+        user.getUserScore().setAvgTariff(userDTO.getUserScore().getAvgTariff());
+
 
         return user;
     }
@@ -41,16 +50,11 @@ public class UserMapper {
         }
 
         UserDTO userDTO = new UserDTO();
-        userDTO.setUid(user.getUid());
+        userDTO.setId(user.getId());
         userDTO.setName(user.getName());
         userDTO.setBirthday(user.getBirthday());
         userDTO.setEmail(user.getEmail());
         userDTO.setAddress(user.getAddress());
-        userDTO.setLatitude(user.getLatitude());
-        userDTO.setLongitude(user.getLongitude());
-        //userDTO.setGeohash(user.getGeohash());
-        userDTO.setPhone(user.getPhone());
-        userDTO.setPhone_ccn(user.getPhone_ccn());
         userDTO.setType(user.getType());
         userDTO.setPassword(user.getPassword());
         userDTO.setCreateDate(user.getCreateDate());
@@ -62,9 +66,19 @@ public class UserMapper {
         userDTO.setDescription(user.getDescription());
         userDTO.setSpecialization(user.getSpecialization());
 
-        // Asumiendo que tienes un método para convertir la entidad de puntuación a UserSpecRating DTO
-        // y que User tiene un método getUserScore que devuelve una entidad que puede ser mapeada.
-        userDTO.setUserScore(UserSpecRatingMapper.toDTO(user.getUserScore()));
+        userDTO.getLocation().setLatitude(user.getLocation().getLatitude());
+        userDTO.getLocation().setLongitude(user.getLocation().getLongitude());
+
+        userDTO.getPhone().setCcn(user.getPhone().getCcn());
+        userDTO.getPhone().setNumber(user.getPhone().getNumber());
+
+        userDTO.getUserScore().setAppearanceScore(user.getUserScore().getAppearanceScore());
+        userDTO.getUserScore().setCleanlinessScore(user.getUserScore().getCleanlinessScore());
+        userDTO.getUserScore().setQualityScore(user.getUserScore().getQualityScore());
+        userDTO.getUserScore().setSpeedScore(user.getUserScore().getSpeedScore());
+        userDTO.getUserScore().setOverallScore(user.getUserScore().getOverallScore());
+        userDTO.getUserScore().setAvgCompletionTime(user.getUserScore().getAvgCompletionTime());
+        userDTO.getUserScore().setAvgTariff(user.getUserScore().getAvgTariff());
 
         return userDTO;
     }

@@ -31,6 +31,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ProviderModeFragment extends Fragment {
@@ -110,8 +111,8 @@ public class ProviderModeFragment extends Fragment {
         if(mLoggedUser.getName()!=null) {
             mProfileSwitchItem.setSwitchState(!Objects.equals(mLoggedUser.getType(), "1"));
             model.getServices().observe(requireActivity(),this::loadServicesCheckBox);
-            LoggedUserSpecialization = mLoggedUser.getSpecialization();
-            setSpecializationText(mLoggedUser.getSpecialization(), getString(R.string.ProviderModeFrag_Specialization_Tittle), item_Specialization);
+            LoggedUserSpecialization = mLoggedUser.getSpecialization().toString();
+            setSpecializationText(mLoggedUser.getSpecialization().toString(), getString(R.string.ProviderModeFrag_Specialization_Tittle), item_Specialization);
         }
     }
 
@@ -173,7 +174,7 @@ public class ProviderModeFragment extends Fragment {
             });
             //se agrega el Checkbox con la configuracion
             RadioGroupFilter.addView(ServiceCheckBox);
-            ServiceCheckBox.setChecked(mLoggedUser.getSpecialization().toUpperCase().contains(pServices.get(i).toUpperCase()));
+            ServiceCheckBox.setChecked(mLoggedUser.getSpecialization().toString().toUpperCase().contains(pServices.get(i).toUpperCase()));
         }
 
     }
@@ -200,8 +201,8 @@ public class ProviderModeFragment extends Fragment {
         } else {
             LoggedUserType="1";
         }
-        mLoggedUser.setType(LoggedUserType);
-        mLoggedUser.setSpecialization(LoggedUserSpecialization);
+        mLoggedUser.setType(Integer.valueOf(LoggedUserType));
+        mLoggedUser.setSpecialization(List.of(LoggedUserSpecialization));
 
         model.updateLoggedUser(mLoggedUser);
         //model.TabLayoutVisibility(View.VISIBLE);

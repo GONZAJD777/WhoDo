@@ -1,5 +1,7 @@
 package com.example.whodo.app.utils;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -8,6 +10,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.TimeZone;
 
 public class Utils {
@@ -31,7 +34,14 @@ public class Utils {
         return fechaFormateada;
     }
 
-    public static String convertToUTC(String localDateTime) {
+    public static Date creationDateParse(long timestamp) {
+        ZonedDateTime zonedDateTime = Instant.ofEpochMilli(timestamp)
+                .atZone(ZoneId.systemDefault()); // Usa la zona horaria del sistema
+        return Date.from(zonedDateTime.toInstant()); // Convierte `ZonedDateTime` a `Date`
+    }
+
+
+        public static String convertToUTC(String localDateTime) {
         // Parsear la fecha local proporcionada en formato ISO 8601 con zona horaria
         ZonedDateTime fechaLocal = ZonedDateTime.parse(localDateTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
@@ -64,6 +74,12 @@ public class Utils {
 
         return fechaFormateada;
     }
+
+    public static Date parseISODate(String isoDateString) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(isoDateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        return Date.from(zonedDateTime.toInstant()); // Convertir a Date
+    }
+
     //***********************************************************
     public static String getISOLocalDateFromString(String pDate, String pTime) {
         // Detectar el formato de la fecha ingresada

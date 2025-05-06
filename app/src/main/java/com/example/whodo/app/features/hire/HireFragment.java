@@ -381,13 +381,13 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         String AvgTariff = this.getResources().getString(R.string.HireFragment_MapMarkerSnipets_AvgTariff);
         String AvgCompletionTime = this.getResources().getString(R.string.HireFragment_MapMarkerSnipets_AvgCompletionTime);
         String OverallScore = this.getResources().getString( R.string.HireFragment_MapMarkerSnipets_OverallScore);
-        LatLng UserLatLon = new LatLng(pProvider.getLatitude(), pProvider.getLongitude());
-        String SnippetText = pProvider.getSpecialization().replaceAll(RegSeed, "|") +
+        LatLng UserLatLon = new LatLng(pProvider.getLocation().getLatitude(), pProvider.getLocation().getLongitude());
+        String SnippetText = pProvider.getSpecialization().toString().replaceAll(RegSeed, ",") +
                 AvgTariff + " " + pProvider.getUserScore().getAvgTariff() + "\n" +
                 AvgCompletionTime + " " + pProvider.getUserScore().getAvgCompletionTime() + "\n" +
                 OverallScore + " " + pProvider.getUserScore().getOverallScore();
 
-        if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "1")) {
+        if (Objects.equals(pProvider.getAuthId(), mLoggedUser.getAuthId()) && Objects.equals(mLoggedUser.getType(), "1")) {
             String mMapIconName = "my_location_customer";
             Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
@@ -395,7 +395,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                                 .snippet(SnippetText)
                                 .icon(BitmapDescriptorFactory.fromBitmap(mMapIcon))))
                                 .setTag(pProvider);
-        } else if (Objects.equals(pProvider.getUid(), mLoggedUser.getUid()) && Objects.equals(mLoggedUser.getType(), "2")) {
+        } else if (Objects.equals(pProvider.getAuthId(), mLoggedUser.getAuthId()) && Objects.equals(mLoggedUser.getType(), "2")) {
             String mMapIconName = "my_location_provider";
             Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
@@ -405,12 +405,12 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                                 .setTag(pProvider);
         } else {
             String mServIconName;
-            String[] mSplit = pProvider.getSpecialization().split(",");
+            String[] mSplit = pProvider.getSpecialization().toArray(new String[0]);
             if (mSplit.length>1) {
                 mServIconName= "varios_24";
             }
             else {
-                mServIconName = pProvider.getSpecialization().replaceAll(RegSeed, "") + "_64";
+                mServIconName = pProvider.getSpecialization().toString().replaceAll(RegSeed, "") + "_64";
             }
             Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mServIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
@@ -428,7 +428,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         mHireItem.setReviews(pProvider.getUserScore().getOverallScore()+"");
         mHireItem.setSpeed(pProvider.getUserScore().getAvgCompletionTime()+"");
 
-        String SpecText=pProvider.getSpecialization().replaceAll(RegSeed, "");
+        String SpecText=pProvider.getSpecialization().toString().replaceAll(RegSeed, "");
         ArrayList<String> SpecArrayList = new ArrayList<>(Arrays.asList(SpecText.split(",")));
         for(int i = 0; i< SpecArrayList.size(); i++){
 
@@ -525,18 +525,18 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             ProviderName_TextView.setText(PickedUser.getName());
             Picasso.get().load(PickedUser.getProfilePicture()).into(ProfilePic_ImageView);
             ProviderDescription_TextView.setText(PickedUser.getDescription());
-            ProviderLanguage_TextView.setText(PickedUser.getLanguages().replaceAll(RegSeed,""));
+            ProviderLanguage_TextView.setText(PickedUser.getLanguages().toString().replaceAll(RegSeed,""));
             ProviderAddress_TextView.setText(PickedUser.getAddress());
-            String FullPhoneNumber =PickedUser.getPhone_ccn().substring(PickedUser.getPhone_ccn().indexOf("("),PickedUser.getPhone_ccn().indexOf(")")+1)+" "+PickedUser.getPhone();
+            String FullPhoneNumber =PickedUser.getPhone().getCcn().substring(PickedUser.getPhone().getCcn().indexOf("("),PickedUser.getPhone().getCcn().indexOf(")")+1)+" "+PickedUser.getPhone().getNumber();
             ProviderPhoneNumber_TextView.setText(FullPhoneNumber);
             ProviderEmail_TextView.setText(PickedUser.getEmail());
 
             OverallScore.setRating(Float.parseFloat((PickedUser.getUserScore().getOverallScore()).substring(0, 3)));
             //OverallScore.setRightTextView(PickedUser.getUserScore().getOverallScore());
-            SpeedScore.setRating(Float.parseFloat(PickedUser.getUserScore().getSpeedScore().substring(0, 3)));
-            QualityScore.setRating(Float.parseFloat(PickedUser.getUserScore().getQualityScore().substring(0, 3)));
-            AppereanceScore.setRating(Float.parseFloat(PickedUser.getUserScore().getAppereanceScore().substring(0, 3)));
-            CleanlinessScore.setRating(Float.parseFloat(PickedUser.getUserScore().getCleanlinessScore().substring(0, 3)));
+            SpeedScore.setRating((float)PickedUser.getUserScore().getSpeedScore());
+            QualityScore.setRating((float)PickedUser.getUserScore().getQualityScore());
+            AppereanceScore.setRating((float)PickedUser.getUserScore().getAppearanceScore());
+            CleanlinessScore.setRating((float) PickedUser.getUserScore().getCleanlinessScore());
 
         } catch (Exception e)
         {

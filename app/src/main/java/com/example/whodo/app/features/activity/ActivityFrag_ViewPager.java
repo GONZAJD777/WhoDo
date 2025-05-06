@@ -91,7 +91,7 @@ public class ActivityFrag_ViewPager extends Fragment {
         String mWorkOrderType;
         String mCustomerStates = "PLANNED,DIAGNOSED,DONE";
         String mProviderStates = "ONEVALUATION,CONFIRMED,ONPROGRESS";
-        if (Objects.equals(pWorkOrder.getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getUid()))
+        if (Objects.equals(pWorkOrder.getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getAuthId()))
         {mWorkOrderType="CUSTOMER";}
         else {mWorkOrderType="PROVIDER";}
 

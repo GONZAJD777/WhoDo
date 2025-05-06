@@ -53,6 +53,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditProfileFragment extends Fragment implements OnMapReadyCallback {
     boolean mLocationPermissionsGranted = false;
@@ -376,11 +377,11 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         LoggedUserImage = mLoggedUser.getProfilePicture();
         setDescriptionText(mLoggedUser.getDescription(), getString(R.string.PersonalInfoFrag_Description1), item_Description);
         DescriptionSimpleEditText.setText(mLoggedUser.getDescription());
-        setLocationText(mLoggedUser.getAddress(), new LatLng(mLoggedUser.getLatitude(), mLoggedUser.getLongitude()), getString(R.string.PersonalInfoFrag_Location1), item_Location);
+        setLocationText(mLoggedUser.getAddress(), new LatLng(mLoggedUser.getLocation().getLatitude(), mLoggedUser.getLocation().getLongitude()), getString(R.string.PersonalInfoFrag_Location1), item_Location);
         LocationSimpleEditText.setText(mLoggedUser.getAddress());
         //el pin se coloca en el metodo OnMapReady
-        LoggedUserLanguages = mLoggedUser.getLanguages();
-        setLanguagesText(mLoggedUser.getLanguages(), getString(R.string.PersonalInfoFrag_Languages1), item_Languages);
+        LoggedUserLanguages = mLoggedUser.getLanguages().toString();
+        setLanguagesText(mLoggedUser.getLanguages().toString(), getString(R.string.PersonalInfoFrag_Languages1), item_Languages);
         model.getLanguages().observe(requireActivity(), this::loadLanguages);
         }
     }
@@ -418,9 +419,9 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
 
         mLoggedUser.setDescription(LoggedUserDescription);
         mLoggedUser.setAddress(LoggedUserAddress);
-        mLoggedUser.setLatitude(LoggedUserLocationLat);
-        mLoggedUser.setLongitude(LoggedUserLocationLon);
-        mLoggedUser.setLanguages(LoggedUserLanguages);
+        mLoggedUser.getLocation().setLatitude(LoggedUserLocationLat);
+        mLoggedUser.getLocation().setLongitude(LoggedUserLocationLon);
+        mLoggedUser.setLanguages(List.of(LoggedUserLanguages));
         mLoggedUser.setProfilePicture(LoggedUserImage);
         //String LoggedUserGeoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(LoggedUserLocationLat,LoggedUserLocationLon));
         //mLoggedUser.setGeohash(LoggedUserGeoHash);
@@ -500,7 +501,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        addMarkers(mMap,new LatLng(mLoggedUser.getLatitude(),mLoggedUser.getLongitude()));
+        addMarkers(mMap,new LatLng(mLoggedUser.getLocation().getLatitude(),mLoggedUser.getLocation().getLongitude()));
         googleMap.setOnMapClickListener(latLng -> addMarkers(mMap,latLng));
         if (mLocationPermissionsGranted) {
             if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)

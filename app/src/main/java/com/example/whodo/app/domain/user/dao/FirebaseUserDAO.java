@@ -74,12 +74,12 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
                 Log.w(TAG1, "findUser:onCancelled -->" + databaseError.toException());
             }
         };
-        UserDBRef.orderByChild("uid").equalTo(pUserDTO.getUid()).addValueEventListener(postListener);
+        UserDBRef.orderByChild("authId").equalTo(pUserDTO.getAuthId()).addValueEventListener(postListener);
         return mUser;
     }
     @Override
     public void create(UserDTO pUserDTO,Callback<UserDTO> callback) {
-        UserDBRef.child(pUserDTO.getUid()).setValue(pUserDTO).addOnCompleteListener(task -> {
+        UserDBRef.child(pUserDTO.getAuthId()).setValue(pUserDTO).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // La operación se completó con éxito
                 System.out.println("Operación exitosa");
@@ -114,7 +114,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
             }
         };
 
-        UserDBRef.orderByChild("uid").equalTo(pUserDTO.getUid()).addListenerForSingleValueEvent(postListener);
+        UserDBRef.orderByChild("uid").equalTo(pUserDTO.getAuthId()).addListenerForSingleValueEvent(postListener);
 
     }
     @Override
@@ -124,7 +124,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
         if (pUserDTO.getAddress() != null) {
             updates.put("address", pUserDTO.getAddress());
         }
-        if (pUserDTO.getBirthday() != 0) {
+        if (pUserDTO.getBirthday() != null) {
             updates.put("birthday", pUserDTO.getBirthday());
         }
         if (pUserDTO.getDescription() != null) {
@@ -139,23 +139,23 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
         if (pUserDTO.getLanguages() != null) {
             updates.put("languages", pUserDTO.getLanguages());
         }
-        if (pUserDTO.getLatitude() != 0.0 || pUserDTO.getLongitude() != 0.0 ) {
-            String newGeoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(pUserDTO.getLatitude(),pUserDTO.getLongitude()));
-            updates.put("latitude", pUserDTO.getLatitude());
-            updates.put("longitude", pUserDTO.getLongitude());
+        if (pUserDTO.getLocation().getLatitude() != 0.0 || pUserDTO.getLocation().getLongitude() != 0.0 ) {
+            String newGeoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(pUserDTO.getLocation().getLatitude(),pUserDTO.getLocation().getLongitude()));
+            updates.put("latitude", pUserDTO.getLocation().getLatitude());
+            updates.put("longitude", pUserDTO.getLocation().getLongitude());
             updates.put("geohash",newGeoHash );
         }
-        if (pUserDTO.getIsValidated() != 0) {
+        if (pUserDTO.getIsValidated() != null) {
             updates.put("isValidated", pUserDTO.getIsValidated());
         }
         if (pUserDTO.getPassword() != null) {
             updates.put("password", pUserDTO.getPassword());
         }
-        if (pUserDTO.getPhone() != null) {
-            updates.put("phone", pUserDTO.getPhone());
+        if (pUserDTO.getPhone().getNumber() != null) {
+            updates.put("number", pUserDTO.getPhone().getNumber());
         }
-        if (pUserDTO.getPhone_ccn() != null) {
-            updates.put("phone_ccn", pUserDTO.getPhone_ccn());
+        if (pUserDTO.getPhone().getCcn() != null) {
+            updates.put("ccn", pUserDTO.getPhone().getCcn());
         }
         if (pUserDTO.getType() != null) {
             updates.put("type", pUserDTO.getType());
@@ -169,7 +169,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
                 String profilePictureUri = uri.toString();
                 updates.put("profilePicture", profilePictureUri);
 
-                UserDBRef.child(pUserDTO.getUid()).updateChildren(updates).addOnSuccessListener(aVoid -> {
+                UserDBRef.child(pUserDTO.getAuthId()).updateChildren(updates).addOnSuccessListener(aVoid -> {
                             Log.i(TAG1, " update() operation --> User Update Success");
                         })
                         .addOnFailureListener(e -> {
@@ -180,7 +180,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
         }
         else {
             if(!updates.isEmpty()){
-                UserDBRef.child(pUserDTO.getUid()).updateChildren(updates).addOnSuccessListener(aVoid -> {
+                UserDBRef.child(pUserDTO.getAuthId()).updateChildren(updates).addOnSuccessListener(aVoid -> {
                             Log.i(TAG1, " update() operation --> User Update Success");
                         })
                         .addOnFailureListener(e -> {
@@ -192,9 +192,9 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
 
     @Override
     public void findProviders(UserDTO pUserDTO, Callback<List<UserDTO>> callback) {
-        GeoLocation center = new GeoLocation(pUserDTO.getLatitude(), pUserDTO.getLongitude());
+        GeoLocation center = new GeoLocation(pUserDTO.getLocation().getLatitude(), pUserDTO.getLocation().getLongitude());
         double radiusInM = 100 * 1000;
-        List<Task<DataSnapshot>> tasks = getHashBounds(pUserDTO.getLatitude(), pUserDTO.getLongitude());
+        List<Task<DataSnapshot>> tasks = getHashBounds(pUserDTO.getLocation().getLatitude(), pUserDTO.getLocation().getLongitude());
 
         Tasks.whenAllComplete(tasks).addOnSuccessListener(new OnSuccessListener<List<Task<?>>>() {
             @Override
@@ -206,11 +206,11 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
                         for (DataSnapshot doc : snap.getChildren()) {
                             UserDTO user = doc.getValue(UserDTO.class);
                             if (user != null) {
-                                GeoLocation docLocation = new GeoLocation(user.getLatitude(), user.getLongitude());
+                                GeoLocation docLocation = new GeoLocation(user.getLocation().getLatitude(), user.getLocation().getLongitude());
                                 double distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center);
                                 if (distanceInM <= radiusInM
                                         && Objects.equals(user.getType(), "2")
-                                        || (Objects.equals(user.getUid(), pUserDTO.getUid()))
+                                        || (Objects.equals(user.getAuthId(), pUserDTO.getAuthId()))
                                 ) {
                                     users.add(user);
                                 }
@@ -273,7 +273,7 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
 
 
     private void uploadProfileImage(UserDTO pUserDTO,OnSuccessListener<Uri> downloadUrlListener){
-        StorageReference mImagesRef = mImageStorageRef.child("PROFILE-PICTURE/" + pUserDTO.getUid());
+        StorageReference mImagesRef = mImageStorageRef.child("PROFILE-PICTURE/" + pUserDTO.getAuthId());
         Uri mUri = Uri.parse(pUserDTO.getProfilePicture());
         UploadTask mUploadTask = mImagesRef.putFile(mUri);
         mUploadTask.addOnFailureListener(new OnFailureListener() {

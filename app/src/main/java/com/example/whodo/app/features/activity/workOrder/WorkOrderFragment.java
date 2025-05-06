@@ -310,13 +310,14 @@ public class WorkOrderFragment extends Fragment {
      //********************************** OPEN STATE **********************************//
     private void openStateWorkOrder() {
         OpenState mOpenStateItem = new OpenState(requireContext());
-        String[] mProviderServices = Objects.requireNonNull(mHireFragmentViewModel.getPickedProvider().getValue()).getSpecialization().split(",");
+        String[] mProviderServices = Objects.requireNonNull(mHireFragmentViewModel.getPickedProvider().getValue()).getSpecialization().toArray(new String[0]);
+                //Objects.requireNonNull(mHireFragmentViewModel.getPickedProvider().getValue()).getSpecialization().split(",");
         User mPickedProvider = mHireFragmentViewModel.getPickedProvider().getValue();
         User mLoggedUser = mMainActivityViewModel.getLoggedUser().getValue();
 
         mOpenStateItem.setProviderName("Nombre: " + mPickedProvider.getName());
         mOpenStateItem.setProviderAddress("Direccion: " + mPickedProvider.getAddress());
-        mOpenStateItem.setProviderPhone("Telefono: " + mPickedProvider.getPhone_ccn() + " " + mPickedProvider.getPhone());
+        mOpenStateItem.setProviderPhone("Telefono: " + mPickedProvider.getPhone().getCcn() + " " + mPickedProvider.getPhone().getNumber());
         mOpenStateItem.setSpinnerValues(mProviderServices);
         mOpenStateItem.setLimitDateListener(v -> showDatePickerDialog(new Callback<String>() {
             @Override
@@ -353,12 +354,12 @@ public class WorkOrderFragment extends Fragment {
 
         String mStateChangeDate = Utils.getISOLocalDate();
 
-        String mCustomerPhoneNumber = pCustomer.getPhone_ccn() + pCustomer.getPhone();
-        String mProviderPhoneNumber = pProvider.getPhone_ccn() + pProvider.getPhone();
+        String mCustomerPhoneNumber = pCustomer.getPhone().getCcn() + pCustomer.getPhone().getNumber();
+        String mProviderPhoneNumber = pProvider.getPhone().getCcn() + pCustomer.getPhone().getNumber();
         String mState = "ONEVALUATION";
 
-        WorkOrder WO = new WorkOrder(pCustomer.getUid(), pCustomer.getName(), pCustomer.getAddress(), pCustomer.getLatitude(), pCustomer.getLongitude(), mCustomerPhoneNumber,
-                pProvider.getUid(), pProvider.getName(), pProvider.getAddress(), pProvider.getLatitude(), pProvider.getLongitude(), mProviderPhoneNumber,
+        WorkOrder WO = new WorkOrder(pCustomer.getAuthId(), pCustomer.getName(), pCustomer.getAddress(), pCustomer.getLocation().getLatitude(), pCustomer.getLocation().getLongitude(), mCustomerPhoneNumber,
+                pProvider.getAuthId(), pProvider.getName(), pProvider.getAddress(), pProvider.getLocation().getLatitude(), pProvider.getLocation().getLongitude(), mProviderPhoneNumber,
                 mState, pCategory, pDescription, pCreationDate, pLimitDate, mStateChangeDate);
 
         mMainActivityViewModel.createWorkOrder(WO);
@@ -1259,8 +1260,8 @@ public class WorkOrderFragment extends Fragment {
         boolean isProviderState = List.of("ONEVALUATION", "CONFIRMED", "ONPROGRESS")
                 .contains(pWorkOrder.getState());
 
-        boolean isUserAuthorized = (isCustomerState && Objects.equals(pWorkOrder.getCustomerId(), pUser.getUid()))
-                || (isProviderState && Objects.equals(pWorkOrder.getProviderId(), pUser.getUid()));
+        boolean isUserAuthorized = (isCustomerState && Objects.equals(pWorkOrder.getCustomerId(), pUser.getAuthId()))
+                || (isProviderState && Objects.equals(pWorkOrder.getProviderId(), pUser.getAuthId()));
 
         return mActivateUserTypeValidation != 1 || isUserAuthorized;
     }

@@ -124,15 +124,15 @@ public class HireFragmentViewModel extends ViewModel {
     }
     private void setProvidersLiveData (List<User> pProviders, Double pDistanceFilter , List<String> pServiceFilter) {
         List<User> ProvidersList = new ArrayList<>();
-        LatUpperLimit=mUser.getLatitude()+pDistanceFilter;
-        LatLowerLimit=mUser.getLatitude()-pDistanceFilter;
-        LonRigthLimit=mUser.getLongitude()+pDistanceFilter;
-        LonLetfLimit=mUser.getLongitude()-pDistanceFilter;
+        LatUpperLimit=mUser.getLocation().getLatitude()+pDistanceFilter;
+        LatLowerLimit=mUser.getLocation().getLatitude()-pDistanceFilter;
+        LonRigthLimit=mUser.getLocation().getLongitude()+pDistanceFilter;
+        LonLetfLimit=mUser.getLocation().getLongitude()-pDistanceFilter;
 
         if (!pProviders.isEmpty())
         {
             for(int i = 0; i< pProviders.size(); i++) {
-                if (Objects.equals(pProviders.get(i).getUid(), this.getUser().getUid())) {
+                if (Objects.equals(pProviders.get(i).getAuthId(), this.getUser().getAuthId())) {
                     ProvidersList.add(pProviders.get(i));
                 } else {
                     if (CheckRange(pProviders.get(i))) {
@@ -154,10 +154,10 @@ public class HireFragmentViewModel extends ViewModel {
         }
     }
     private boolean CheckRange (User pProvider) {
-        return pProvider.getLatitude() < LatUpperLimit &&
-                pProvider.getLatitude() > LatLowerLimit &&
-                pProvider.getLongitude() > LonLetfLimit &&
-                pProvider.getLongitude() < LonRigthLimit;
+        return pProvider.getLocation().getLatitude() < LatUpperLimit &&
+                pProvider.getLocation().getLatitude() > LatLowerLimit &&
+                pProvider.getLocation().getLongitude() > LonLetfLimit &&
+                pProvider.getLocation().getLongitude() < LonRigthLimit;
     }
     public LiveData<List<String>> getServiceFilter(){ return mServiceFilter; }
     public LiveData<Double> getDistanceFilter() { return mDistanceFilter; }

@@ -1,185 +1,206 @@
 package com.example.whodo.app.domain.user;
 
-import com.google.firebase.encoders.annotations.Encodable;
+import java.util.Date;
+import java.util.List;
 
 public class UserDTO {
 
-    private String Uid;
-    private String Name;
-    private long Birthday;
-    private String Email;
-    private String Address;
-    private double Latitude;
-    private double Longitude;
-    //private String Geohash;
-    private String Phone;
-    private String Phone_ccn;
-    private String Type;
-    private String Password;
-    private long CreateDate;
-    private long DeleteDate;
-    private int State;
-    private int isValidated;
-    private String ProfilePicture;
-    private String Languages;
-    private String Description;
-    private String Specialization;
-    private UserSpecRatingDTO UserScore;
+    private String id;
+    private String authId; // Identificador de autenticación
+    private String address;
+    private Date birthday;
+    private Date createDate;
+    private Date deleteDate;
+    private String description;
+    private String email;
+    private Boolean isValidated;
+    private List<String> languages;
+    private Location location; // Geohash dentro de Location
+    private String name;
+    private String password;
+    private Phone phone;
+    private String profilePicture;
+    private List<String> specialization;
+    private Integer state;
+    private Integer type;
+    private UserScore userScore;
 
-    public UserDTO() {
-    }
+    public UserDTO() {} // Constructor vacío requerido por MongoDB
 
-
-    public UserDTO(String pUid, String pName, long pBirthday, String pEmail, String pAddress,
-                     double pLatitude, double pLongitude,
-                     String pPhone,
-                     String pPhone_ccn, String pType, String pPassword, long pCreateDate, long pDeleteDate,
-                     int pState, int pIsValidated, String pProfilePicture, String pLanguages, String pDescription, String pSpecialization) {
-        Uid = pUid;
-        Name = pName;
-        Birthday = pBirthday;
-        Email = pEmail;
-        Address = pAddress;
-        Latitude = pLatitude;
-        Longitude = pLongitude;
-        Phone = pPhone;
-        Phone_ccn = pPhone_ccn;
-        Type = pType;
-        Password = pPassword;
-        CreateDate = pCreateDate;
-        DeleteDate = pDeleteDate;
-        State = pState;
-        isValidated = pIsValidated;
-        ProfilePicture = pProfilePicture;
-        Languages = pLanguages;
-        Description = pDescription;
-        Specialization = pSpecialization;
-        UserScore = new UserSpecRatingDTO(); // Asumiendo que quieres inicializar UserScore aquí también
+    public UserDTO(String id, String authId, String address, Date birthday, Date createDate, Date deleteDate,
+                String description, String email, boolean isValidated, List<String> languages,
+                Location location, String name, String password, Phone phone, String profilePicture,
+                List<String> specialization, int state, int type, UserScore userScore) {
+        this.id = id;
+        this.authId = authId;
+        this.address = address;
+        this.birthday = birthday;
+        this.createDate = createDate;
+        this.deleteDate = deleteDate;
+        this.description = description;
+        this.email = email;
+        this.isValidated = isValidated;
+        this.languages = languages;
+        this.location = location;
+        this.name = name;
+        this.password = password;
+        this.phone = phone;
+        this.profilePicture = profilePicture;
+        this.specialization = specialization;
+        this.state = state;
+        this.type = type;
+        this.userScore = userScore;
     }
 
-    @Encodable.Ignore
-    public UserSpecRatingDTO getUserScore() {
-        return UserScore;
-    }
-    @Encodable.Ignore
-    public void setUserScore(UserSpecRatingDTO pUserSpecRating){ UserScore=pUserSpecRating; }
-
-    // @PropertyName("Uid")
-    public String getUid() {
-        return Uid;
-    }
-    public void setUid(String pUid){
-        Uid=pUid;
+    public UserDTO(String id) {
+        this.id = id;
     }
 
-    // @PropertyName("Name")
-    public String getName() {
-        return Name;
-    }
-    public void setName(String pName){
-        Name=pName;
+    public UserDTO(User user) {
     }
 
-    // @PropertyName("Birthday")
-    public long getBirthday() {
-        return Birthday;
-    }
-    public void setBirthday(long pBirthday){
-        Birthday=pBirthday;
+    // Getters y Setters completos
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getAuthId() { return authId; }
+    public void setAuthId(String authId) { this.authId = authId; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public Date getBirthday() { return birthday; }
+    public void setBirthday(Date birthday) { this.birthday = birthday; }
+
+    public Date getCreateDate() { return createDate; }
+    public void setCreateDate(Date createDate) { this.createDate = createDate; }
+
+    public Date getDeleteDate() { return deleteDate; }
+    public void setDeleteDate(Date deleteDate) { this.deleteDate = deleteDate; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public Boolean getIsValidated() { return isValidated; }
+    public void setIsValidated(Boolean validated) { isValidated = validated; }
+
+    public List<String> getLanguages() { return languages; }
+    public void setLanguages(List<String> languages) { this.languages = languages; }
+
+    public Location getLocation() { return location; }
+    public void setLocation(Location location) { this.location = location; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public Phone getPhone() { return phone; }
+    public void setPhone(Phone phone) { this.phone = phone; }
+
+    public String getProfilePicture() { return profilePicture; }
+    public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
+
+    public List<String> getSpecialization() { return specialization; }
+    public void setSpecialization(List<String> specialization) { this.specialization = specialization; }
+
+    public Integer getState() { return state; }
+    public void setState(Integer state) { this.state = state; }
+
+    public Integer getType() { return type; }
+    public void setType(Integer type) { this.type = type; }
+
+    public UserScore getUserScore() { return userScore; }
+    public void setUserScore(UserScore userScore) { this.userScore = userScore; }
+
+    // Subclases para datos anidados
+    public static class Location {
+        private double latitude;
+        private double longitude;
+        private String geohash; // Ahora correctamente agrupado con la ubicación
+
+        public Location() {}
+
+        public Location(double latitude, double longitude, String geohash) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+            this.geohash = geohash;
+        }
+
+        public double getLatitude() { return latitude; }
+        public void setLatitude(double latitude) { this.latitude = latitude; }
+
+        public double getLongitude() { return longitude; }
+        public void setLongitude(double longitude) { this.longitude = longitude; }
+
+        public String getGeohash() { return geohash; }
+        public void setGeohash(String geohash) { this.geohash = geohash; }
     }
 
-    // @PropertyName("Email")
-    public String getEmail() {
-        return Email;
-    }
-    public void setEmail(String pEmail){Email=pEmail;}
+    public static class Phone {
+        private String number;
+        private String ccn;
 
-    //@PropertyName("Password")
-    public String getPassword() {
-        return Password;
-    }
-    public void setPassword(String pPassword){
-        Password=pPassword;
-    }
+        public Phone() {}
 
-    //@PropertyName("Address")
-    public String getAddress() {
-        return Address;
-    }
-    public void setAddress(String pAddress){
-        Address=pAddress;
+        public Phone(String number, String ccn) {
+            this.number = number;
+            this.ccn = ccn;
+        }
+
+        public String getNumber() { return number; }
+        public void setNumber(String number) { this.number = number; }
+
+        public String getCcn() { return ccn; }
+        public void setCcn(String ccn) { this.ccn = ccn; }
     }
 
-    // @PropertyName("Latitude")
-    public double getLatitude() {
-        return Latitude;
-    }
-    public void setLatitude(double pLatitude){
-        Latitude=pLatitude;
-    }
+    public static class UserScore {
+        private double appearanceScore;
+        private String avgCompletionTime;
+        private String avgTariff;
+        private double cleanlinessScore;
+        private String overallScore;
+        private double qualityScore;
+        private double speedScore;
 
-    //@PropertyName("Longitude")
-    public double getLongitude() {
-        return Longitude;
-    }
-    public void setLongitude(double pLongitude){
-        Longitude=pLongitude;
-    }
+        public UserScore() {}
 
-    // @PropertyName("Phone")
-    public String getPhone() {
-        return Phone;
-    }
-    public void setPhone(String pPhone){
-        Phone=pPhone;
-    }
+        public UserScore(double appearanceScore, String avgCompletionTime, String avgTariff,
+                         double cleanlinessScore, String overallScore, double qualityScore, double speedScore) {
+            this.appearanceScore = appearanceScore;
+            this.avgCompletionTime = avgCompletionTime;
+            this.avgTariff = avgTariff;
+            this.cleanlinessScore = cleanlinessScore;
+            this.overallScore = overallScore;
+            this.qualityScore = qualityScore;
+            this.speedScore = speedScore;
+        }
 
-    public String getPhone_ccn() {return Phone_ccn;}
-    public void setPhone_ccn(String pPhone_ccn){
-        Phone_ccn=pPhone_ccn;
-    }
+        public double getAppearanceScore() { return appearanceScore; }
+        public void setAppearanceScore(double appearanceScore) { this.appearanceScore = appearanceScore; }
 
-    public String getType() {return Type;}
-    public void setType(String pType){
-        Type=pType;
-    }
+        public String getAvgCompletionTime() { return avgCompletionTime; }
+        public void setAvgCompletionTime(String avgCompletionTime) { this.avgCompletionTime = avgCompletionTime; }
 
-    public long getCreateDate() {return CreateDate;}
-    public void setCreateDate(long pCreateDate){
-        CreateDate=pCreateDate;
-    }
+        public String getAvgTariff() { return avgTariff; }
+        public void setAvgTariff(String avgTariff) { this.avgTariff = avgTariff; }
 
-    public long getDeleteDate() {return DeleteDate;}
-    public void setDeleteDate(long pDeleteDate){
-        DeleteDate=pDeleteDate;
-    }
+        public double getCleanlinessScore() { return cleanlinessScore; }
+        public void setCleanlinessScore(double cleanlinessScore) { this.cleanlinessScore = cleanlinessScore; }
 
-    public Integer getState() {return State;}
-    public void setState(Integer pState){
-        State=pState;
-    }
+        public String getOverallScore() { return overallScore; }
+        public void setOverallScore(String overallScore) { this.overallScore = overallScore; }
 
-    public Integer getIsValidated() {return isValidated;}
-    public void setIsValidated(Integer pisValidated){
-        isValidated=pisValidated;
-    }
+        public double getQualityScore() { return qualityScore; }
+        public void setQualityScore(double qualityScore) { this.qualityScore = qualityScore; }
 
-    public String getProfilePicture() {return ProfilePicture;}
-    public void setProfilePicture(String pProfilePicture){ ProfilePicture=pProfilePicture; }
-
-    public String getLanguages() {return Languages;}
-    public void setLanguages(String pLanguages){
-        Languages=pLanguages;
-    }
-
-    public String getDescription() {return Description;}
-    public void setDescription(String pDescription){
-        Description=pDescription;
-    }
-
-    public String getSpecialization() {return Specialization;}
-    public void setSpecialization(String pSpecialization){
-        Specialization=pSpecialization;
+        public double getSpeedScore() { return speedScore; }
+        public void setSpeedScore(double speedScore) { this.speedScore = speedScore; }
     }
 
 }
