@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
 import com.example.whodo.app.domain.user.dao.UserDao;
 import com.example.whodo.app.domain.user.UserDTO;
 import com.example.whodo.app.domain.user.UserMapper;
@@ -67,7 +69,7 @@ public class MainActivityViewModel extends ViewModel {
 
     public MainActivityViewModel() {
 
-        mUserDao=pUserDao;
+        mUserDao= new FirebaseUserDAO();
         mWorkOrderDao = new FirebaseWorkOrderDAO();
         mSeletedTab.setValue(0);
         mTabLayoutVisibility.setValue(View.VISIBLE);
@@ -75,6 +77,9 @@ public class MainActivityViewModel extends ViewModel {
 
         this.sseUserClient = new SSEUserClient("http://localhost:8080/users/stream"+"/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
         this.sseWorkOrderClient = new SSEWorkOrderClient("http://localhost:8080/work-orders/stream");
+
+        this.sseUserClient.startListening(mUser);
+        this.sseWorkOrderClient.startListening(mWorkOrders);
 
         User currentUser = new User(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
         mUserDao.findUser(UserMapper.toDTO(currentUser)).observeForever(userDto -> {
@@ -294,12 +299,4 @@ public class MainActivityViewModel extends ViewModel {
     public LiveData<List<WorkOrder>> getWorkOrder () {return mWorkOrders;}
     public void setPickedWorkOrder(WorkOrder pPickedWorkOrder){ mPickedWorkOrder.setValue(pPickedWorkOrder); }
     public LiveData<WorkOrder> getPickedWorkOrder(){ return mPickedWorkOrder; }
-
-    //SSE Client Starter
-    public void startStreaming() {
-        sseUserClient.startListening(mUser);
-        sseWorkOrderClient.startListening(mWorkOrders);
-    }
-
-
 }

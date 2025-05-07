@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         FirebaseUserDAO FirebaseUserDao = new FirebaseUserDAO(); // Asegúrate de implementar esto
-        MainActivityViewModelFactory factory = new MainActivityViewModelFactory(FirebaseUserDao);
+
 
 
         mMainActivityViewModel = new ViewModelProvider(this,factory).get(MainActivityViewModel.class);
