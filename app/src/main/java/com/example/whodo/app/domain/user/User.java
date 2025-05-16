@@ -12,12 +12,11 @@ public class User {
     private String id;
     private String authId; // Identificador de autenticación
     private String address;
-    private Date birthday;
-    private Date createDate;
-    private Date deleteDate;
+    private String birthday;
+    private String createDate;
+    private String deleteDate;
     private String description;
     private String email;
-    private Boolean isValidated;
     private List<String> languages;
     private Location location; // Geohash dentro de Location
     private String name;
@@ -29,38 +28,19 @@ public class User {
     private Integer type;
     private UserScore userScore;
 
-    public User() {} // Constructor vacío requerido por MongoDB
+    public User() {
+        this.location = new Location();   //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+        this.phone = new Phone();         //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+        this.userScore = new UserScore(); //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+    } // Constructor vacío requerido por MongoDB
 
-    public User(String id, String authId, String address, Date birthday, Date createDate, Date deleteDate,
-                String description, String email, boolean isValidated, List<String> languages,
-                Location location, String name, String password, Phone phone, String profilePicture,
-                List<String> specialization, int state, int type, UserScore userScore) {
-        this.id = id;
+
+
+    public User(String authId) {
         this.authId = authId;
-        this.address = address;
-        this.birthday = birthday;
-        this.createDate = createDate;
-        this.deleteDate = deleteDate;
-        this.description = description;
-        this.email = email;
-        this.isValidated = isValidated;
-        this.languages = languages;
-        this.location = location;
-        this.name = name;
-        this.password = password;
-        this.phone = phone;
-        this.profilePicture = profilePicture;
-        this.specialization = specialization;
-        this.state = state;
-        this.type = type;
-        this.userScore = userScore;
-    }
-
-    public User(String id) {
-        this.id = id;
-    }
-
-    public User(User user) {
+        this.location = new Location();   //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+        this.phone = new Phone();         //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+        this.userScore = new UserScore(); //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
     }
 
     public User(String authId, String name, String email, String password) {
@@ -68,6 +48,30 @@ public class User {
         this.name=name;
         this.email=email;
         this.password=password;
+        this.location = new Location();   //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+        this.phone = new Phone();         //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+        this.userScore = new UserScore(); //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+    }
+
+    public User(User user) {
+        this.id = user.id;
+        this.authId = user.authId;
+        this.address = user.address;
+        this.birthday = user.birthday;
+        this.createDate = user.createDate;
+        this.deleteDate = user.deleteDate;
+        this.description = user.description;
+        this.email = user.email;
+        this.languages = user.languages;
+        this.location = user.location;
+        this.name = user.name;
+        this.password = user.password;
+        this.phone = user.phone;
+        this.profilePicture = user.profilePicture;
+        this.specialization = user.specialization;
+        this.state = user.state;
+        this.type = user.type;
+        this.userScore = user.userScore;
     }
 
     // Getters y Setters completos
@@ -80,23 +84,20 @@ public class User {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
-    public Date getBirthday() { return birthday; }
-    public void setBirthday(Date birthday) { this.birthday = birthday; }
+    public String getBirthday() { return birthday; }
+    public void setBirthday(String birthday) { this.birthday = birthday; }
 
-    public Date getCreateDate() { return createDate; }
-    public void setCreateDate(Date createDate) { this.createDate = createDate; }
+    public String getCreateDate() { return createDate; }
+    public void setCreateDate(String createDate) { this.createDate = createDate; }
 
-    public Date getDeleteDate() { return deleteDate; }
-    public void setDeleteDate(Date deleteDate) { this.deleteDate = deleteDate; }
+    public String getDeleteDate() { return deleteDate; }
+    public void setDeleteDate(String deleteDate) { this.deleteDate = deleteDate; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-
-    public Boolean getIsValidated() { return isValidated; }
-    public void setIsValidated(Boolean validated) { isValidated = validated; }
 
     public List<String> getLanguages() { return languages; }
     public void setLanguages(List<String> languages) { this.languages = languages; }
@@ -130,8 +131,8 @@ public class User {
 
     // Subclases para datos anidados
     public static class Location {
-        private double latitude;
-        private double longitude;
+        private Double latitude;
+        private Double longitude;
         private String geohash; // Ahora correctamente agrupado con la ubicación
 
         public Location() {}
@@ -142,14 +143,23 @@ public class User {
             this.geohash = geohash;
         }
 
-        public double getLatitude() { return latitude; }
-        public void setLatitude(double latitude) { this.latitude = latitude; }
+        public Double getLatitude() { return latitude; }
+        public void setLatitude(Double latitude) { this.latitude = latitude; }
 
-        public double getLongitude() { return longitude; }
-        public void setLongitude(double longitude) { this.longitude = longitude; }
+        public Double getLongitude() { return longitude; }
+        public void setLongitude(Double longitude) { this.longitude = longitude; }
 
         public String getGeohash() { return geohash; }
         public void setGeohash(String geohash) { this.geohash = geohash; }
+
+        @Override
+        public String toString() {
+            return "Location{" +
+                    "latitude=" + latitude +
+                    ", longitude=" + longitude +
+                    ", geohash='" + geohash + '\'' +
+                    '}';
+        }
     }
 
     public static class Phone {
@@ -168,21 +178,29 @@ public class User {
 
         public String getCcn() { return ccn; }
         public void setCcn(String ccn) { this.ccn = ccn; }
+
+        @Override
+        public String toString() {
+            return "Phone{" +
+                    "number='" + number + '\'' +
+                    ", ccn='" + ccn + '\'' +
+                    '}';
+        }
     }
 
     public static class UserScore {
-        private double appearanceScore;
+        private Double appearanceScore;
         private String avgCompletionTime;
         private String avgTariff;
-        private double cleanlinessScore;
+        private Double cleanlinessScore;
         private String overallScore;
-        private double qualityScore;
-        private double speedScore;
+        private Double qualityScore;
+        private Double speedScore;
 
         public UserScore() {}
 
-        public UserScore(double appearanceScore, String avgCompletionTime, String avgTariff,
-                         double cleanlinessScore, String overallScore, double qualityScore, double speedScore) {
+        public UserScore(Double appearanceScore, String avgCompletionTime, String avgTariff,
+                         Double cleanlinessScore, String overallScore, Double qualityScore, Double speedScore) {
             this.appearanceScore = appearanceScore;
             this.avgCompletionTime = avgCompletionTime;
             this.avgTariff = avgTariff;
@@ -192,8 +210,8 @@ public class User {
             this.speedScore = speedScore;
         }
 
-        public double getAppearanceScore() { return appearanceScore; }
-        public void setAppearanceScore(double appearanceScore) { this.appearanceScore = appearanceScore; }
+        public Double getAppearanceScore() { return appearanceScore; }
+        public void setAppearanceScore(Double appearanceScore) { this.appearanceScore = appearanceScore; }
 
         public String getAvgCompletionTime() { return avgCompletionTime; }
         public void setAvgCompletionTime(String avgCompletionTime) { this.avgCompletionTime = avgCompletionTime; }
@@ -201,38 +219,58 @@ public class User {
         public String getAvgTariff() { return avgTariff; }
         public void setAvgTariff(String avgTariff) { this.avgTariff = avgTariff; }
 
-        public double getCleanlinessScore() { return cleanlinessScore; }
-        public void setCleanlinessScore(double cleanlinessScore) { this.cleanlinessScore = cleanlinessScore; }
+        public Double getCleanlinessScore() { return cleanlinessScore; }
+        public void setCleanlinessScore(Double cleanlinessScore) { this.cleanlinessScore = cleanlinessScore; }
 
         public String getOverallScore() { return overallScore; }
         public void setOverallScore(String overallScore) { this.overallScore = overallScore; }
 
-        public double getQualityScore() { return qualityScore; }
-        public void setQualityScore(double qualityScore) { this.qualityScore = qualityScore; }
+        public Double getQualityScore() { return qualityScore; }
+        public void setQualityScore(Double qualityScore) { this.qualityScore = qualityScore; }
 
-        public double getSpeedScore() { return speedScore; }
-        public void setSpeedScore(double speedScore) { this.speedScore = speedScore; }
+        public Double getSpeedScore() { return speedScore; }
+        public void setSpeedScore(Double speedScore) { this.speedScore = speedScore; }
+
+        @Override
+        public String toString() {
+            return "UserScore{" +
+                    "appearanceScore=" + appearanceScore +
+                    ", avgCompletionTime='" + avgCompletionTime + '\'' +
+                    ", avgTariff='" + avgTariff + '\'' +
+                    ", cleanlinessScore=" + cleanlinessScore +
+                    ", overallScore='" + overallScore + '\'' +
+                    ", qualityScore=" + qualityScore +
+                    ", speedScore=" + speedScore +
+                    '}';
+        }
     }
-
-
-
 
     public User deepCopy() {
         Gson gson = new GsonBuilder().create(); // Serializador JSON
         return gson.fromJson(gson.toJson(this), User.class); // Serializa y deserializa creando una copia nueva
     }
 
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return id.equals(user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public String toString() {
+        return "UserDTO{" +
+                "id='" + id + '\'' +
+                ", authId='" + authId + '\'' +
+                ", address='" + address + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", createDate='" + createDate + '\'' +
+                ", deleteDate='" + deleteDate + '\'' +
+                ", description='" + description + '\'' +
+                ", email='" + email + '\'' +
+                ", languages=" + languages +
+                ", location=" + location.toString() +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", phone=" + phone.toString() +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", specialization=" + specialization +
+                ", state=" + state +
+                ", type=" + type +
+                ", userScore=" + userScore.toString() +
+                '}';
     }
 }

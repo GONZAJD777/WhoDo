@@ -8,7 +8,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.whodo.BuildConfig;
 import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
+import com.example.whodo.app.domain.user.dao.MongoDBUserDAO;
 import com.example.whodo.app.domain.user.dao.UserDao;
 import com.example.whodo.app.domain.user.UserDTO;
 import com.example.whodo.app.domain.user.UserMapper;
@@ -16,6 +18,7 @@ import com.example.whodo.app.domain.workOrder.WorkOrder;
 import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
 import com.example.whodo.app.domain.workOrder.WorkOrderMapper;
 import com.example.whodo.app.domain.workOrder.dao.FirebaseWorkOrderDAO;
+import com.example.whodo.app.domain.workOrder.dao.MongoDBWorkOrderDAO;
 import com.example.whodo.app.domain.workOrder.dao.WorkOrderDao;
 import com.example.whodo.app.features.favorites.FavoritesFragment;
 import com.example.whodo.app.features.hire.HireFragment;
@@ -34,10 +37,8 @@ import com.example.whodo.app.features.profile.fragments.RecomendationsFragment;
 import com.example.whodo.app.features.profile.fragments.SecurityFragment;
 import com.example.whodo.app.features.profile.fragments.SupportFragment;
 import com.example.whodo.app.features.profile.fragments.TutorialFragment;
-import com.example.whodo.app.network.SSECallback;
-import com.example.whodo.app.network.SSEUserClient;
-import com.example.whodo.app.network.SSEWorkOrderClient;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 import java.util.ArrayList;
@@ -46,234 +47,285 @@ import java.util.Objects;
 
 public class MainActivityViewModel extends ViewModel {
 
-    private final SSEUserClient sseUserClient;
-    private final SSEWorkOrderClient sseWorkOrderClient;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final String TAG1="MAIN-ACTIVITY-VIEWMODEL";
-    private UserDao<UserDTO> mUserDao ;
-    private User mSnapshotUser; // No es LiveData
+    private final String TAG = "MAIN-ACTIVITY-VIEWMODEL";
+
+    private User mSnapshotUser= new User(); // No es LiveData
     private final MutableLiveData<User> mUser = new MutableLiveData<>();
     private final MutableLiveData<List<User>> mProviders = new MutableLiveData<>();
     private final MutableLiveData<User> mWorkOrdersCustomer = new MutableLiveData<>();
     private final MutableLiveData<List<WorkOrder>> mWorkOrders = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<String>> mServices = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<String>> mLanguages= new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<String>> mLanguages = new MutableLiveData<>();
     private final MutableLiveData<Fragment> mFragmentSelected = new MutableLiveData<>();
     private final MutableLiveData<Integer> mTabLayoutVisibility = new MutableLiveData<>();
     private final MutableLiveData<Integer> mSeletedTab = new MutableLiveData<>();
+    private final MutableLiveData<WorkOrder> mPickedWorkOrder = new MutableLiveData<>();
 
-
-    private final MutableLiveData <WorkOrder> mPickedWorkOrder = new MutableLiveData<>();
-    private final WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
+    //private final SSEUserClient sseUserClient;
+    private final MongoDBUserDAO MongoDBUserDao = new MongoDBUserDAO();
+    private final FirebaseUserDAO FirebaseUserDao= new FirebaseUserDAO();
+    private final FirebaseWorkOrderDAO FirebaseWorkOrderDao= new FirebaseWorkOrderDAO();
+    private final MongoDBWorkOrderDAO MongoDBWorkOrderDao= new MongoDBWorkOrderDAO();
+    private UserDao<UserDTO> mUserDao;
+    private WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
 
 
     public MainActivityViewModel() {
 
-        mUserDao= new FirebaseUserDAO();
-        mWorkOrderDao = new FirebaseWorkOrderDAO();
+
+        if ("FIREBASE".equals(BuildConfig.DATABASE)) {
+            mUserDao = this.FirebaseUserDao;
+            mWorkOrderDao=this.FirebaseWorkOrderDao;
+        }
+        if ("MONGODB".equals(BuildConfig.DATABASE)) {
+            mUserDao = this.MongoDBUserDao;
+            mWorkOrderDao=this.MongoDBWorkOrderDao;
+        }
+
+
         mSeletedTab.setValue(0);
         mTabLayoutVisibility.setValue(View.VISIBLE);
         mFragmentSelected.setValue(new HireFragment());
+        
 
-        this.sseUserClient = new SSEUserClient("http://localhost:8080/users/stream"+"/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        this.sseWorkOrderClient = new SSEWorkOrderClient("http://localhost:8080/work-orders/stream");
-
-        this.sseUserClient.startListening(mUser);
-        this.sseWorkOrderClient.startListening(mWorkOrders);
-
-        User currentUser = new User(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        mUserDao.findUser(UserMapper.toDTO(currentUser)).observeForever(userDto -> {
-            if (userDto != null) {
-                User user = UserMapper.toEntity(userDto);
-                mUser.setValue(user);
-                mSnapshotUser = new User(user);
-                //*************************** PROVIDERS ***************************//
-                mUserDao.findProviders(UserMapper.toDTO(mSnapshotUser), new Callback<List<UserDTO>>() {
-                    @Override
-                    public void onSuccess(List<UserDTO> userDTOList) {
-                        if (userDTOList != null) {
-                            List<User> AuxUserList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
-
-                            for (UserDTO userDTO : userDTOList) {
-                                User user = UserMapper.toEntity(userDTO); // Mapear UserDTO a User
-                                AuxUserList.add(user); // Agregar el objeto User a la lista
-                            }
-                            mProviders.setValue(AuxUserList);
-                        }
-                    }
-                    @Override
-                    public void onError(Exception e) { }
-                });
-                //*************************** PROVIDERS ***************************//
-
-                //*************************** WORKORDERS ***************************//
-                WorkOrder mWorkOrder = new WorkOrder();
-                mWorkOrder.setCustomerId(user.getId());
-                mWorkOrder.setProviderId(user.getId());
-                mWorkOrderDao.find(WorkOrderMapper.toDto(mWorkOrder)).observeForever( workOrderDTOList -> {
-                    if (workOrderDTOList != null) {
-                        List<WorkOrder> AuxWorkOrderList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
-
-                        for (WorkOrderDTO workOrderDTO : workOrderDTOList) {
-                            WorkOrder workOrder = WorkOrderMapper.toEntity(workOrderDTO); // Mapear UserDTO a User
-                            AuxWorkOrderList.add(workOrder); // Agregar el objeto User a la lista
-                        }
-                        mWorkOrders.setValue(AuxWorkOrderList);
-                        Log.d(TAG1, "WorkOrderObserver --> a cambiado el dataset ");
-
-                        if(mWorkOrders.isInitialized() && mPickedWorkOrder.isInitialized()) {
-                                for (WorkOrder pWorkOrder : Objects.requireNonNull(mWorkOrders.getValue())) {
-                                    if(mPickedWorkOrder.getValue()!=null && Objects.equals(mPickedWorkOrder.getValue().getOrderId(), pWorkOrder.getOrderId())) {
-                                        mPickedWorkOrder.setValue(pWorkOrder);
-                                    }
-                                }
-                        }
-
-                    }
-                });
-                //*************************** WORKORDERS ***************************//
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            User currentUser = new User(user.getUid());
+            Log.d(TAG, "mAuth no es nulo y currentUser: " + currentUser);
+            try {
+                LoadUserInfo(currentUser);
+            }catch (Exception e){
+                Log.d(TAG, "Error al llamar a la base de datos --> espera a la actualizacion de datos." + e);
             }
-        });
+        } else {
+            Log.e(TAG, "Usuario no autenticado");
+        }
+        
         mUserDao.findLanguages(new Callback<List<String>>() {
             @Override
-            public void onSuccess(List<String> pLanguages) { mLanguages.setValue((ArrayList<String>) pLanguages); }
+            public void onSuccess(List<String> pLanguages) {
+                mLanguages.setValue((ArrayList<String>) pLanguages);
+            }
+
             @Override
-            public void onError(Exception e) { }
+            public void onError(Exception e) {
+            }
         });
         mUserDao.findServices(new Callback<List<String>>() {
             @Override
-            public void onSuccess(List<String> pServices) { mServices.setValue((ArrayList<String>) pServices); }
+            public void onSuccess(List<String> pServices) {
+                mServices.setValue((ArrayList<String>) pServices);
+            }
+
             @Override
-            public void onError(Exception e) { }
+            public void onError(Exception e) {
+            }
         });
 
         StartUserUpdateThread();
     }
-    public LiveData<User> getLoggedUser() { return this.mUser; }
-    public LiveData<List<User>> getProviders() { return this.mProviders; }
-    public LiveData<ArrayList<String>> getServices() { return this.mServices; }
-    public LiveData<ArrayList<String>> getLanguages() { return this.mLanguages; }
-    public LiveData<Fragment> getSelectedFragment() { return this.mFragmentSelected; }
-    public LiveData<Integer> getTabLayoutVisibility() { return this.mTabLayoutVisibility; }
-    public LiveData<Integer> getSelectedTab(){ return this.mSeletedTab;}
+
+    public LiveData<User> getLoggedUser() {
+        return this.mUser;
+    }
+
+    public LiveData<List<User>> getProviders() {
+        return this.mProviders;
+    }
+
+    public LiveData<ArrayList<String>> getServices() {
+        return this.mServices;
+    }
+
+    public LiveData<ArrayList<String>> getLanguages() {
+        return this.mLanguages;
+    }
+
+    public LiveData<Fragment> getSelectedFragment() {
+        return this.mFragmentSelected;
+    }
+
+    public LiveData<Integer> getTabLayoutVisibility() {
+        return this.mTabLayoutVisibility;
+    }
+
+    public LiveData<Integer> getSelectedTab() {
+        return this.mSeletedTab;
+    }
+
     //**************************************************************
-    public void setSelectedTab (int pTab){this.mSeletedTab.setValue(pTab);}
-    public void setSelectedFragment (int pTab,int pTabLayoutVisibility){
-        switch (pTab)
-        {
-            case 0:  mFragmentSelected.setValue(new HireFragment()); break;
-            case 1:  mFragmentSelected.setValue(new FavoritesFragment()); break;
-            case 2:  mFragmentSelected.setValue(new ActivityFragment()); break;
-            case 3:  mFragmentSelected.setValue(new MessagesFragment()); break;
-            case 4:  mFragmentSelected.setValue(new MainProfileFragment()); break;
-            case 5:  mFragmentSelected.setValue(new EditProfileFragment()); break;
-            case 6:  mFragmentSelected.setValue(new PersonalInfoFragment()); break;
-            case 7:  mFragmentSelected.setValue(new SecurityFragment()); break;
-            case 8:  mFragmentSelected.setValue(new ProviderModeFragment()); break;
-            case 9:  mFragmentSelected.setValue(new TutorialFragment()); break;
-            case 10:  mFragmentSelected.setValue(new RecomendationsFragment()); break;
-            case 11:  mFragmentSelected.setValue(new SupportFragment()); break;
-            case 12:  mFragmentSelected.setValue(new CommentsFragment()); break;
-            case 13:  mFragmentSelected.setValue(new LegalTermsFragment()); break;
-            case 14:  mFragmentSelected.setValue(new PrivacyPoliticsFragment()); break;
-            case 15:  mFragmentSelected.setValue(new WorkOrderFragment()); break;
+    public void setSelectedTab(int pTab) {
+        this.mSeletedTab.setValue(pTab);
+    }
+
+    public void setSelectedFragment(int pTab, int pTabLayoutVisibility) {
+        switch (pTab) {
+            case 0:
+                mFragmentSelected.setValue(new HireFragment());
+                break;
+            case 1:
+                mFragmentSelected.setValue(new FavoritesFragment());
+                break;
+            case 2:
+                mFragmentSelected.setValue(new ActivityFragment());
+                break;
+            case 3:
+                mFragmentSelected.setValue(new MessagesFragment());
+                break;
+            case 4:
+                mFragmentSelected.setValue(new MainProfileFragment());
+                break;
+            case 5:
+                mFragmentSelected.setValue(new EditProfileFragment());
+                break;
+            case 6:
+                mFragmentSelected.setValue(new PersonalInfoFragment());
+                break;
+            case 7:
+                mFragmentSelected.setValue(new SecurityFragment());
+                break;
+            case 8:
+                mFragmentSelected.setValue(new ProviderModeFragment());
+                break;
+            case 9:
+                mFragmentSelected.setValue(new TutorialFragment());
+                break;
+            case 10:
+                mFragmentSelected.setValue(new RecomendationsFragment());
+                break;
+            case 11:
+                mFragmentSelected.setValue(new SupportFragment());
+                break;
+            case 12:
+                mFragmentSelected.setValue(new CommentsFragment());
+                break;
+            case 13:
+                mFragmentSelected.setValue(new LegalTermsFragment());
+                break;
+            case 14:
+                mFragmentSelected.setValue(new PrivacyPoliticsFragment());
+                break;
+            case 15:
+                mFragmentSelected.setValue(new WorkOrderFragment());
+                break;
         }
         mTabLayoutVisibility.setValue(pTabLayoutVisibility);
     }
-    public void updateLoggedUser(User pUser){ this.mUser.setValue(pUser); }
-    private void StartUserUpdateThread () {
+
+    public void updateLoggedUser(User pUser) {
+        this.mUser.setValue(pUser);
+    }
+
+    private void StartUserUpdateThread() {
         final Handler handler = new Handler();
         new Thread(new Runnable() {
             public void run() {
-                try{
+                try {
+                    Log.i(TAG, "mUser : " + Objects.requireNonNull(mUser.getValue()).toString());
+                    Log.i(TAG, "mSnapshotUser : " + mSnapshotUser.toString());
                     updateUser(Objects.requireNonNull(mUser.getValue()), Objects.requireNonNull(mSnapshotUser));
-                }
-                catch (Exception e)
-                {
-                    Log.i(TAG1, "StartUserUpdateThread --> BackgroundUpdateUser.UpdateUser(): "+ e );
-                }
-                finally {
+                } catch (Exception e) {
+                    Log.i(TAG, "StartUserUpdateThread --> BackgroundUpdateUser.UpdateUser(): " + e);
+                } finally {
                     handler.postDelayed(this, 60000);
                 }
             }
         }).start();
     }
-    private void updateUser(User pUser,User pUserSnapshot){
-        Log.i(TAG1,  "Operacion CRUD.UpdateUser() Se actualizara el usuario:" + "USERS/"+pUser.getId());
-        User userToUpdate = new User(pUser.getId());
+
+    public void createUser(User pUser, Callback<UserDTO> callback) {
+        mUserDao.create(UserMapper.toDTO(pUser), new Callback<UserDTO>() {
+            @Override
+            public void onSuccess(UserDTO pUserDTO) {
+                callback.onSuccess(pUserDTO);
+                Log.d(TAG, "createUser() Method --> User has been created " + pUserDTO);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                callback.onError(e);
+                Log.d(TAG, "createUser() Method --> User couldn't been created" + e);
+            }
+        });
+    }
+
+    private void updateUser(User pUser, User pUserSnapshot) {
+        Log.i(TAG, "Operacion CRUD.UpdateUser() Se actualizara el usuario:" + "USERS/" + pUser.getId());
+        User userToUpdate = new User();
+        userToUpdate.setId(pUser.getId());
         if (!Objects.equals(pUser.getAddress(), pUserSnapshot.getAddress())) {
-            Log.i(TAG1,"UpdateUser DIRECCION ANTIGUA: " + pUserSnapshot.getAddress() );
-            Log.i(TAG1,"UpdateUser DIRECCION NUEVA: "+ pUser.getAddress());
+            Log.i(TAG, "UpdateUser DIRECCION ANTIGUA: " + pUserSnapshot.getAddress());
+            Log.i(TAG, "UpdateUser DIRECCION NUEVA: " + pUser.getAddress());
             userToUpdate.setAddress(pUser.getAddress());
         }
         if (!Objects.equals(pUser.getBirthday(), pUserSnapshot.getBirthday())) {
-            Log.i(TAG1,"UpdateUser CUMPLEAÑOS ANTIGUA: "+pUserSnapshot.getBirthday() );
-            Log.i(TAG1,"UpdateUser CUMPLEAÑOS NUEVA: "+ pUser.getBirthday());
+            Log.i(TAG, "UpdateUser CUMPLEAÑOS ANTIGUA: " + pUserSnapshot.getBirthday());
+            Log.i(TAG, "UpdateUser CUMPLEAÑOS NUEVA: " + pUser.getBirthday());
             userToUpdate.setBirthday(pUser.getBirthday());
         }
         if (!Objects.equals(pUser.getDescription(), pUserSnapshot.getDescription())) {
-            Log.i(TAG1,"UpdateUser DESCRIPCION ANTIGUA: "+pUserSnapshot.getDescription() );
-            Log.i(TAG1,"UpdateUser DESCRIPCION NUEVA: "+ pUser.getDescription());
+            Log.i(TAG, "UpdateUser DESCRIPCION ANTIGUA: " + pUserSnapshot.getDescription());
+            Log.i(TAG, "UpdateUser DESCRIPCION NUEVA: " + pUser.getDescription());
             userToUpdate.setDescription(pUser.getDescription());
         }
         if (!Objects.equals(pUser.getEmail(), pUserSnapshot.getEmail())) {
-            Log.i(TAG1,"UpdateUser CORREO ANTIGUA: "+pUserSnapshot.getEmail() );
-            Log.i(TAG1,"UpdateUser CORREO NUEVA: "+ pUser.getEmail());
+            Log.i(TAG, "UpdateUser CORREO ANTIGUA: " + pUserSnapshot.getEmail());
+            Log.i(TAG, "UpdateUser CORREO NUEVA: " + pUser.getEmail());
             userToUpdate.setEmail(pUser.getEmail());
         }
-        if (!Objects.equals(pUser.getIsValidated(), pUserSnapshot.getIsValidated())) {
-            Log.i(TAG1,"UpdateUser iSVALIDATED ANTIGUA: "+pUserSnapshot.getIsValidated() );
-            Log.i(TAG1,"UpdateUser iSVALIDATED NUEVA: "+ pUser.getIsValidated());
-            userToUpdate.setIsValidated(pUser.getIsValidated());
+        if(pUser.getLanguages()!=null && pUserSnapshot.getLanguages()!=null){
+            if (!Objects.equals(pUser.getLanguages(), pUserSnapshot.getLanguages())) {
+                Log.i(TAG, "UpdateUser IDIOMAS ANTIGUA: " + pUserSnapshot.getLanguages());
+                Log.i(TAG, "UpdateUser IDIOMAS NUEVA: " + pUser.getLanguages());
+                userToUpdate.setLanguages(pUser.getLanguages());
+            }
         }
-        if (!Objects.equals(pUser.getLanguages(), pUserSnapshot.getLanguages())) {
-            Log.i(TAG1,"UpdateUser IDIOMAS ANTIGUA: "+pUserSnapshot.getLanguages() );
-            Log.i(TAG1,"UpdateUser IDIOMAS NUEVA: "+ pUser.getLanguages());
-            userToUpdate.setLanguages(pUser.getLanguages());
-        }
-        if (!Objects.equals(pUser.getLocation().getLatitude(), pUserSnapshot.getLocation().getLatitude()) || !Objects.equals(pUser.getLocation().getLongitude(), pUserSnapshot.getLocation().getLongitude()) ) {
-            Log.i(TAG1,"UpdateUser LATITUD ANTIGUA: " + pUserSnapshot.getLocation().getLatitude() );
-            Log.i(TAG1,"UpdateUser LATITUD NUEVA: "+ pUser.getLocation().getLatitude());
-            Log.i(TAG1,"UpdateUser LONGITUD ANTIGUA: " + pUserSnapshot.getLocation().getLongitude() );
-            Log.i(TAG1,"UpdateUser LONGITUD NUEVA: " + pUser.getLocation().getLongitude());
+        if (!Objects.equals(pUser.getLocation().getLatitude(), pUserSnapshot.getLocation().getLatitude()) || !Objects.equals(pUser.getLocation().getLongitude(), pUserSnapshot.getLocation().getLongitude())) {
+            Log.i(TAG, "UpdateUser LATITUD ANTIGUA: " + pUserSnapshot.getLocation().getLatitude());
+            Log.i(TAG, "UpdateUser LATITUD NUEVA: " + pUser.getLocation().getLatitude());
+            Log.i(TAG, "UpdateUser LONGITUD ANTIGUA: " + pUserSnapshot.getLocation().getLongitude());
+            Log.i(TAG, "UpdateUser LONGITUD NUEVA: " + pUser.getLocation().getLongitude());
             userToUpdate.getLocation().setLatitude(pUser.getLocation().getLatitude());
             userToUpdate.getLocation().setLongitude(pUser.getLocation().getLongitude());
         }
         if (!Objects.equals(pUser.getName(), pUserSnapshot.getName())) {
-            Log.i(TAG1,"UpdateUser NOMBRE ANTIGUA: "+pUserSnapshot.getName() );
-            Log.i(TAG1,"UpdateUser NOMBRE NUEVA: "+ pUser.getName());
+            Log.i(TAG, "UpdateUser NOMBRE ANTIGUA: " + pUserSnapshot.getName());
+            Log.i(TAG, "UpdateUser NOMBRE NUEVA: " + pUser.getName());
             userToUpdate.setName(pUser.getName());
         }
         if (!Objects.equals(pUser.getPassword(), pUserSnapshot.getPassword())) {
-            Log.i(TAG1,"UpdateUser PASSWORD ANTIGUA: "+pUserSnapshot.getPassword() );
-            Log.i(TAG1,"UpdateUser PASSWORD NUEVA: "+ pUser.getPassword());
+            Log.i(TAG, "UpdateUser PASSWORD ANTIGUA: " + pUserSnapshot.getPassword());
+            Log.i(TAG, "UpdateUser PASSWORD NUEVA: " + pUser.getPassword());
             userToUpdate.setPassword(pUser.getPassword());
         }
         if (!Objects.equals(pUser.getPhone().getNumber(), pUserSnapshot.getPhone().getNumber())) {
-            Log.i(TAG1,"UpdateUser TELEFONO ANTIGUA: "+pUserSnapshot.getPhone().getNumber() );
-            Log.i(TAG1,"UpdateUser TELEFONO NUEVA: "+ pUser.getPhone().getNumber());
+            Log.i(TAG, "UpdateUser TELEFONO ANTIGUA: " + pUserSnapshot.getPhone().getNumber());
+            Log.i(TAG, "UpdateUser TELEFONO NUEVA: " + pUser.getPhone().getNumber());
             userToUpdate.getPhone().setNumber(pUser.getPhone().getNumber());
         }
         if (!Objects.equals(pUser.getPhone().getCcn(), pUserSnapshot.getPhone().getCcn())) {
-            Log.i(TAG1,"UpdateUser CCN ANTIGUA: "+pUserSnapshot.getPhone().getCcn() );
-            Log.i(TAG1,"UpdateUser CCN NUEVA: "+ pUser.getPhone().getCcn());
+            Log.i(TAG, "UpdateUser CCN ANTIGUA: " + pUserSnapshot.getPhone().getCcn());
+            Log.i(TAG, "UpdateUser CCN NUEVA: " + pUser.getPhone().getCcn());
             userToUpdate.getPhone().setCcn(pUser.getPhone().getCcn());
         }
         if (!Objects.equals(pUser.getType(), pUserSnapshot.getType())) {
-            Log.i(TAG1, "UpdateUser TIPO ANTIGUA: "+pUserSnapshot.getType() );
-            Log.i(TAG1,"UpdateUser TIPO NUEVA: "+ pUser.getType());
+            Log.i(TAG, "UpdateUser TIPO ANTIGUA: " + pUserSnapshot.getType());
+            Log.i(TAG, "UpdateUser TIPO NUEVA: " + pUser.getType());
             userToUpdate.setType(pUser.getType());
         }
         if (!Objects.equals(pUser.getSpecialization(), pUserSnapshot.getSpecialization())) {
-            Log.i("WhoDo-Log ", "UpdateUser ESPECIALIZACION ANTIGUA: "+pUserSnapshot.getSpecialization() );
-            Log.i(TAG1,"UpdateUser ESPECIALIZACION NUEVA: "+ pUser.getSpecialization());
+            Log.i("WhoDo-Log ", "UpdateUser ESPECIALIZACION ANTIGUA: " + pUserSnapshot.getSpecialization());
+            Log.i(TAG, "UpdateUser ESPECIALIZACION NUEVA: " + pUser.getSpecialization());
             userToUpdate.setSpecialization(pUser.getSpecialization());
         }
         if (!Objects.equals(pUser.getProfilePicture(), pUserSnapshot.getProfilePicture())) {
-            Log.i(TAG1,"UpdateUser IMAGEN ANTIGUA: "+pUserSnapshot.getProfilePicture() );
-            Log.i(TAG1,"UpdateUser IMAGEN NUEVA: "+ pUser.getProfilePicture());
+            Log.i(TAG, "UpdateUser IMAGEN ANTIGUA: " + pUserSnapshot.getProfilePicture());
+            Log.i(TAG, "UpdateUser IMAGEN NUEVA: " + pUser.getProfilePicture());
             userToUpdate.setProfilePicture(pUser.getProfilePicture());
         }
+        Log.i(TAG, "UpdateUser : " + userToUpdate.toString());
+
         mUserDao.update(UserMapper.toDTO(userToUpdate));
     }
 
@@ -281,22 +333,106 @@ public class MainActivityViewModel extends ViewModel {
     public void createWorkOrder(WorkOrder pWorkOrder) {
         mWorkOrderDao.create(WorkOrderMapper.toDto(pWorkOrder), new Callback<WorkOrderDTO>() {
             @Override
-            public void onSuccess(WorkOrderDTO workOrderDTO) {}
+            public void onSuccess(WorkOrderDTO workOrderDTO) {
+            }
+
             @Override
             public void onError(Exception e) {
             }
         });
     }
+
     public void updateWorkOrder(WorkOrder pWorkOrder) {
         mWorkOrderDao.update(WorkOrderMapper.toDto(pWorkOrder), new Callback<WorkOrderDTO>() {
             @Override
-            public void onSuccess(WorkOrderDTO workOrderDTO) {}
+            public void onSuccess(WorkOrderDTO workOrderDTO) {
+            }
+
             @Override
             public void onError(Exception e) {
             }
         });
     }
-    public LiveData<List<WorkOrder>> getWorkOrder () {return mWorkOrders;}
-    public void setPickedWorkOrder(WorkOrder pPickedWorkOrder){ mPickedWorkOrder.setValue(pPickedWorkOrder); }
-    public LiveData<WorkOrder> getPickedWorkOrder(){ return mPickedWorkOrder; }
+
+    public LiveData<List<WorkOrder>> getWorkOrder() {
+        return mWorkOrders;
+    }
+
+    public void setPickedWorkOrder(WorkOrder pPickedWorkOrder) {
+        mPickedWorkOrder.setValue(pPickedWorkOrder);
+    }
+
+    public LiveData<WorkOrder> getPickedWorkOrder() {
+        return mPickedWorkOrder;
+    }
+    //HANDLING WORKORDERS
+
+    private void LoadUserInfo(User pUser){
+        mUserDao.findUser(UserMapper.toDTO(pUser)).observeForever(userDto -> {
+            if (userDto != null) {
+                User user = UserMapper.toEntity(userDto);
+                mUser.setValue(user);
+                mSnapshotUser = user;
+                Log.i(TAG, "mUser: " + Objects.requireNonNull(mUser.getValue()).toString());
+                Log.i(TAG, "mSnapshotUser: " + mSnapshotUser.toString());
+
+                //*************************** PROVIDERS ***************************//
+                //LoadUserProviders();
+                //*************************** PROVIDERS ***************************//
+
+                //*************************** WORKORDERS ***************************//
+                //LoadUserWorkOrders(user);
+                //*************************** WORKORDERS ***************************//
+            }
+        });
+    }
+    
+    private void LoadUserWorkOrders(User pUser){
+        WorkOrder mWorkOrder = new WorkOrder();
+        mWorkOrder.setCustomerId(pUser.getId());
+        mWorkOrder.setProviderId(pUser.getId());
+        mWorkOrderDao.find(WorkOrderMapper.toDto(mWorkOrder)).observeForever(workOrderDTOList -> {
+            if (workOrderDTOList != null) {
+                List<WorkOrder> AuxWorkOrderList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
+
+                for (WorkOrderDTO workOrderDTO : workOrderDTOList) {
+                    WorkOrder workOrder = WorkOrderMapper.toEntity(workOrderDTO); // Mapear UserDTO a User
+                    AuxWorkOrderList.add(workOrder); // Agregar el objeto User a la lista
+                }
+                mWorkOrders.setValue(AuxWorkOrderList);
+                Log.d(TAG, "WorkOrderObserver --> a cambiado el dataset ");
+
+                if (mWorkOrders.isInitialized() && mPickedWorkOrder.isInitialized()) {
+                    for (WorkOrder pWorkOrder : Objects.requireNonNull(mWorkOrders.getValue())) {
+                        if (mPickedWorkOrder.getValue() != null && Objects.equals(mPickedWorkOrder.getValue().getOrderId(), pWorkOrder.getOrderId())) {
+                            mPickedWorkOrder.setValue(pWorkOrder);
+                        }
+                    }
+                }
+
+            }
+        });
+    }
+    
+    private void LoadUserProviders(){
+        mUserDao.findProviders(UserMapper.toDTO(mSnapshotUser), new Callback<List<UserDTO>>() {
+            @Override
+            public void onSuccess(List<UserDTO> userDTOList) {
+                if (userDTOList != null) {
+                    List<User> AuxUserList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
+
+                    for (UserDTO userDTO : userDTOList) {
+                        User user = UserMapper.toEntity(userDTO); // Mapear UserDTO a User
+                        AuxUserList.add(user); // Agregar el objeto User a la lista
+                    }
+                    mProviders.setValue(AuxUserList);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+        });
+    }
+    
 }

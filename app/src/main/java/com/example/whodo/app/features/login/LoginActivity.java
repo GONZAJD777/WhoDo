@@ -1,15 +1,23 @@
 package com.example.whodo.app.features.login;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.whodo.R;
 import com.example.whodo.app.MainActivity;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.appupdate.AppUpdateOptions;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -31,8 +39,6 @@ public class LoginActivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.hide();
 
-
-
         ViewPager2=findViewById(R.id.Login_view_pager);
         TabLayout=findViewById(R.id.Login_TabLayout);
         ViewPager2.setUserInputEnabled(false);
@@ -46,20 +52,13 @@ public class LoginActivity extends AppCompatActivity {
         checkLoggedUser ();
 
     }
-    private void checkLoggedUser ()
-    {
 
-
+    private void checkLoggedUser (){
         if(currentUser != null){
-            currentUser.getEmail();
             Intent intent = new Intent(this, MainActivity.class);
-            //Bundle b = new Bundle();
-            //b.putString("LoggedUser_Email",currentUser.getEmail());
-            //b.putString("LoggedUser_Uid",currentUser.getUid());
-            //intent.putExtras(b); //Put your id to your next Intent
             this.startActivity(intent);
             this.finish();
-            Toast.makeText(this, "You are logged with: "+currentUser.getEmail(),Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "You are logged with: " + currentUser.getEmail(),Toast.LENGTH_LONG).show();
         }
         else
         {

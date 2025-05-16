@@ -50,8 +50,7 @@ public class RegisterUserFragment extends Fragment {
     private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
     private FirebaseUser currentUser;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         // messagesViewModel= new ViewModelProvider(this).get(MessagesViewModel.class);
         View root= inflater.inflate(R.layout.act_login_frag_register_user, container, false);
 
@@ -102,9 +101,26 @@ public class RegisterUserFragment extends Fragment {
 
         return root;
     }
+    private void sendVerificationEmail(){
+        currentUser= mAuth.getCurrentUser();
+        assert currentUser != null;
+        mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(requireContext(), "Authentication Success. Please verify your Email",Toast.LENGTH_SHORT).show();
+                            }
+                        else
+                        {
+                            // email not sent, so display message and restart the activity or do whatever you wish to do
+                            Toast.makeText(getContext(), "We could not send you validation email, please try again using a valid email address", Toast.LENGTH_LONG).show();
+                            currentUser.delete();
+                        }
+                    }
+                });
+    }
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view)  {
-
         switch (view.getId()) {
 
             case R.id.SignUpShowHideButton:
@@ -140,18 +156,18 @@ public class RegisterUserFragment extends Fragment {
 
                 if (!MailSimpleEditText.getText().toString().equals("") && lengthValidationCheckBox.isChecked() && lowerUpperCaseCheckBox.isChecked() && symbolCaseCheckBox.isChecked() && agreementCheckbox.isChecked())
                 {
-                        mAuth.createUserWithEmailAndPassword(MailSimpleEditText.getText().toString(),ClaveSimpleEditText.getText().toString()).addOnCompleteListener( new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        sendVerificationEmail();
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                        Toast.makeText(requireContext(), "Authentication failed.",Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                    mAuth.createUserWithEmailAndPassword(MailSimpleEditText.getText().toString(),ClaveSimpleEditText.getText().toString()).addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                sendVerificationEmail();
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                Toast.makeText(requireContext(), "Authentication failed.",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
 
                 }
                 else
@@ -196,80 +212,25 @@ public class RegisterUserFragment extends Fragment {
 
 
     }
-
     private static boolean hasSymbol(CharSequence data) {
         String password = String.valueOf(data);
         //Log.i("Checkbox", "Clave introducida:"+ password +"|");
         //Log.i("Checkbox", "Validacion num y symbol:"+ password.matches(".*[!@#$%^&*+=?\\-].*") +"|");
         return password.matches(".*[!@#$%^&*+=?\\-].*");
     }
-
-
     private static boolean hasNumbers(CharSequence data) {
         String password = String.valueOf(data);
         //Log.i("Checkbox", "Clave introducida:"+ password +"|");
         //Log.i("Checkbox", "Validacion num y symbol:"+ password.matches(".*[0-9].*") +"|");
         return password.matches(".*[0-9].*");
     }
-
     private static boolean hasUpperCase(CharSequence data) {
         String password = String.valueOf(data);
         return !password.equals(password.toLowerCase());
     }
-
     private static boolean hasLowerCase(CharSequence data) {
         String password = String.valueOf(data);
         return !password.equals(password.toUpperCase());
     }
-    private void sendVerificationEmail()
-    {
-        currentUser= mAuth.getCurrentUser();
-        assert currentUser != null;
-        currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-
-                            String Name=MailSimpleEditText.getText().toString().toUpperCase();
-                            String Email=MailSimpleEditText.getText().toString();
-                            String Password=ClaveSimpleEditText.getText().toString();
-                            String AuthId=currentUser.getUid();
-
-                            User DefaultUser = new User(AuthId,Name,Email,Password);
-                            DefaultUser.setCreateDate(Utils.creationDateParse(Objects.requireNonNull(mAuth.getCurrentUser().getMetadata()).getCreationTimestamp()));
-
-                            UserDao<UserDTO> userDao = new FirebaseUserDAO();
-                            userDao.create(UserMapper.toDTO(DefaultUser), new Callback<UserDTO>() {
-                                @Override
-                                public void onSuccess(UserDTO userDTO) {
-                                    //Luego de la creacion se procede a mostrar un mensaje, llamar a MainActivity y cerrar la actividad de logeo
-                                    Log.d(TAG, "createUserWithEmail:success ///// UID: " + DefaultUser.getAuthId());
-                                    Toast.makeText(requireContext(), "Authentication Success. Please verify your Email",Toast.LENGTH_SHORT).show();
-
-                                    // email sent
-                                    // after email is sent just logout the user and finish this activity
-                                    Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                                    requireActivity().startActivity(intent);
-                                    FirebaseAuth.getInstance().signOut();
-                                    requireActivity().finish();
-                                }
-                                @Override
-                                public void onError(Exception e) {
-                                    Toast.makeText(requireContext(), "Authentication Failed. Please verify your Email:" + e,Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-
-                        }
-                        else
-                        {
-                            // email not sent, so display message and restart the activity or do whatever you wish to do
-                            Toast.makeText(getContext(), "We could not send you validation email, please try again using a valid email address", Toast.LENGTH_LONG).show();
-                            currentUser.delete();
-                        }
-                    }
-                });
-    }
-
     }
 

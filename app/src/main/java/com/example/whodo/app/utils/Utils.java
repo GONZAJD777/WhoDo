@@ -1,6 +1,5 @@
 package com.example.whodo.app.utils;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,14 +33,16 @@ public class Utils {
         return fechaFormateada;
     }
 
-    public static Date creationDateParse(long timestamp) {
+    public static String creationDateParse(long timestamp) {
         ZonedDateTime zonedDateTime = Instant.ofEpochMilli(timestamp)
                 .atZone(ZoneId.systemDefault()); // Usa la zona horaria del sistema
-        return Date.from(zonedDateTime.toInstant()); // Convierte `ZonedDateTime` a `Date`
+
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"));
     }
 
 
-        public static String convertToUTC(String localDateTime) {
+
+    public static String convertToUTC(String localDateTime) {
         // Parsear la fecha local proporcionada en formato ISO 8601 con zona horaria
         ZonedDateTime fechaLocal = ZonedDateTime.parse(localDateTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
@@ -80,6 +81,7 @@ public class Utils {
         return Date.from(zonedDateTime.toInstant()); // Convertir a Date
     }
 
+    //Conviernte una fecha en formatos simples con hora separada a formato ISO
     //***********************************************************
     public static String getISOLocalDateFromString(String pDate, String pTime) {
         // Detectar el formato de la fecha ingresada
@@ -88,7 +90,10 @@ public class Utils {
             formatterEntrada = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         } else if (pDate.contains("/")) {
             formatterEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        } else {
+        } else if (pDate.length()==8) {
+            formatterEntrada = DateTimeFormatter.ofPattern("yyyyMMdd");
+        }
+        else {
             throw new IllegalArgumentException("Formato de fecha no reconocido: " + pDate);
         }
 
@@ -106,7 +111,14 @@ public class Utils {
         DateTimeFormatter formatterSalida = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         return fechaHoraZoned.format(formatterSalida);
     }
+    //Entada 2023-08-26T02:15:47-03:00 --> Salida 26/08/2023
+    public static String getDateFromISO(String pISODate) {
+        return OffsetDateTime.parse(pISODate, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
 
+
+    // Tranforma una ISODATE 2023-08-26T02:15:47-03:00  a un formato amigable
     public static String getISOtoDate(String pISODate) {
         // Cadena en formato ISO_OFFSET_DATE_TIME
         String isoDateTime = "2023-08-26T02:15:47-03:00";
@@ -124,6 +136,7 @@ public class Utils {
         return fechaAmigable;
     }
 
+    //Compara 2 fechas y devuelve la mas grande
     public static String getBiggerISODate(String mDate1, String mDate2){
             // Parsear las cadenas
             OffsetDateTime offsetDateTime1 = OffsetDateTime.parse(mDate1, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
@@ -141,7 +154,7 @@ public class Utils {
                 return mDate1;
             }
     }
-
+    //Compara 2 fechas isThisDate con AfterThisDate y devuelve true si es mayor
     public static Boolean isAfter(String isThisDate,String AfterThisDate){
         OffsetDateTime offsetDateTime1 = OffsetDateTime.parse(isThisDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         OffsetDateTime offsetDateTime2 = OffsetDateTime.parse(AfterThisDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);

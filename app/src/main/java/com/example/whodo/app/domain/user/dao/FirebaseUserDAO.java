@@ -65,7 +65,6 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
                     } catch (Exception e) {
                         Log.i(TAG1,  "Exception Mapping Snapshot to UserDTO: " + e);
                     }
-
                 }
             }
             @Override
@@ -144,9 +143,6 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
             updates.put("latitude", pUserDTO.getLocation().getLatitude());
             updates.put("longitude", pUserDTO.getLocation().getLongitude());
             updates.put("geohash",newGeoHash );
-        }
-        if (pUserDTO.getIsValidated() != null) {
-            updates.put("isValidated", pUserDTO.getIsValidated());
         }
         if (pUserDTO.getPassword() != null) {
             updates.put("password", pUserDTO.getPassword());
@@ -269,8 +265,6 @@ public class FirebaseUserDAO implements UserDao<UserDTO> {
         });
 
     }
-
-
 
     private void uploadProfileImage(UserDTO pUserDTO,OnSuccessListener<Uri> downloadUrlListener){
         StorageReference mImagesRef = mImageStorageRef.child("PROFILE-PICTURE/" + pUserDTO.getAuthId());

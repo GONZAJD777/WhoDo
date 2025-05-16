@@ -1,6 +1,5 @@
 package com.example.whodo.app.domain.workOrder;
 
-import com.google.android.gms.maps.model.LatLng;
 
 public class WorkOrderDTO {
 

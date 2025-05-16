@@ -373,16 +373,19 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private void loadUserData (User pUser) {
         mLoggedUser=pUser.deepCopy();
         if (mLoggedUser.getName()!=null) {
-        Picasso.get().load(mLoggedUser.getProfilePicture()).into(imagePicker);
-        LoggedUserImage = mLoggedUser.getProfilePicture();
-        setDescriptionText(mLoggedUser.getDescription(), getString(R.string.PersonalInfoFrag_Description1), item_Description);
-        DescriptionSimpleEditText.setText(mLoggedUser.getDescription());
-        setLocationText(mLoggedUser.getAddress(), new LatLng(mLoggedUser.getLocation().getLatitude(), mLoggedUser.getLocation().getLongitude()), getString(R.string.PersonalInfoFrag_Location1), item_Location);
-        LocationSimpleEditText.setText(mLoggedUser.getAddress());
-        //el pin se coloca en el metodo OnMapReady
-        LoggedUserLanguages = mLoggedUser.getLanguages().toString();
-        setLanguagesText(mLoggedUser.getLanguages().toString(), getString(R.string.PersonalInfoFrag_Languages1), item_Languages);
-        model.getLanguages().observe(requireActivity(), this::loadLanguages);
+            Picasso.get().load(mLoggedUser.getProfilePicture()).into(imagePicker);
+            LoggedUserImage = mLoggedUser.getProfilePicture();
+            setDescriptionText(mLoggedUser.getDescription(), getString(R.string.PersonalInfoFrag_Description1), item_Description);
+            DescriptionSimpleEditText.setText(mLoggedUser.getDescription());
+            setLocationText(mLoggedUser.getAddress(), new LatLng(mLoggedUser.getLocation().getLatitude(), mLoggedUser.getLocation().getLongitude()), getString(R.string.PersonalInfoFrag_Location1), item_Location);
+            LocationSimpleEditText.setText(mLoggedUser.getAddress());
+            //el pin se coloca en el metodo OnMapReady
+            String languages = (mLoggedUser != null && mLoggedUser.getLanguages() != null) ? String.join(", ", mLoggedUser.getLanguages()): "";
+            LoggedUserLanguages = languages;
+            Log.i(TAG, "LoggedUserLanguages -->" + LoggedUserLanguages );
+            setLanguagesText(languages, getString(R.string.PersonalInfoFrag_Languages1), item_Languages);
+
+            model.getLanguages().observe(requireActivity(), this::loadLanguages);
         }
     }
 
@@ -430,30 +433,32 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         //model.setFragmentVisibility(View.VISIBLE);
         model.setSelectedFragment(4,View.VISIBLE);
     }
-    private void setDescriptionText(String text1,String text2,ProfileItem ProfileItem1){
-        if (text1.trim().length() != 0 ) {
-            ProfileItem1.setText(text1);
-            LoggedUserDescription=text1;
-        }
-        else
-        {
-            ProfileItem1.setText(text2);
-            LoggedUserDescription="";
+    private void setDescriptionText(String text1, String text2, ProfileItem profileItem) {
+        // Si text1 no es nulo y su contenido no es vacío, se lo usa.
+        if (text1 != null && !text1.trim().isEmpty()) {
+            profileItem.setText(text1);
+            LoggedUserDescription = text1;
+        } else {
+            // Si text1 es nulo o vacío, se utiliza text2, siempre chequeando que text2 no sea null.
+            profileItem.setText(text2 != null ? text2 : "");
+            LoggedUserDescription = "";
         }
     }
-    private void setLocationText(String text1,LatLng latLng ,String text3 ,ProfileItem ProfileItem1){
-        if ( text1.trim().length() != 0 && latLng != null ) {
-            ProfileItem1.setText(text1 + "\n Lat:"+latLng.latitude +"\n Lon:"+latLng.longitude );
-            LoggedUserAddress=text1;
-            LoggedUserLocationLat=latLng.latitude;
-            LoggedUserLocationLon=latLng.longitude;
-        }
-        else
-        {
-            ProfileItem1.setText(text3);
-            LoggedUserAddress="";
-            LoggedUserLocationLat=0;
-            LoggedUserLocationLon=0;
+    private void setLocationText(String text1, LatLng latLng, String text3, ProfileItem profileItem) {
+        // Verificamos que text1 no sea nulo, que no esté vacío y además que latLng no sea nulo.
+        if (text1 != null && !text1.trim().isEmpty() && latLng != null) {
+            profileItem.setText(text1
+                    + "\n Lat:" + latLng.latitude
+                    + "\n Lon:" + latLng.longitude);
+            LoggedUserAddress = text1;
+            LoggedUserLocationLat = latLng.latitude;
+            LoggedUserLocationLon = latLng.longitude;
+        } else {
+            // Si text1 es nulo o vacío o latLng es nulo, se utiliza text3 o cadena vacía si text3 es nulo
+            profileItem.setText(text3 != null ? text3 : "");
+            LoggedUserAddress = "";
+            LoggedUserLocationLat = 0;
+            LoggedUserLocationLon = 0;
         }
     }
     private void setLanguagesText(String text1,String text2,ProfileItem ProfileItem1){

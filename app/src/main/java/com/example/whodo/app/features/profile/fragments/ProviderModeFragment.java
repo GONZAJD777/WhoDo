@@ -111,8 +111,9 @@ public class ProviderModeFragment extends Fragment {
         if(mLoggedUser.getName()!=null) {
             mProfileSwitchItem.setSwitchState(!Objects.equals(mLoggedUser.getType(), "1"));
             model.getServices().observe(requireActivity(),this::loadServicesCheckBox);
-            LoggedUserSpecialization = mLoggedUser.getSpecialization().toString();
-            setSpecializationText(mLoggedUser.getSpecialization().toString(), getString(R.string.ProviderModeFrag_Specialization_Tittle), item_Specialization);
+            String specialization = (mLoggedUser != null && mLoggedUser.getSpecialization() != null) ? mLoggedUser.getSpecialization().toString() : "";
+            LoggedUserSpecialization = specialization;
+            setSpecializationText(specialization, getString(R.string.ProviderModeFrag_Specialization_Tittle), item_Specialization);
         }
     }
 

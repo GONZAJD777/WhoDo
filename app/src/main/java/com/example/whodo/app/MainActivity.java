@@ -6,7 +6,14 @@ import com.example.whodo.R;
 import com.example.whodo.app.resources.images.ImageManager;
 import com.example.whodo.app.resources.images.ImagesViewModel;
 import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.appupdate.AppUpdateOptions;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -29,12 +36,10 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
 
-
-        FirebaseUserDAO FirebaseUserDao = new FirebaseUserDAO(); // Asegúrate de implementar esto
-
+        checkGooglePlayVersion();
 
 
-        mMainActivityViewModel = new ViewModelProvider(this,factory).get(MainActivityViewModel.class);
+        mMainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
         mMainActivityViewModel.getSelectedFragment().observe(this,this::setSelectedFragment);
         mMainActivityViewModel.getTabLayoutVisibility().observe(this,this::setTabLayoutVisibility);
         mMainActivityViewModel.getSelectedTab().observe(this,this::setSelectedTab);
@@ -101,6 +106,20 @@ public class MainActivity extends AppCompatActivity  {
             mFragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             mFragmentTransaction.commit();
         }
+    private void checkGooglePlayVersion(){
+        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                appUpdateManager.startUpdateFlow(
+                        appUpdateInfo,
+                        this, // La actividad actual
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                );
+            }
+        });
+    }
 }
 
 

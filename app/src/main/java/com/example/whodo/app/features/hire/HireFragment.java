@@ -533,10 +533,10 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
             OverallScore.setRating(Float.parseFloat((PickedUser.getUserScore().getOverallScore()).substring(0, 3)));
             //OverallScore.setRightTextView(PickedUser.getUserScore().getOverallScore());
-            SpeedScore.setRating((float)PickedUser.getUserScore().getSpeedScore());
-            QualityScore.setRating((float)PickedUser.getUserScore().getQualityScore());
-            AppereanceScore.setRating((float)PickedUser.getUserScore().getAppearanceScore());
-            CleanlinessScore.setRating((float) PickedUser.getUserScore().getCleanlinessScore());
+            SpeedScore.setRating(PickedUser.getUserScore().getSpeedScore().floatValue());
+            QualityScore.setRating(PickedUser.getUserScore().getQualityScore().floatValue());
+            AppereanceScore.setRating(PickedUser.getUserScore().getAppearanceScore().floatValue());
+            CleanlinessScore.setRating(PickedUser.getUserScore().getCleanlinessScore().floatValue());
 
         } catch (Exception e)
         {

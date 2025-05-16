@@ -8,6 +8,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.whodo.app.Callback;
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.features.profile.ProfileItem;
 import com.example.whodo.app.uiClasses.CustomDatePicker;
@@ -41,16 +43,21 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Objects;
 
 public class PersonalInfoFragment extends Fragment {
+    private String TAG = "PERSONAL-INFO-FRAG";
     private String LoggedUserName;
     private String LoggedUserPhoneNumber;
     private String LoggedUserCCN;
     private String LoggedUserEmail;
+    private String LoggedUserBirthday;
     private ProfileItem item_UserName;
     private ProfileItem item_PhoneNumber;
     private ProfileItem item_Email;
+    private ProfileItem item_Birthday;
     private EditText UserNameSimpleEditText;
     private EditText PhoneNumberSimpleEditText;
     private EditText CredentialsEmailSimpleEditText;
@@ -61,13 +68,13 @@ public class PersonalInfoFragment extends Fragment {
     private BottomSheetBehavior<LinearLayout> PhoneBottomSheetBehavior;
     private BottomSheetBehavior<LinearLayout> EmailBottomSheetBehavior;
     private Spinner countryCodeSpinner;
-    private CustomDatePicker BirthdayCalendar;
     private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
     private final FirebaseUser currentUser=mAuth.getCurrentUser();
     private MainActivityViewModel model;
     private User mLoggedUser;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
 
         View root = inflater.inflate(R.layout.act_profile_frag_personal_info, container, false);
 
@@ -281,8 +288,27 @@ public class PersonalInfoFragment extends Fragment {
         label_Birthday.setText(getString(R.string.PersonalInfoFrag_Birthday));
         label_Birthday.setPadding(85, 85, 0, 0);
         //----------------------------------------------------------
-        BirthdayCalendar = new CustomDatePicker(getContext());
-        BirthdayCalendar.setPadding(85, 85, 85, 85);
+        item_Birthday = new ProfileItem(getContext());
+        item_Birthday.setText(getString(R.string.PersonalInfoFrag_Birthday));
+        item_Birthday.setImage(R.drawable.email_addresss_48);
+        item_Birthday.setOnClickListener(v -> {
+            showDatePickerDialog(new Callback<String>() {
+                                     @Override
+                                     public void onSuccess(String s) {
+
+                                         LoggedUserBirthday=s;
+                                         item_Birthday.setText(s);
+                                     }
+
+                                     @Override
+                                     public void onError(Exception e) {
+
+                                     }
+                                 },"Fecha de Nacimiento",null,null);
+            Toast.makeText(getContext(), "Presionaste: " + getString(R.string.PersonalInfoFrag_Location), Toast.LENGTH_LONG).show();
+        });
+        //BirthdayCalendar = new CustomDatePicker(getContext());
+        //BirthdayCalendar.setPadding(85, 85, 85, 85);
         //----------------------------------------------------------
 
         linearLayout.addView(label_UserName);
@@ -292,7 +318,7 @@ public class PersonalInfoFragment extends Fragment {
         linearLayout.addView(label_Email);
         linearLayout.addView(item_Email);
         linearLayout.addView(label_Birthday);
-        linearLayout.addView(BirthdayCalendar);
+        linearLayout.addView(item_Birthday);
 
         FloatingActionButton SaveChangesButton = root.findViewById(R.id.SaveChangesButton);
         SaveChangesButton.setOnClickListener(v -> {
@@ -300,14 +326,34 @@ public class PersonalInfoFragment extends Fragment {
             saveUserData();
         });
 
+        model.getLoggedUser().observe(requireActivity(),this::loadUserData);
+
         return root;
     }
 
+    private void showDatePickerDialog(Callback<String> pCallback, String pTitle, Integer pMinDaysAvailable , Integer pMaxDaysAvailable ) {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-    public void onStart() {
-        super.onStart();
-        model.getLoggedUser().observe(requireActivity(),this::loadUserData);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year1, month1, dayOfMonth) -> {
+            // Formatear la fecha seleccionada y mostrarla en el EditText
+            String fechaSeleccionada = String.format(Locale.ROOT, "%02d/%02d/%04d", dayOfMonth, month1 + 1, year1);
+            pCallback.onSuccess(fechaSeleccionada);},
+                year, month, day);
+        datePickerDialog.setTitle(pTitle);
+        if (pMinDaysAvailable!=null){
+            datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() + (86400L *1000*pMinDaysAvailable-1000));
+
+        }
+        if (pMaxDaysAvailable!=null){
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() + (86400L *1000*pMaxDaysAvailable-1000));
+        }
+
+        datePickerDialog.show();
     }
+
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {
         switch (view.getId()) {
@@ -415,10 +461,11 @@ public class PersonalInfoFragment extends Fragment {
                 countryCodeSpinner.setSelection(setCCNIndex());
                 setUserEmailText(mLoggedUser.getEmail(), getString(R.string.PersonalInfoFrag_Email1), item_Email);
                 EmailSimpleEditText.setText(mLoggedUser.getEmail());
-                String YEAR = String.valueOf(mLoggedUser.getBirthday()).substring(0, 4);
-                String MONTH = String.valueOf(mLoggedUser.getBirthday()).substring(4, 6);
-                String DAY = String.valueOf(mLoggedUser.getBirthday()).substring(6, 8);
-                BirthdayCalendar.updateDate(Integer.parseInt(YEAR), Integer.parseInt(MONTH) - 1, Integer.parseInt(DAY));
+                if (mLoggedUser.getBirthday() != null){
+                LoggedUserBirthday=Utils.getDateFromISO(mLoggedUser.getBirthday());
+                item_Birthday.setText(Utils.getDateFromISO(mLoggedUser.getBirthday()));
+                }
+
             }
     }
     private void saveUserData (){
@@ -430,29 +477,13 @@ public class PersonalInfoFragment extends Fragment {
         mLoggedUser.getPhone().setNumber(LoggedUserPhoneNumber);
         mLoggedUser.getPhone().setCcn(LoggedUserCCN);
         mLoggedUser.setEmail(LoggedUserEmail);
-        mLoggedUser.setBirthday(Utils.parseISODate(Utils.getISOLocalDateFromString(SetBirthday(),"00:00:00")));
+        Log.i(TAG, "CustomDate: " + Utils.getISOLocalDateFromString(LoggedUserBirthday,"00:00:00"));
+        mLoggedUser.setBirthday(Utils.getISOLocalDateFromString(LoggedUserBirthday,"00:00:00"));
         model.updateLoggedUser(mLoggedUser);
         //model.TabLayoutVisibility(View.VISIBLE);
         model.setSelectedFragment(4,View.VISIBLE);
     }
-    private String SetBirthday (){
-        String CustomDate;
-        String MONTH;
-        String DAY;
-        if (BirthdayCalendar.getDayOfMonth() <10){
-            DAY = "0"+BirthdayCalendar.getDayOfMonth();
-        } else {
-            DAY = BirthdayCalendar.getDayOfMonth()+"";
-        }
-        if ((BirthdayCalendar.getMonth() + 1) <10) {
-            MONTH = "0"+(BirthdayCalendar.getMonth()+1);
-        } else {
-            MONTH = (BirthdayCalendar.getMonth()+1)+"";
-        }
-        CustomDate = BirthdayCalendar.getYear() + MONTH + DAY + "";
-        Log.i("CustomDate", "CustomDate: " + CustomDate);
-        return CustomDate;
-    }
+
     private int setCCNIndex(){
         int index=0;
         for(int i = 0; i< countryCodeSpinner.getCount(); i++) {
@@ -486,7 +517,7 @@ public class PersonalInfoFragment extends Fragment {
         }
     }
     private void setUserPhoneNumber(String NIM,String CCN,String EmptyString, ProfileItem MenuItem){
-        if ( NIM.trim().length() != 0 && !Objects.equals(CCN, "-")) {
+        if (NIM != null && CCN != null && NIM.trim().length() != 0 && !Objects.equals(CCN, "-")) {
            LoggedUserPhoneNumber = NIM;
            LoggedUserCCN=CCN;
            MenuItem.setText(CCN+" "+NIM);

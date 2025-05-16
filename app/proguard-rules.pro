@@ -19,3 +19,17 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Mantener la clase User sin cambios
+-keep class com.example.whodo.app.domain.user.User { *; }
+
+# Mantener la clase UserDTO sin cambios
+-keep class com.example.whodo.app.domain.user.UserDTO { *; }
+
+# Mantener todas las clases del paquete DTO
+-keep class com.example.whodo.app.domain.user.** { *; }
+
+# Evitar problemas con Gson y Retrofit
+-keepattributes Signature
+-keep class com.google.gson.** { *; }
+-keep class com.squareup.retrofit2.** { *; }
