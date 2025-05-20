@@ -469,6 +469,7 @@ public class PersonalInfoFragment extends Fragment {
             }
     }
     private void saveUserData (){
+    try {
         model.getLoggedUser().removeObservers(requireActivity());
         model.getLanguages().removeObservers(requireActivity());
         model.getServices().removeObservers(requireActivity());
@@ -477,11 +478,19 @@ public class PersonalInfoFragment extends Fragment {
         mLoggedUser.getPhone().setNumber(LoggedUserPhoneNumber);
         mLoggedUser.getPhone().setCcn(LoggedUserCCN);
         mLoggedUser.setEmail(LoggedUserEmail);
-        Log.i(TAG, "CustomDate: " + Utils.getISOLocalDateFromString(LoggedUserBirthday,"00:00:00"));
-        mLoggedUser.setBirthday(Utils.getISOLocalDateFromString(LoggedUserBirthday,"00:00:00"));
+        if(LoggedUserBirthday!=null){
+            Log.i(TAG, "CustomDate: " + Utils.getISOLocalDateFromString(LoggedUserBirthday,"00:00:00"));
+            mLoggedUser.setBirthday(Utils.getISOLocalDateFromString(LoggedUserBirthday,"00:00:00"));
+        }else {
+            mLoggedUser.setBirthday(null);
+        }
         model.updateLoggedUser(mLoggedUser);
         //model.TabLayoutVisibility(View.VISIBLE);
         model.setSelectedFragment(4,View.VISIBLE);
+    } catch (Exception e) {
+        Log.i(TAG, "Error en saveUserData: " + e);
+    }
+
     }
 
     private int setCCNIndex(){

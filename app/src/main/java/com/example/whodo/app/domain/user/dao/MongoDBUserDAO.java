@@ -1,5 +1,6 @@
 package com.example.whodo.app.domain.user.dao;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -8,7 +9,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.whodo.BuildConfig;
 import com.example.whodo.app.Callback;
+import com.example.whodo.app.domain.user.UserApiRestRequestDTO;
 import com.example.whodo.app.domain.user.UserDTO;
+import com.example.whodo.app.domain.user.UserMapper;
 import com.example.whodo.app.network.reactive.SSELoggedUserClient;
 import com.example.whodo.app.network.rest.RetrofitClient;
 import com.example.whodo.app.network.rest.api.UserApi;
@@ -40,10 +43,10 @@ public class MongoDBUserDAO implements UserDao<UserDTO>{
 
 
 
-    public MongoDBUserDAO() {
+    public MongoDBUserDAO(Context pContext) {
         Log.d(TAG, "mBaseUrl -->" + mBaseUrl);
 
-        RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl);
+        RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl,pContext.getApplicationContext());
         this.mUserApi = retrofitClient.createService(UserApi.class);
     }
 
@@ -66,9 +69,10 @@ public class MongoDBUserDAO implements UserDao<UserDTO>{
     }
 
     @Override
-    public void create(UserDTO userDTO, Callback<UserDTO> callback) {
-        Call<UserDTO> call = mUserApi.createUser(userDTO);
-        Log.d(TAG, "Endpoint Requested -->" + mUserApi.createUser(userDTO).request().url());
+    public void create(UserDTO pUserDTO, Callback<UserDTO> callback) {
+        UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiResponseDTO(pUserDTO);
+        Call<UserDTO> call = mUserApi.createUser(mUserApiRestRequestDTO);
+        Log.d(TAG, "Endpoint Requested -->" + mUserApi.createUser(mUserApiRestRequestDTO).request().url());
 
         call.enqueue(new retrofit2.Callback<>() {
             @Override
@@ -87,23 +91,48 @@ public class MongoDBUserDAO implements UserDao<UserDTO>{
     }
 
     @Override
-    public void update(UserDTO userDTO) {
-        Map<String, Object> updates = buildUpdate(userDTO);
-        if (!updates.isEmpty()){
-            Call<UserDTO> call = mUserApi.updateUser(userDTO);
-            Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateUser(userDTO).request().url());
-            Log.d(TAG, "Update -->" + updates);
-            call.enqueue(new retrofit2.Callback<>() {
-                @Override
-                public void onResponse(@NonNull Call<UserDTO> call, @NonNull Response<UserDTO> response) {
+    public void update(UserDTO pUserDTO) {
 
-                }
-                @Override
-                public void onFailure(@NonNull Call<UserDTO> call, @NonNull Throwable t) {
-                    Log.d(TAG, "mUserApi.updateUser() - OnFailure --> " + new Exception(t));
-                }
-            });
-        }else {
+        if (!validateUpdate(pUserDTO).isEmpty()){
+            if (pUserDTO.getProfilePicture() != null) {
+                OnSuccessListener<Uri> downloadUrlListener = uri -> {
+                    String profilePictureUri = uri.toString();
+                    pUserDTO.setProfilePicture(profilePictureUri);
+
+                    UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiResponseDTO(pUserDTO);
+                    Call<UserDTO> call = mUserApi.updateUser(mUserApiRestRequestDTO);
+                    Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateUser(mUserApiRestRequestDTO).request().url());
+                    Log.d(TAG, "Update -->" + pUserDTO);
+                    call.enqueue(new retrofit2.Callback<>() {
+                        @Override
+                        public void onResponse(@NonNull Call<UserDTO> call, @NonNull Response<UserDTO> response) {
+
+                        }
+                        @Override
+                        public void onFailure(@NonNull Call<UserDTO> call, @NonNull Throwable t) {
+                            Log.d(TAG, "mUserApi.updateUser() - OnFailure --> " + new Exception(t));
+                        }
+                    });
+
+                };
+                uploadProfileImage(pUserDTO, downloadUrlListener);
+            } else {
+                UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiResponseDTO(pUserDTO);
+                Call<UserDTO> call = mUserApi.updateUser(mUserApiRestRequestDTO);
+                Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateUser(mUserApiRestRequestDTO).request().url());
+                Log.d(TAG, "Update -->" + pUserDTO);
+                call.enqueue(new retrofit2.Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<UserDTO> call, @NonNull Response<UserDTO> response) {
+
+                    }
+                    @Override
+                    public void onFailure(@NonNull Call<UserDTO> call, @NonNull Throwable t) {
+                        Log.d(TAG, "mUserApi.updateUser() - OnFailure --> " + new Exception(t));
+                    }
+                });
+            }
+        } else {
             Log.d(TAG, "Update Canceled --> Nothing to Update" );
         }
     }
@@ -121,13 +150,11 @@ public class MongoDBUserDAO implements UserDao<UserDTO>{
 
     }
 
-    private Map<String, Object> buildUpdate(UserDTO pUserDTO){
-
+    private Map<String, Object> validateUpdate(UserDTO pUserDTO){
         if (pUserDTO == null) {
             Log.e(TAG, "buildUpdate: UserDTO es null");
             return new HashMap<>();
         }
-
         // Agregar chequeos para props compuestas:
         if (pUserDTO.getLocation() == null) {
             Log.e(TAG, "buildUpdate: Location es null");
@@ -135,7 +162,6 @@ public class MongoDBUserDAO implements UserDao<UserDTO>{
         if (pUserDTO.getPhone() == null) {
             Log.e(TAG, "buildUpdate: Phone es null");
         }
-
 
         Map<String, Object> updates = new HashMap<>();
 
@@ -167,7 +193,6 @@ public class MongoDBUserDAO implements UserDao<UserDTO>{
                 updates.put("geohash", newGeoHash);
             }
         }
-
         if (pUserDTO.getPassword() != null) {
             updates.put("password", pUserDTO.getPassword());
         }
@@ -179,22 +204,18 @@ public class MongoDBUserDAO implements UserDao<UserDTO>{
                 updates.put("ccn", pUserDTO.getPhone().getCcn());
             }
         }
-
         if (pUserDTO.getType() != null) {
             updates.put("type", pUserDTO.getType());
         }
         if (pUserDTO.getSpecialization() != null) {}
+
         if (pUserDTO.getProfilePicture() != null) {
-            OnSuccessListener<Uri> downloadUrlListener = uri -> {
-                String profilePictureUri = uri.toString();
-                updates.put("profilePicture", profilePictureUri);
-            };
-            uploadProfileImage(pUserDTO, downloadUrlListener);
+            updates.put("profilePicture", pUserDTO.getProfilePicture());
         }
         return updates;
     }
     private void uploadProfileImage(UserDTO pUserDTO, OnSuccessListener<Uri> downloadUrlListener){
-        StorageReference mImagesRef = mImageStorageRef.child("PROFILE-PICTURE/" + pUserDTO.getAuthId());
+        StorageReference mImagesRef = mImageStorageRef.child("PROFILE-PICTURE/" + pUserDTO.getId());
         Uri mUri = Uri.parse(pUserDTO.getProfilePicture());
         UploadTask mUploadTask = mImagesRef.putFile(mUri);
         mUploadTask.addOnFailureListener(new OnFailureListener() {

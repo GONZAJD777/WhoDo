@@ -1,6 +1,8 @@
 package com.example.whodo.app.domain.workOrder.dao;
 
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -17,8 +19,8 @@ public class MongoDBWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
     private final WorkOrderApi mWorkOrderApi;
     private final String mBaseUrl= BuildConfig.BASE_URL;
 
-    public MongoDBWorkOrderDAO() {
-        RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl);
+    public MongoDBWorkOrderDAO(Context pContext) {
+        RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl,pContext);
         this.mWorkOrderApi = retrofitClient.createService(WorkOrderApi.class);
 
     }

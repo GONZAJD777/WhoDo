@@ -168,6 +168,8 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
 
         mapView = root.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
+
         getLocationPermission();
         MaxDistanceFilterLabel = root.findViewById(R.id.MaxDistanceFilterLabel);
         //MaxDistanceFilterLabel.setText("10km");
@@ -616,32 +618,55 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         }
     }
     private void setMapConfig(GoogleMap pGoogleMap){
-        View googleLogo = mapView.findViewWithTag("GoogleWatermark");
-        RelativeLayout.LayoutParams glLayoutParams = (RelativeLayout.LayoutParams)googleLogo.getLayoutParams();
-        glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-        glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_START, 0);
-        glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-        glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_END,0 );
-        googleLogo.setLayoutParams(glLayoutParams);
 
-        View MapButtons = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("4"));
-        RelativeLayout.LayoutParams glLayoutParamsMapbuttons = (RelativeLayout.LayoutParams)MapButtons.getLayoutParams();
-        glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
-        glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
-        glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_START, 0);
-        glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_END,RelativeLayout.TRUE );
-        MapButtons.setLayoutParams(glLayoutParamsMapbuttons);
+        if (mapView != null) {
+            View googleLogo = mapView.findViewWithTag("GoogleWatermark");
+            if (googleLogo != null) {
+                RelativeLayout.LayoutParams glLayoutParams = (RelativeLayout.LayoutParams) googleLogo.getLayoutParams();
+                glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+                glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+                glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_START, 0);
+                glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+                glLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_END,0 );
+                googleLogo.setLayoutParams(glLayoutParams);
+            } else {
+                Log.e("HireFragment", "GoogleWatermark no encontrado");
+            }
+        } else {
+            Log.e("HireFragment", "mapView es nulo en setMapConfig");
+        }
 
-        View LocButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-        RelativeLayout.LayoutParams glLayoutParamsLocButton = (RelativeLayout.LayoutParams)LocButton.getLayoutParams();
-        glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
-        glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
-        glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
-        glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_END, 0);
-        LocButton.setLayoutParams(glLayoutParamsLocButton);
+        View mapButtonsParent = mapView.findViewById(Integer.parseInt("1"));
+        if (mapButtonsParent != null) {
+            View MapButtons = ((View) mapButtonsParent.getParent()).findViewById(Integer.parseInt("4"));
+            if (MapButtons != null) {
+                RelativeLayout.LayoutParams glLayoutParamsMapbuttons = (RelativeLayout.LayoutParams) MapButtons.getLayoutParams();
+                glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
+                glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+                glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_START, 0);
+                glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+                glLayoutParamsMapbuttons.addRule(RelativeLayout.ALIGN_PARENT_END,RelativeLayout.TRUE );
+                MapButtons.setLayoutParams(glLayoutParamsMapbuttons);
+            } else {
+                Log.e("HireFragment", "MapButtons no encontrado");
+            }
+
+            View LocButton = ((View) mapButtonsParent.getParent()).findViewById(Integer.parseInt("2"));
+            if (LocButton != null) {
+                RelativeLayout.LayoutParams glLayoutParamsLocButton = (RelativeLayout.LayoutParams)LocButton.getLayoutParams();
+                glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
+                glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+                glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+                glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+                glLayoutParamsLocButton.addRule(RelativeLayout.ALIGN_PARENT_END, 0);
+                LocButton.setLayoutParams(glLayoutParamsLocButton);
+            } else {
+                Log.e("HireFragment", "LocButton no encontrado");
+            }
+
+        } else {
+            Log.e("HireFragment", "mapButtonsParent es nulo");
+        }
 
         pGoogleMap.setPadding(50,30,0,0);
         pGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);

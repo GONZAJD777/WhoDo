@@ -87,7 +87,7 @@ public class ProviderModeFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setSpecializationText(LoggedUserSpecialization.toString(),getString(R.string.ProviderModeFrag_Specialization_Tittle),item_Specialization);
+                    setSpecializationText(LoggedUserSpecialization,getString(R.string.ProviderModeFrag_Specialization_Tittle),item_Specialization);
                     setBottomSheetBehavior(SpecializationBottomSheetBehavior, 1);
                 }
             });
@@ -111,9 +111,12 @@ public class ProviderModeFragment extends Fragment {
         if(mLoggedUser.getName()!=null) {
             mProfileSwitchItem.setSwitchState(!Objects.equals(mLoggedUser.getType(), "1"));
             model.getServices().observe(requireActivity(),this::loadServicesCheckBox);
-            String specialization = (mLoggedUser != null && mLoggedUser.getSpecialization() != null) ? mLoggedUser.getSpecialization().toString() : "";
+
+            String specialization = (mLoggedUser != null && mLoggedUser.getSpecialization() != null) ? String.join(",", mLoggedUser.getSpecialization()): "";
             LoggedUserSpecialization = specialization;
             setSpecializationText(specialization, getString(R.string.ProviderModeFrag_Specialization_Tittle), item_Specialization);
+            Log.i(TAG, "LoggedUserLanguages -->" + LoggedUserSpecialization );
+
         }
     }
 
@@ -203,7 +206,12 @@ public class ProviderModeFragment extends Fragment {
             LoggedUserType="1";
         }
         mLoggedUser.setType(Integer.valueOf(LoggedUserType));
-        mLoggedUser.setSpecialization(List.of(LoggedUserSpecialization));
+
+        if(!Objects.equals(LoggedUserSpecialization, "")){
+            mLoggedUser.setSpecialization(List.of(LoggedUserSpecialization));
+        }else {
+            mLoggedUser.setSpecialization(null);
+        }
 
         model.updateLoggedUser(mLoggedUser);
         //model.TabLayoutVisibility(View.VISIBLE);

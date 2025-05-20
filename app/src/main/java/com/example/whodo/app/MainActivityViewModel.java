@@ -1,9 +1,14 @@
 package com.example.whodo.app;
 
+import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -45,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivityViewModel extends ViewModel {
+public class MainActivityViewModel extends AndroidViewModel {
 
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String TAG = "MAIN-ACTIVITY-VIEWMODEL";
@@ -62,25 +67,25 @@ public class MainActivityViewModel extends ViewModel {
     private final MutableLiveData<Integer> mSeletedTab = new MutableLiveData<>();
     private final MutableLiveData<WorkOrder> mPickedWorkOrder = new MutableLiveData<>();
 
-    //private final SSEUserClient sseUserClient;
-    private final MongoDBUserDAO MongoDBUserDao = new MongoDBUserDAO();
-    private final FirebaseUserDAO FirebaseUserDao= new FirebaseUserDAO();
     private final FirebaseWorkOrderDAO FirebaseWorkOrderDao= new FirebaseWorkOrderDAO();
-    private final MongoDBWorkOrderDAO MongoDBWorkOrderDao= new MongoDBWorkOrderDAO();
     private UserDao<UserDTO> mUserDao;
     private WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
 
 
-    public MainActivityViewModel() {
+    public MainActivityViewModel(@NonNull Application application) {
+        super(application);
+
 
 
         if ("FIREBASE".equals(BuildConfig.DATABASE)) {
-            mUserDao = this.FirebaseUserDao;
+            FirebaseUserDAO firebaseUserDao = new FirebaseUserDAO();
+            mUserDao = firebaseUserDao;
             mWorkOrderDao=this.FirebaseWorkOrderDao;
         }
         if ("MONGODB".equals(BuildConfig.DATABASE)) {
-            mUserDao = this.MongoDBUserDao;
-            mWorkOrderDao=this.MongoDBWorkOrderDao;
+            //private final SSEUserClient sseUserClient;
+            mUserDao = new MongoDBUserDAO(application.getApplicationContext());
+            mWorkOrderDao= new MongoDBWorkOrderDAO(application.getApplicationContext());
         }
 
 

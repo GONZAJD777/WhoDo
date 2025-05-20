@@ -54,6 +54,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EditProfileFragment extends Fragment implements OnMapReadyCallback {
     boolean mLocationPermissionsGranted = false;
@@ -71,8 +72,8 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private static String LoggedUserLanguages;
     private static String LoggedUserDescription;
     private static String LoggedUserAddress;
-    private static double LoggedUserLocationLat;
-    private static double LoggedUserLocationLon;
+    private static Double LoggedUserLocationLat;
+    private static Double LoggedUserLocationLon;
     private ProfileItem item_Description;
     private ProfileItem item_Location;
     private ProfileItem item_Languages;
@@ -217,7 +218,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setLocationText(LocationSimpleEditText.getText().toString(),mLatLng,getString(R.string.PersonalInfoFrag_Location1),item_Location);
+                    setLocationText(LocationSimpleEditText.getText().toString(),mLatLng.latitude,mLatLng.longitude,getString(R.string.PersonalInfoFrag_Location1),item_Location);
                     setBottomSheetBehavior(LocationBottomSheetBehavior,1);
                 }
             });
@@ -238,7 +239,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                     case STATE_HIDDEN:
                         //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
                         //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
-                        setLocationText(LocationSimpleEditText.getText().toString(),mLatLng,getString(R.string.PersonalInfoFrag_Location1),item_Location);
+                        setLocationText(LocationSimpleEditText.getText().toString(),mLatLng.latitude,mLatLng.longitude,getString(R.string.PersonalInfoFrag_Location1),item_Location);
                         setBottomSheetBehavior(LocationBottomSheetBehavior,1);
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
@@ -324,25 +325,8 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                 Log.d("PhotoPicker", "No media selected");
             }
         });
-        //*********************************************************************************
 
-
-        // Llamado PlacesAutocomplete que sugiere y ubica al usuario
-        // servicio pago por lo que se deja para cuando haya ingresos.lel
-        /*LocationSimpleEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                //PlacesAutocomplete(LocationSimpleEditText.getText().toString());
-            }
-        });*/
         model.getLoggedUser().observe(requireActivity(),this::loadUserData);
-
 
         return root;
     }
@@ -355,7 +339,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
                 setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
                 break;
             case R.id.ReadyLabelButtonLocation:
-                setLocationText(LocationSimpleEditText.getText().toString(),mLatLng,getString(R.string.PersonalInfoFrag_Location1),item_Location);
+                setLocationText(LocationSimpleEditText.getText().toString(),mLatLng.latitude,mLatLng.longitude,getString(R.string.PersonalInfoFrag_Location1),item_Location);
                 setBottomSheetBehavior(LocationBottomSheetBehavior,1);
                 break;
             case R.id.ReadyLabelButtonLanguages:
@@ -377,10 +361,10 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             LoggedUserImage = mLoggedUser.getProfilePicture();
             setDescriptionText(mLoggedUser.getDescription(), getString(R.string.PersonalInfoFrag_Description1), item_Description);
             DescriptionSimpleEditText.setText(mLoggedUser.getDescription());
-            setLocationText(mLoggedUser.getAddress(), new LatLng(mLoggedUser.getLocation().getLatitude(), mLoggedUser.getLocation().getLongitude()), getString(R.string.PersonalInfoFrag_Location1), item_Location);
+            setLocationText(mLoggedUser.getAddress(), mLoggedUser.getLocation().getLatitude(), mLoggedUser.getLocation().getLongitude(), getString(R.string.PersonalInfoFrag_Location1), item_Location);
             LocationSimpleEditText.setText(mLoggedUser.getAddress());
             //el pin se coloca en el metodo OnMapReady
-            String languages = (mLoggedUser != null && mLoggedUser.getLanguages() != null) ? String.join(", ", mLoggedUser.getLanguages()): "";
+            String languages = (mLoggedUser != null && mLoggedUser.getLanguages() != null) ? String.join(",", mLoggedUser.getLanguages()): "";
             LoggedUserLanguages = languages;
             Log.i(TAG, "LoggedUserLanguages -->" + LoggedUserLanguages );
             setLanguagesText(languages, getString(R.string.PersonalInfoFrag_Languages1), item_Languages);
@@ -424,7 +408,11 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         mLoggedUser.setAddress(LoggedUserAddress);
         mLoggedUser.getLocation().setLatitude(LoggedUserLocationLat);
         mLoggedUser.getLocation().setLongitude(LoggedUserLocationLon);
-        mLoggedUser.setLanguages(List.of(LoggedUserLanguages));
+        if(!Objects.equals(LoggedUserLanguages, "")){
+            mLoggedUser.setLanguages(List.of(LoggedUserLanguages));
+        }else {
+            mLoggedUser.setLanguages(null);
+        }
         mLoggedUser.setProfilePicture(LoggedUserImage);
         //String LoggedUserGeoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(LoggedUserLocationLat,LoggedUserLocationLon));
         //mLoggedUser.setGeohash(LoggedUserGeoHash);
@@ -444,21 +432,22 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             LoggedUserDescription = "";
         }
     }
-    private void setLocationText(String text1, LatLng latLng, String text3, ProfileItem profileItem) {
-        // Verificamos que text1 no sea nulo, que no esté vacío y además que latLng no sea nulo.
-        if (text1 != null && !text1.trim().isEmpty() && latLng != null) {
-            profileItem.setText(text1
-                    + "\n Lat:" + latLng.latitude
-                    + "\n Lon:" + latLng.longitude);
+    private void setLocationText(String text1, Double pLatitude,Double pLongitude, String text3, ProfileItem profileItem) {
+        boolean hasValidText = text1 != null && !text1.trim().isEmpty();
+        boolean hasValidLocation = pLatitude != null && pLongitude != null;
+
+        if (hasValidText && hasValidLocation) {
+            String locationText = String.format("%s\n Lat: %.6f\n Lon: %.6f", text1, pLatitude, pLongitude);
+            profileItem.setText(locationText);
+
             LoggedUserAddress = text1;
-            LoggedUserLocationLat = latLng.latitude;
-            LoggedUserLocationLon = latLng.longitude;
+            LoggedUserLocationLat = pLatitude;
+            LoggedUserLocationLon = pLongitude;
         } else {
-            // Si text1 es nulo o vacío o latLng es nulo, se utiliza text3 o cadena vacía si text3 es nulo
             profileItem.setText(text3 != null ? text3 : "");
             LoggedUserAddress = "";
-            LoggedUserLocationLat = 0;
-            LoggedUserLocationLon = 0;
+            LoggedUserLocationLat = null;
+            LoggedUserLocationLon = null;
         }
     }
     private void setLanguagesText(String text1,String text2,ProfileItem ProfileItem1){
@@ -506,7 +495,9 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        addMarkers(mMap,new LatLng(mLoggedUser.getLocation().getLatitude(),mLoggedUser.getLocation().getLongitude()));
+        if (mLoggedUser.getLocation().getLatitude()!=null && mLoggedUser.getLocation().getLongitude()!=null){
+            addMarkers(mMap,new LatLng(mLoggedUser.getLocation().getLatitude(),mLoggedUser.getLocation().getLongitude()));
+        }
         googleMap.setOnMapClickListener(latLng -> addMarkers(mMap,latLng));
         if (mLocationPermissionsGranted) {
             if (ActivityCompat.checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)

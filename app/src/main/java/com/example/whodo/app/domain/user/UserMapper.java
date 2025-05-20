@@ -98,6 +98,53 @@ public class UserMapper {
         return userDTO;
     }
 
+    public static UserApiRestRequestDTO toApiResponseDTO(UserDTO pUserDTO) {
+        if (pUserDTO == null) {
+            return null;
+        }
+
+        UserApiRestRequestDTO mUserApiRestRequestDTO = new UserApiRestRequestDTO();
+        mUserApiRestRequestDTO.setId(pUserDTO.getId());
+        mUserApiRestRequestDTO.setAuthId(pUserDTO.getAuthId());
+        mUserApiRestRequestDTO.setName(pUserDTO.getName());
+        mUserApiRestRequestDTO.setBirthday(new UserApiRestRequestDTO.UserDate(pUserDTO.getBirthday()));
+        mUserApiRestRequestDTO.setEmail(pUserDTO.getEmail());
+        mUserApiRestRequestDTO.setAddress(pUserDTO.getAddress());
+        mUserApiRestRequestDTO.setType(pUserDTO.getType());
+        mUserApiRestRequestDTO.setPassword(pUserDTO.getPassword());
+        mUserApiRestRequestDTO.setCreateDate(new UserApiRestRequestDTO.UserDate(pUserDTO.getCreateDate()));
+        mUserApiRestRequestDTO.setDeleteDate(new UserApiRestRequestDTO.UserDate(pUserDTO.getDeleteDate()));
+        mUserApiRestRequestDTO.setState(pUserDTO.getState());
+        mUserApiRestRequestDTO.setProfilePicture(pUserDTO.getProfilePicture());
+        mUserApiRestRequestDTO.setLanguages(pUserDTO.getLanguages());
+        mUserApiRestRequestDTO.setDescription(pUserDTO.getDescription());
+        mUserApiRestRequestDTO.setSpecialization(pUserDTO.getSpecialization());
+
+        // Manejo seguro de objetos anidados
+        if(mUserApiRestRequestDTO.getLocation()!=null && pUserDTO.getLocation()!=null){
+            //esta validacion se incluye a pesar de que el constructor define el dato Location en su instanciacion
+            mUserApiRestRequestDTO.getLocation().setLatitude(pUserDTO.getLocation().getLatitude());
+            mUserApiRestRequestDTO.getLocation().setLongitude(pUserDTO.getLocation().getLongitude());
+        }
+
+        if(mUserApiRestRequestDTO.getPhone()!=null && pUserDTO.getPhone()!=null){
+            mUserApiRestRequestDTO.getPhone().setCcn(pUserDTO.getPhone().getCcn());
+            mUserApiRestRequestDTO.getPhone().setNumber(pUserDTO.getPhone().getNumber());
+        }
+
+        if(mUserApiRestRequestDTO.getUserScore()!=null && pUserDTO.getUserScore()!=null){
+            mUserApiRestRequestDTO.getUserScore().setAppearanceScore(pUserDTO.getUserScore().getAppearanceScore());
+            mUserApiRestRequestDTO.getUserScore().setCleanlinessScore(pUserDTO.getUserScore().getCleanlinessScore());
+            mUserApiRestRequestDTO.getUserScore().setQualityScore(pUserDTO.getUserScore().getQualityScore());
+            mUserApiRestRequestDTO.getUserScore().setSpeedScore(pUserDTO.getUserScore().getSpeedScore());
+            mUserApiRestRequestDTO.getUserScore().setOverallScore(pUserDTO.getUserScore().getOverallScore());
+            mUserApiRestRequestDTO.getUserScore().setAvgCompletionTime(pUserDTO.getUserScore().getAvgCompletionTime());
+            mUserApiRestRequestDTO.getUserScore().setAvgTariff(pUserDTO.getUserScore().getAvgTariff());
+        }
+
+        return mUserApiRestRequestDTO;
+    }
+
     public static LiveData<User> toEntityLiveData(LiveData<UserDTO> userDTOLiveData) {
         MutableLiveData<User> userLiveData = new MutableLiveData<>();
         userDTOLiveData.observeForever(userDTO -> {
