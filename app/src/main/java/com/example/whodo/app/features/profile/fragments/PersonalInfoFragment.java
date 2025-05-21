@@ -526,7 +526,7 @@ public class PersonalInfoFragment extends Fragment {
         }
     }
     private void setUserPhoneNumber(String NIM,String CCN,String EmptyString, ProfileItem MenuItem){
-        if (NIM != null && CCN != null && NIM.trim().length() != 0 && !Objects.equals(CCN, "-")) {
+        if (NIM != null && CCN != null && !NIM.trim().isEmpty() && !Objects.equals(CCN, "-")) {
            LoggedUserPhoneNumber = NIM;
            LoggedUserCCN=CCN;
            MenuItem.setText(CCN+" "+NIM);
@@ -534,8 +534,8 @@ public class PersonalInfoFragment extends Fragment {
         else
         {
             MenuItem.setText(EmptyString);
-            LoggedUserPhoneNumber="";
-            LoggedUserCCN="-";
+            LoggedUserPhoneNumber=null;
+            LoggedUserCCN=null;
         }
     }
     private void setBottomSheetBehavior (BottomSheetBehavior<LinearLayout> mBottomSheetBehavior, Integer mState){

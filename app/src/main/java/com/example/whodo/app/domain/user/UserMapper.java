@@ -107,13 +107,19 @@ public class UserMapper {
         mUserApiRestRequestDTO.setId(pUserDTO.getId());
         mUserApiRestRequestDTO.setAuthId(pUserDTO.getAuthId());
         mUserApiRestRequestDTO.setName(pUserDTO.getName());
-        mUserApiRestRequestDTO.setBirthday(new UserApiRestRequestDTO.UserDate(pUserDTO.getBirthday()));
+        if(pUserDTO.getBirthday() !=null){
+            mUserApiRestRequestDTO.setBirthday(new UserApiRestRequestDTO.UserDate(pUserDTO.getBirthday()));
+        }
         mUserApiRestRequestDTO.setEmail(pUserDTO.getEmail());
         mUserApiRestRequestDTO.setAddress(pUserDTO.getAddress());
         mUserApiRestRequestDTO.setType(pUserDTO.getType());
         mUserApiRestRequestDTO.setPassword(pUserDTO.getPassword());
-        mUserApiRestRequestDTO.setCreateDate(new UserApiRestRequestDTO.UserDate(pUserDTO.getCreateDate()));
-        mUserApiRestRequestDTO.setDeleteDate(new UserApiRestRequestDTO.UserDate(pUserDTO.getDeleteDate()));
+        if(pUserDTO.getCreateDate() !=null) {
+            mUserApiRestRequestDTO.setCreateDate(new UserApiRestRequestDTO.UserDate(pUserDTO.getCreateDate()));
+        }
+        if(pUserDTO.getDeleteDate() !=null) {
+            mUserApiRestRequestDTO.setDeleteDate(new UserApiRestRequestDTO.UserDate(pUserDTO.getDeleteDate()));
+        }
         mUserApiRestRequestDTO.setState(pUserDTO.getState());
         mUserApiRestRequestDTO.setProfilePicture(pUserDTO.getProfilePicture());
         mUserApiRestRequestDTO.setLanguages(pUserDTO.getLanguages());

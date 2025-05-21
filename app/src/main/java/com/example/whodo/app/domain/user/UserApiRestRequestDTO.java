@@ -1,9 +1,14 @@
 package com.example.whodo.app.domain.user;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class UserApiRestRequestDTO {
 
@@ -176,7 +181,7 @@ public class UserApiRestRequestDTO {
     }
 
     public static class UserDate {
-        private Date dateUtc; // Fecha almacenada en UTC
+        private String dateUtc; // Fecha almacenada en UTC
         private String timeZoneOffset; // Desplazamiento horario en formato ±hh:mm
 
         public UserDate() {}
@@ -184,21 +189,36 @@ public class UserApiRestRequestDTO {
         // 🔹 Constructor que recibe la fecha en formato ISO 8601 y la convierte
         public UserDate(String isoDate) {
             try {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-                this.dateUtc = formatter.parse(isoDate); // Parsear la fecha
-                this.timeZoneOffset = isoDate.substring(isoDate.length() - 6); // Extraer el offset
-            } catch (ParseException e) {
+                System.out.println("Date To Parse send --> " + isoDate);
+
+                // Formato de entrada para la fecha con offset
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                Date parsedDate = inputFormat.parse(isoDate);
+
+                // Formatear la fecha en el formato esperado por el backend
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                outputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                this.dateUtc = outputFormat.format(parsedDate);
+                this.timeZoneOffset = isoDate.substring(isoDate.length() - 6);
+
+                System.out.println("Formatted Date UTC --> " + this.dateUtc);
+                System.out.println("Offset --> " + this.timeZoneOffset);
+
+            } catch (Exception e) {
                 throw new RuntimeException("Error al convertir la fecha: " + e.getMessage());
             }
         }
 
-        public UserDate(Date dateUtc, String timeZoneOffset) {
+
+
+        public UserDate(String dateUtc, String timeZoneOffset) {
             this.dateUtc = dateUtc;
             this.timeZoneOffset = timeZoneOffset;
         }
 
-        public Date getDateUtc() { return dateUtc; }
-        public void setDateUtc(Date dateUtc) { this.dateUtc = dateUtc; }
+        public String getDateUtc() { return dateUtc; }
+        public void setDateUtc(String dateUtc) { this.dateUtc = dateUtc; }
 
         public String getTimeZoneOffset() { return timeZoneOffset; }
         public void setTimeZoneOffset(String timeZoneOffset) { this.timeZoneOffset = timeZoneOffset; }

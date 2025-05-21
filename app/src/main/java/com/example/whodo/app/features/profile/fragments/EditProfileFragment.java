@@ -429,7 +429,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         } else {
             // Si text1 es nulo o vacío, se utiliza text2, siempre chequeando que text2 no sea null.
             profileItem.setText(text2 != null ? text2 : "");
-            LoggedUserDescription = "";
+            LoggedUserDescription = null;
         }
     }
     private void setLocationText(String text1, Double pLatitude,Double pLongitude, String text3, ProfileItem profileItem) {
@@ -445,7 +445,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             LoggedUserLocationLon = pLongitude;
         } else {
             profileItem.setText(text3 != null ? text3 : "");
-            LoggedUserAddress = "";
+            LoggedUserAddress = null;
             LoggedUserLocationLat = null;
             LoggedUserLocationLon = null;
         }

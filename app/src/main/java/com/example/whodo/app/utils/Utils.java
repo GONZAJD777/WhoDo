@@ -36,8 +36,7 @@ public class Utils {
     public static String creationDateParse(long timestamp) {
         ZonedDateTime zonedDateTime = Instant.ofEpochMilli(timestamp)
                 .atZone(ZoneId.systemDefault()); // Usa la zona horaria del sistema
-
-        return zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"));
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")); // 🛠️ Usa XXX en lugar de XX
     }
 
 

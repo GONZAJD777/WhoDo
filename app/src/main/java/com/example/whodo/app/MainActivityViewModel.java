@@ -98,6 +98,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         if (user != null) {
             User currentUser = new User(user.getUid());
             Log.d(TAG, "mAuth no es nulo y currentUser: " + currentUser);
+            StartUserUpdateThread();
             try {
                 LoadUserInfo(currentUser);
             }catch (Exception e){
@@ -128,7 +129,7 @@ public class MainActivityViewModel extends AndroidViewModel {
             }
         });
 
-        StartUserUpdateThread();
+
     }
 
     public LiveData<User> getLoggedUser() {
