@@ -18,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,9 +35,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.features.profile.ProfileItem;
+import com.example.whodo.app.resources.parameters.Parameter;
 import com.example.whodo.app.uiClasses.CustomMapView;
 import com.example.whodo.R;
 import com.example.whodo.app.MainActivityViewModel;
+import com.example.whodo.app.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,7 +55,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class EditProfileFragment extends Fragment implements OnMapReadyCallback {
     boolean mLocationPermissionsGranted = false;
@@ -69,7 +69,8 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private ImageView imagePicker;
     private LatLng mLatLng;
     private static String LoggedUserImage;
-    private static String LoggedUserLanguages;
+    //private static String LoggedUserLanguages;
+    private List<String> LoggedUserLanguages = new ArrayList<>();
     private static String LoggedUserDescription;
     private static String LoggedUserAddress;
     private static Double LoggedUserLocationLat;
@@ -94,7 +95,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private LinearLayout Description_bottom_sheet;
     private LinearLayout Location_bottom_sheet;
     private LinearLayout Languages_bottom_sheet;
-    private MainActivityViewModel model;
+    private MainActivityViewModel mMainActivityViewModel;
     private User mLoggedUser;
 
 
@@ -102,7 +103,8 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.act_profile_frag_edit_profile, container, false);
 
-        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+
         mapView = root.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         getLocationPermission();
@@ -326,36 +328,13 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             }
         });
 
-        model.getLoggedUser().observe(requireActivity(),this::loadUserData);
+        mMainActivityViewModel.getLoggedUser().observe(requireActivity(),this::loadUserData);
 
         return root;
     }
-
-    @SuppressLint("NonConstantResourceId")
-    private void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ReadyLabelButtonDescription:
-                setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
-                setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
-                break;
-            case R.id.ReadyLabelButtonLocation:
-                setLocationText(LocationSimpleEditText.getText().toString(),mLatLng.latitude,mLatLng.longitude,getString(R.string.PersonalInfoFrag_Location1),item_Location);
-                setBottomSheetBehavior(LocationBottomSheetBehavior,1);
-                break;
-            case R.id.ReadyLabelButtonLanguages:
-                setLanguagesText(LoggedUserLanguages,getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
-                setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);
-                break;
-            case R.id.SaveChangesButton:
-                saveUserData();
-                break;
-            case R.id.PickImageButton:
-                SelectImage();
-                break;
-        }
-    }
     private void loadUserData (User pUser) {
         mLoggedUser=pUser.deepCopy();
+
         if (mLoggedUser.getName()!=null) {
             Picasso.get().load(mLoggedUser.getProfilePicture()).into(imagePicker);
             LoggedUserImage = mLoggedUser.getProfilePicture();
@@ -364,63 +343,65 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             setLocationText(mLoggedUser.getAddress(), mLoggedUser.getLocation().getLatitude(), mLoggedUser.getLocation().getLongitude(), getString(R.string.PersonalInfoFrag_Location1), item_Location);
             LocationSimpleEditText.setText(mLoggedUser.getAddress());
             //el pin se coloca en el metodo OnMapReady
-            String languages = (mLoggedUser != null && mLoggedUser.getLanguages() != null) ? String.join(",", mLoggedUser.getLanguages()): "";
-            LoggedUserLanguages = languages;
+            LoggedUserLanguages = mLoggedUser.getLanguages();
+
             Log.i(TAG, "LoggedUserLanguages -->" + LoggedUserLanguages );
-            setLanguagesText(languages, getString(R.string.PersonalInfoFrag_Languages1), item_Languages);
+            setLanguagesText(LoggedUserLanguages, getString(R.string.PersonalInfoFrag_Languages1), item_Languages);
 
-            model.getLanguages().observe(requireActivity(), this::loadLanguages);
+            mMainActivityViewModel.getParameters().observe(getViewLifecycleOwner(),this::loadLanguages);
+
         }
     }
-
-    private void loadLanguages(ArrayList<String> pLanguages) {
-        for(int i = 0; i< pLanguages.size(); i++) {
-
-            CheckBox checkBox = new CheckBox(getContext());
-            checkBox.setText(pLanguages.get(i));
-            if ( LoggedUserLanguages.toUpperCase().contains(pLanguages.get(i).toUpperCase()))
-            {
-                Log.i("CheckBox", "EL SIGUIENTE IDIOMA ESTA EN LA LISTA" + mLoggedUser.getLanguages() );
-                checkBox.setChecked(true);
-            }
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b){
-                        LoggedUserLanguages=LoggedUserLanguages+compoundButton.getText()+",";
-                        Log.i("CheckBoxPicked", "Idiomas " + LoggedUserLanguages );
-                    }else {
-                        LoggedUserLanguages=LoggedUserLanguages.replace(compoundButton.getText()+",","" );
-                        Log.i("CheckBoxPicked", "Idiomas " + LoggedUserLanguages );
-                    }
-                }
-            });
-            LanguagesLinearLayout.addView(checkBox);
-        }
-    }
-
     private void saveUserData (){
-        model.getLoggedUser().removeObservers(requireActivity());
-        model.getLanguages().removeObservers(requireActivity());
-        model.getServices().removeObservers(requireActivity());
+        mMainActivityViewModel.getLoggedUser().removeObservers(requireActivity());
+        mMainActivityViewModel.getParameters().removeObservers(requireActivity());
 
         mLoggedUser.setDescription(LoggedUserDescription);
         mLoggedUser.setAddress(LoggedUserAddress);
         mLoggedUser.getLocation().setLatitude(LoggedUserLocationLat);
         mLoggedUser.getLocation().setLongitude(LoggedUserLocationLon);
-        if(!Objects.equals(LoggedUserLanguages, "")){
-            mLoggedUser.setLanguages(List.of(LoggedUserLanguages));
-        }else {
-            mLoggedUser.setLanguages(null);
-        }
+
+        mLoggedUser.setLanguages(LoggedUserLanguages);
+        Log.i(TAG, "mLoggedUser.getLanguages() -->" + mLoggedUser.getLanguages().toString() );
+        Log.i(TAG, "LoggedUserLanguages -->" + LoggedUserLanguages );
+
         mLoggedUser.setProfilePicture(LoggedUserImage);
         //String LoggedUserGeoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(LoggedUserLocationLat,LoggedUserLocationLon));
         //mLoggedUser.setGeohash(LoggedUserGeoHash);
-        model.updateLoggedUser(mLoggedUser);//luego de cargar todos los cambios en mLoggedUser modificamos el usuario en el ViewModel
+        mMainActivityViewModel.updateLoggedUser(mLoggedUser);//luego de cargar todos los cambios en mLoggedUser modificamos el usuario en el ViewModel
         //Log.i(TAG, "POST SALVAR CAMBIOS " + Objects.requireNonNull(model.getLoggedUser().getValue()).getLanguages() );
         //model.setFragmentVisibility(View.VISIBLE);
-        model.setSelectedFragment(4,View.VISIBLE);
+        mMainActivityViewModel.setSelectedFragment(4,View.VISIBLE);
     }
+    private void loadLanguages(List<Parameter> pParameters) {
+        List<String> pLanguages = Utils.extractListFromParameters(pParameters, "LANGUAGES");
+
+        for (String language : pLanguages) {
+            CheckBox checkBox = new CheckBox(getContext());
+            checkBox.setText(language);
+
+            // Verifica si el idioma está en la lista y marca el CheckBox
+            if (LoggedUserLanguages.contains(language)) {
+                Log.i(TAG, "EL SIGUIENTE IDIOMA ESTÁ EN LA LISTA: " + LoggedUserLanguages);
+                checkBox.setChecked(true);
+            }
+
+            checkBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+                String selectedLanguage = compoundButton.getText().toString();
+                if (isChecked) {
+                    if (!LoggedUserLanguages.contains(selectedLanguage)) {
+                        LoggedUserLanguages.add(selectedLanguage);
+                    }
+                } else {
+                    LoggedUserLanguages.remove(selectedLanguage);
+                }
+                Log.i(TAG, "CheckBoxPicked --> Idiomas en LoggedUserLanguages: " + LoggedUserLanguages);
+            });
+
+            LanguagesLinearLayout.addView(checkBox);
+        }
+    }
+
     private void setDescriptionText(String text1, String text2, ProfileItem profileItem) {
         // Si text1 no es nulo y su contenido no es vacío, se lo usa.
         if (text1 != null && !text1.trim().isEmpty()) {
@@ -450,14 +431,14 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             LoggedUserLocationLon = null;
         }
     }
-    private void setLanguagesText(String text1,String text2,ProfileItem ProfileItem1){
-        if ( text1.trim().length() != 0  ) {
-            String regex = ",$";
-            ProfileItem1.setText(text1.replaceAll(regex,""));
+    private void setLanguagesText(List<String> list1,String text2,ProfileItem ProfileItem1){
+        if ( list1.isEmpty()) {
+            ProfileItem1.setText(text2);
         }
         else
         {
-            ProfileItem1.setText(text2);
+            String regex = ",$";
+            ProfileItem1.setText(list1.toString().replaceAll("^\\[|\\]$", ""));
         }
 
     }
@@ -559,6 +540,29 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, EditProfileFragment.DEFAULT_ZOOM));
     }
+    @SuppressLint("NonConstantResourceId")
+    private void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ReadyLabelButtonDescription:
+                setDescriptionText(DescriptionSimpleEditText.getText().toString(),getString(R.string.PersonalInfoFrag_Description1),item_Description);
+                setBottomSheetBehavior(DescriptionBottomSheetBehavior,1);
+                break;
+            case R.id.ReadyLabelButtonLocation:
+                setLocationText(LocationSimpleEditText.getText().toString(),mLatLng.latitude,mLatLng.longitude,getString(R.string.PersonalInfoFrag_Location1),item_Location);
+                setBottomSheetBehavior(LocationBottomSheetBehavior,1);
+                break;
+            case R.id.ReadyLabelButtonLanguages:
+                setLanguagesText(LoggedUserLanguages,getString(R.string.PersonalInfoFrag_Languages1),item_Languages);
+                setBottomSheetBehavior(LanguagesBottomSheetBehavior,1);
+                break;
+            case R.id.SaveChangesButton:
+                saveUserData();
+                break;
+            case R.id.PickImageButton:
+                SelectImage();
+                break;
+        }
+    }
     @Override
     public void onResume() {
         super.onResume();
@@ -579,53 +583,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
         super.onLowMemory();
         mapView.onLowMemory();
     }
-    /**private void PlacesAutocomplete (String query){
-        // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
-        // and once again when the user makes a selection (for example when calling fetchPlace()).
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
 
-        // Create a RectangularBounds object.
-        //RectangularBounds bounds = RectangularBounds.newInstance(
-        //        new LatLng(-33.880490, 151.184363),
-        //        new LatLng(-33.8749937,151.2041382)
-        //        new LatLng(-33.858754, 151.229596));
-        RectangularBounds bounds = RectangularBounds.newInstance(
-                new LatLng(mLatLng.latitude-1, mLatLng.longitude-1),
-                new LatLng(mLatLng.latitude+1, mLatLng.longitude+1));
-        // Use the builder to create a FindAutocompletePredictionsRequest.
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setLocationRestriction(bounds)
-                //.setOrigin(new LatLng(-33.8749937,151.2041382))
-                .setOrigin(mLatLng)
-                .setTypeFilter(TypeFilter.ADDRESS)
-                .setSessionToken(token)
-                .setQuery(query)
-                .build();
-        // Call either setLocationBias() OR setLocationRestriction().
-        //.setLocationBias(bounds)
-        //.setLocationRestriction(bounds)
-        //.setOrigin(new LatLng(-33.8749937,151.2041382))
-        //.setCountries("AU", "NZ")
-        //.setTypesFilter(Arrays.asList(TypeFilter.ADDRESS.toString()))
-
-        if (!Places.isInitialized()) {
-            Places.initialize(this.requireActivity(), "AIzaSyD6fudFVcF1t0szms6jQTw_S6P_IYi8NFY");
-        }
-        PlacesClient placesClient = Places.createClient(this.requireContext());
-        //assert false;
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                Log.i(TAG, prediction.getPlaceId());
-                Log.i(TAG, prediction.getPrimaryText(null).toString());
-            }
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-            }
-        });
-
-    }*/
 
 
 }

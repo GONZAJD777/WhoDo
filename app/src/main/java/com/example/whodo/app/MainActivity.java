@@ -5,7 +5,6 @@ import android.view.View;
 import com.example.whodo.R;
 import com.example.whodo.app.resources.images.ImageManager;
 import com.example.whodo.app.resources.images.ImagesViewModel;
-import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity  {
     private FragmentManager mFragmentManager;
     private ImagesViewModel mImagesViewModel;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity  {
         mMainActivityViewModel.getSelectedFragment().observe(this,this::setSelectedFragment);
         mMainActivityViewModel.getTabLayoutVisibility().observe(this,this::setTabLayoutVisibility);
         mMainActivityViewModel.getSelectedTab().observe(this,this::setSelectedTab);
+
 
         mImagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
         mImagesViewModel.getServIconNames().observe(this,this::LoadImages);

@@ -12,8 +12,6 @@ public interface UserDao<T> {
     void findCustomer(T t,Callback<T> callback);
     void create(T t, Callback<T> callback);
     void update(T t);
-    void findProviders(T t, Callback<List<T>> callback);
-    void findLanguages(Callback<List<String>> callback);
-    void findServices(Callback<List<String>> callback);
+    LiveData<List<T>> findProviders(T t,Double distance);
 
 }

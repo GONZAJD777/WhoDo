@@ -11,10 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +24,8 @@ import com.example.whodo.app.MainActivityViewModel;
 import com.example.whodo.R;
 import com.example.whodo.app.features.profile.ProfileItem;
 import com.example.whodo.app.features.profile.ProfileSwitchItem;
+import com.example.whodo.app.resources.parameters.Parameter;
+import com.example.whodo.app.utils.Utils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ProviderModeFragment extends Fragment {
-    private String LoggedUserSpecialization;
+    private List<String> LoggedUserSpecialization = new ArrayList<>();
     private String LoggedUserType;
     private ProfileItem item_Specialization;
     private LinearLayout Specialization_bottom_sheet;
@@ -46,7 +45,7 @@ public class ProviderModeFragment extends Fragment {
     private BottomSheetBehavior<LinearLayout> BlackBackgroundBottomSheetBehavior;
     private FloatingActionButton SaveChangesButton;
     private ProfileSwitchItem mProfileSwitchItem;
-    private MainActivityViewModel model;
+    private MainActivityViewModel mMainActivityViewModel;
     private User mLoggedUser;
     private String TAG="PROVIDER-MODE-FRAGMENT";
 
@@ -55,7 +54,8 @@ public class ProviderModeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_profile_frag_provider_mode, container, false);
-        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+
         ItemsLinearLayout = root.findViewById(R.id.ItemsLinearLayout);
 
         TextView ReadyLabelButtonSpecialization = root.findViewById(R.id.ReadyLabelButtonSpecialization);
@@ -101,7 +101,7 @@ public class ProviderModeFragment extends Fragment {
         ItemsLinearLayout.addView(item_Specialization);
 
         //model.getServices().observe(requireActivity(),this::loadServicesCheckBox);
-        model.getLoggedUser().observe(requireActivity(),this::loadUserData);
+        mMainActivityViewModel.getLoggedUser().observe(requireActivity(),this::loadUserData);
 
         return root;
     }
@@ -109,79 +109,68 @@ public class ProviderModeFragment extends Fragment {
     private void loadUserData(User pUser) {
         mLoggedUser=pUser.deepCopy();
         if(mLoggedUser.getName()!=null) {
-            mProfileSwitchItem.setSwitchState(!Objects.equals(mLoggedUser.getType(), "1"));
-            model.getServices().observe(requireActivity(),this::loadServicesCheckBox);
+            mProfileSwitchItem.setSwitchState(!Objects.equals(mLoggedUser.getType(), 1));
+            mMainActivityViewModel.getParameters().observe(requireActivity(),this::loadServicesCheckBox);
 
-            String specialization = (mLoggedUser != null && mLoggedUser.getSpecialization() != null) ? String.join(",", mLoggedUser.getSpecialization()): "";
-            LoggedUserSpecialization = specialization;
-            setSpecializationText(specialization, getString(R.string.ProviderModeFrag_Specialization_Tittle), item_Specialization);
+            LoggedUserSpecialization = mLoggedUser.getSpecialization();
+            setSpecializationText(LoggedUserSpecialization, getString(R.string.ProviderModeFrag_Specialization_Tittle), item_Specialization);
             Log.i(TAG, "LoggedUserLanguages -->" + LoggedUserSpecialization );
 
         }
     }
 
-    public void loadServicesCheckBox(@NonNull ArrayList<String> pServices){
+    private void saveUserData (){
+        mMainActivityViewModel.getLoggedUser().removeObservers(requireActivity());
+        mMainActivityViewModel.getParameters().removeObservers(requireActivity());
+
+        if(mProfileSwitchItem.getSwitchState()){
+            LoggedUserType="2";
+        } else {
+            LoggedUserType="1";
+        }
+        mLoggedUser.setType(Integer.valueOf(LoggedUserType));
+
+        mLoggedUser.setSpecialization(LoggedUserSpecialization);
+        Log.i(TAG, "mLoggedUser.getSpecialization() -->" + mLoggedUser.getSpecialization().toString() );
+        Log.i(TAG, "LoggedUserSpecialization -->" + LoggedUserSpecialization );
+
+        mMainActivityViewModel.updateLoggedUser(mLoggedUser);
+        //model.TabLayoutVisibility(View.VISIBLE);
+        mMainActivityViewModel.setSelectedFragment(4,View.VISIBLE);
+    }
+
+
+
+    public void loadServicesCheckBox(@NonNull List<Parameter> pParameters) {
         clearLinearLayout(SpecializationLinearLayout);
-        //*//******************************************************************************
-        //*//Se comienza a recorrer la lista con los servicio para agregar los botones
-        for(int i = 0; i< pServices.size(); i++) {
-            CheckBox ServiceCheckBox = new CheckBox(getContext());
-            ServiceCheckBox.setText(pServices.get(i));
-            //*//Se valida cuales estan checkeados por el usuario para filtrar
-            if ( LoggedUserSpecialization.toUpperCase().contains(pServices.get(i).toUpperCase()))      {
-                ServiceCheckBox.setChecked(true);
-                Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio esta tildado " + pServices.get(i) );
+        List<String> pServices = Utils.extractListFromParameters(pParameters, "SERVICES");
+
+        for (String service : pServices) {
+            CheckBox serviceCheckBox = new CheckBox(getContext());
+            serviceCheckBox.setText(service);
+
+            // Verifica si el servicio está en la lista y marca el CheckBox
+            if (LoggedUserSpecialization.contains(service)) {
+                serviceCheckBox.setChecked(true);
+                Log.i(TAG, "loadServicesCheckBox --> El servicio está tildado: " + service);
             }
-            //Se configuran los listeners de cambio de estado antes de agregar los Checkbox
-            ServiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b){//Si se tilda el checkbox -->
-                        LoggedUserSpecialization=LoggedUserSpecialization+compoundButton.getText()+",";
-                        Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue tildado " + compoundButton.getText().toString() );
-                    } else {
 
-                        LoggedUserSpecialization=LoggedUserSpecialization.replace(compoundButton.getText()+",","" );
-                        Log.i(TAG, "loadServicesCheckBox --> Checkeando filtrado, el servicio fue destildado " + compoundButton.getText().toString() );
+            serviceCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+                String selectedService = compoundButton.getText().toString();
+                if (isChecked) {
+                    if (!LoggedUserSpecialization.contains(selectedService)) {
+                        LoggedUserSpecialization.add(selectedService);
                     }
-                    Log.i(TAG, "loadServicesCheckBox --> Servicios Tildados: " + LoggedUserSpecialization);
-
+                } else {
+                    LoggedUserSpecialization.remove(selectedService);
                 }
+                Log.i(TAG, "loadServicesCheckBox --> Servicios Tildados: " + LoggedUserSpecialization);
             });
-            //Se agrega el checkbox al LinearLayout
-            SpecializationLinearLayout.addView(ServiceCheckBox);
+
+            SpecializationLinearLayout.addView(serviceCheckBox);
         }
     }
 
-    public void loadServicesRadioButton(ArrayList<String> pServices){
-        clearLinearLayout(SpecializationLinearLayout);
-        RadioGroup RadioGroupFilter = new RadioGroup(requireContext());
-        SpecializationLinearLayout.addView(RadioGroupFilter);
-
-        //*//******************************************************************************
-        //*//Se comienza a recorrer la lista con los servicio para agregar los botones
-        //*//y validar cuales estan checkeados por el usuario para filtrar
-        for(int i = 0; i< pServices.size(); i++) {
-            RadioButton ServiceCheckBox = new RadioButton(requireContext());
-            ServiceCheckBox.setText(pServices.get(i));
-            //******************************************************************************
-            //Se valida si el servicio del checkbox esta en la variable ServicePickerFilter
-            //para aplicar el filtro
-            //******************************************************************************
-            ServiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b){
-                        LoggedUserSpecialization=compoundButton.getText().toString();
-                    }
-                }
-            });
-            //se agrega el Checkbox con la configuracion
-            RadioGroupFilter.addView(ServiceCheckBox);
-            ServiceCheckBox.setChecked(mLoggedUser.getSpecialization().toString().toUpperCase().contains(pServices.get(i).toUpperCase()));
-        }
-
-    }
 
     public void clearLinearLayout(LinearLayout LL){
         try {
@@ -195,36 +184,16 @@ public class ProviderModeFragment extends Fragment {
             Log.i("ReelItemsLinearLayout", "Has no childs:" + e);
         }
     }
-    private void saveUserData (){
-        model.getLoggedUser().removeObservers(requireActivity());
-        model.getLanguages().removeObservers(requireActivity());
-        model.getServices().removeObservers(requireActivity());
 
-        if(mProfileSwitchItem.getSwitchState()){
-            LoggedUserType="2";
-        } else {
-            LoggedUserType="1";
-        }
-        mLoggedUser.setType(Integer.valueOf(LoggedUserType));
-
-        if(!Objects.equals(LoggedUserSpecialization, "")){
-            mLoggedUser.setSpecialization(List.of(LoggedUserSpecialization));
-        }else {
-            mLoggedUser.setSpecialization(null);
-        }
-
-        model.updateLoggedUser(mLoggedUser);
-        //model.TabLayoutVisibility(View.VISIBLE);
-        model.setSelectedFragment(4,View.VISIBLE);
-    }
-    private void setSpecializationText(String text1,String text2,ProfileItem ProfileItem1){
-        if ( text1.trim().length() != 0  ) {
-            String regex = ",$";
-            ProfileItem1.setText(text1.replaceAll(regex,""));
+    private void setSpecializationText(List<String> list1,String text2,ProfileItem ProfileItem1){
+        if ( list1.isEmpty()) {
+            ProfileItem1.setText(text2);
         }
         else
         {
-            ProfileItem1.setText(text2);
+            String regex = ",$";
+            ProfileItem1.setText(list1.toString().replaceAll("^\\[|\\]$", ""));
+
         }
 
     }

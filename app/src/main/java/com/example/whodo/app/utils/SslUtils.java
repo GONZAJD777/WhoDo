@@ -1,4 +1,4 @@
-package com.example.whodo.app.network;
+package com.example.whodo.app.utils;
 
 import android.content.Context;
 

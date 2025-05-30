@@ -186,7 +186,6 @@ public class UserApiRestRequestDTO {
 
         public UserDate() {}
 
-        // 🔹 Constructor que recibe la fecha en formato ISO 8601 y la convierte
         public UserDate(String isoDate) {
             try {
                 System.out.println("Date To Parse send --> " + isoDate);

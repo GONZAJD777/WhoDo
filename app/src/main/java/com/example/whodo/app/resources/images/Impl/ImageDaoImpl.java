@@ -1,17 +1,19 @@
-package com.example.whodo.app.resources.images;
+package com.example.whodo.app.resources.images.Impl;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.whodo.app.Callback;
+import com.example.whodo.app.resources.images.ImageDTO;
+import com.example.whodo.app.resources.images.ImagesDao;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirebaseStorageImageDAO implements ImagesDao<ImageDTO>{
+public class ImageDaoImpl implements ImagesDao<ImageDTO> {
 
     private final String TAG="FirebaseStorageImageDAO";
     //IMAGES STORAGE REF

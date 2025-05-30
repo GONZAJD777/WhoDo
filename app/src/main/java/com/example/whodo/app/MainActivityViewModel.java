@@ -1,7 +1,6 @@
 package com.example.whodo.app;
 
 import android.app.Application;
-import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -10,20 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.whodo.BuildConfig;
-import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
-import com.example.whodo.app.domain.user.dao.MongoDBUserDAO;
+import com.example.whodo.app.domain.user.dao.Impl.UserDaoImpl;
 import com.example.whodo.app.domain.user.dao.UserDao;
-import com.example.whodo.app.domain.user.UserDTO;
-import com.example.whodo.app.domain.user.UserMapper;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
 import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
 import com.example.whodo.app.domain.workOrder.WorkOrderMapper;
-import com.example.whodo.app.domain.workOrder.dao.FirebaseWorkOrderDAO;
-import com.example.whodo.app.domain.workOrder.dao.MongoDBWorkOrderDAO;
+import com.example.whodo.app.domain.workOrder.dao.Impl.WorkOrderDaoImpl;
 import com.example.whodo.app.domain.workOrder.dao.WorkOrderDao;
 import com.example.whodo.app.features.favorites.FavoritesFragment;
 import com.example.whodo.app.features.hire.HireFragment;
@@ -42,11 +36,17 @@ import com.example.whodo.app.features.profile.fragments.RecomendationsFragment;
 import com.example.whodo.app.features.profile.fragments.SecurityFragment;
 import com.example.whodo.app.features.profile.fragments.SupportFragment;
 import com.example.whodo.app.features.profile.fragments.TutorialFragment;
+import com.example.whodo.app.network.ApiResponse;
+import com.example.whodo.app.resources.parameters.Impl.ParametersDaoImpl;
+import com.example.whodo.app.resources.parameters.Parameter;
+import com.example.whodo.app.resources.parameters.ParametersDao;
+import com.example.whodo.app.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,43 +56,33 @@ public class MainActivityViewModel extends AndroidViewModel {
     private final String TAG = "MAIN-ACTIVITY-VIEWMODEL";
 
     private User mSnapshotUser= new User(); // No es LiveData
-    private final MutableLiveData<User> mUser = new MutableLiveData<>();
-    private final MutableLiveData<List<User>> mProviders = new MutableLiveData<>();
     private final MutableLiveData<User> mWorkOrdersCustomer = new MutableLiveData<>();
-    private final MutableLiveData<List<WorkOrder>> mWorkOrders = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<String>> mServices = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<String>> mLanguages = new MutableLiveData<>();
     private final MutableLiveData<Fragment> mFragmentSelected = new MutableLiveData<>();
     private final MutableLiveData<Integer> mTabLayoutVisibility = new MutableLiveData<>();
     private final MutableLiveData<Integer> mSeletedTab = new MutableLiveData<>();
     private final MutableLiveData<WorkOrder> mPickedWorkOrder = new MutableLiveData<>();
 
-    private final FirebaseWorkOrderDAO FirebaseWorkOrderDao= new FirebaseWorkOrderDAO();
-    private UserDao<UserDTO> mUserDao;
-    private WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
+    private final MutableLiveData<User> mUser = new MutableLiveData<>();
+    private final MutableLiveData<List<WorkOrder>> mWorkOrders = new MutableLiveData<>();
+    private final MutableLiveData<List<User>> mProviders = new MutableLiveData<>();
+    private final MutableLiveData<List<Parameter>> mParameters = new MutableLiveData<>();
+    private MediatorLiveData<Boolean> allDataReady = new MediatorLiveData<>();
 
+    private UserDao<User> mUserDao;
+    private WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
+    private final ParametersDao<Parameter> mParametersDao;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
 
-
-
-        if ("FIREBASE".equals(BuildConfig.DATABASE)) {
-            FirebaseUserDAO firebaseUserDao = new FirebaseUserDAO();
-            mUserDao = firebaseUserDao;
-            mWorkOrderDao=this.FirebaseWorkOrderDao;
-        }
-        if ("MONGODB".equals(BuildConfig.DATABASE)) {
-            //private final SSEUserClient sseUserClient;
-            mUserDao = new MongoDBUserDAO(application.getApplicationContext());
-            mWorkOrderDao= new MongoDBWorkOrderDAO(application.getApplicationContext());
-        }
-
+        //private final SSEUserClient sseUserClient;
+        mUserDao = new UserDaoImpl(application.getApplicationContext());
+        mWorkOrderDao= new WorkOrderDaoImpl(application.getApplicationContext());
+        mParametersDao= new ParametersDaoImpl(application.getApplicationContext());
 
         mSeletedTab.setValue(0);
         mTabLayoutVisibility.setValue(View.VISIBLE);
         mFragmentSelected.setValue(new HireFragment());
-        
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -100,52 +90,50 @@ public class MainActivityViewModel extends AndroidViewModel {
             Log.d(TAG, "mAuth no es nulo y currentUser: " + currentUser);
             StartUserUpdateThread();
             try {
-                LoadUserInfo(currentUser);
+                initializeObservers();
+                loadUserInfo(currentUser);
+                loadParameters();
+                allDataReady.observeForever(ready -> {
+                    if (Boolean.TRUE.equals(ready)) {
+                        try {
+                            String value = Utils.findParameterById(Objects.requireNonNull(mParameters.getValue()), "USR_MAX_DISTANCE").getValue();
+                            Double distance = Double.parseDouble(value);
+                            Log.d(TAG, "Distancia: " + distance);
+                            loadUserProviders(mUser.getValue(), distance);
+                            //loadUserWorkOrders(Objects.requireNonNull(mUser.getValue()));
+                        } catch (NumberFormatException e) {
+                            Log.d(TAG, "Error al convertir el valor a Double: " + e.getMessage());
+                        }
+                    }
+                });
             }catch (Exception e){
                 Log.d(TAG, "Error al llamar a la base de datos --> espera a la actualizacion de datos." + e);
             }
         } else {
             Log.e(TAG, "Usuario no autenticado");
         }
-        
-        mUserDao.findLanguages(new Callback<List<String>>() {
-            @Override
-            public void onSuccess(List<String> pLanguages) {
-                mLanguages.setValue((ArrayList<String>) pLanguages);
-            }
 
-            @Override
-            public void onError(Exception e) {
-            }
-        });
-        mUserDao.findServices(new Callback<List<String>>() {
-            @Override
-            public void onSuccess(List<String> pServices) {
-                mServices.setValue((ArrayList<String>) pServices);
-            }
+    }
 
-            @Override
-            public void onError(Exception e) {
-            }
-        });
+    private void initializeObservers() {
+        allDataReady.addSource(mUser, user -> checkReady());
+        allDataReady.addSource(mParameters, params -> checkReady());
+    }
 
-
+    private void checkReady() {
+        if (mUser.getValue() != null && mParameters.getValue() != null) {
+            allDataReady.setValue(true);
+        }
     }
 
     public LiveData<User> getLoggedUser() {
         return this.mUser;
     }
-
     public LiveData<List<User>> getProviders() {
         return this.mProviders;
     }
-
-    public LiveData<ArrayList<String>> getServices() {
-        return this.mServices;
-    }
-
-    public LiveData<ArrayList<String>> getLanguages() {
-        return this.mLanguages;
+    public LiveData<List<Parameter>> getParameters() {
+        return this.mParameters;
     }
 
     public LiveData<Fragment> getSelectedFragment() {
@@ -240,12 +228,12 @@ public class MainActivityViewModel extends AndroidViewModel {
         }).start();
     }
 
-    public void createUser(User pUser, Callback<UserDTO> callback) {
-        mUserDao.create(UserMapper.toDTO(pUser), new Callback<UserDTO>() {
+    public void createUser(User pUser, Callback<User> callback) {
+        mUserDao.create((pUser), new Callback<User>() {
             @Override
-            public void onSuccess(UserDTO pUserDTO) {
-                callback.onSuccess(pUserDTO);
-                Log.d(TAG, "createUser() Method --> User has been created " + pUserDTO);
+            public void onSuccess(User pUser) {
+                callback.onSuccess(pUser);
+                Log.d(TAG, "createUser() Method --> User has been created " + pUser);
             }
 
             @Override
@@ -280,12 +268,11 @@ public class MainActivityViewModel extends AndroidViewModel {
             Log.i(TAG, "UpdateUser CORREO NUEVA: " + pUser.getEmail());
             userToUpdate.setEmail(pUser.getEmail());
         }
-        if(pUser.getLanguages()!=null && pUserSnapshot.getLanguages()!=null){
-            if (!Objects.equals(pUser.getLanguages(), pUserSnapshot.getLanguages())) {
+
+        if (!(new HashSet<>(pUserSnapshot.getLanguages()).containsAll(pUser.getLanguages()) && new HashSet<>(pUser.getLanguages()).containsAll(pUserSnapshot.getLanguages())) ) {
                 Log.i(TAG, "UpdateUser IDIOMAS ANTIGUA: " + pUserSnapshot.getLanguages());
                 Log.i(TAG, "UpdateUser IDIOMAS NUEVA: " + pUser.getLanguages());
                 userToUpdate.setLanguages(pUser.getLanguages());
-            }
         }
         if (!Objects.equals(pUser.getLocation().getLatitude(), pUserSnapshot.getLocation().getLatitude()) || !Objects.equals(pUser.getLocation().getLongitude(), pUserSnapshot.getLocation().getLongitude())) {
             Log.i(TAG, "UpdateUser LATITUD ANTIGUA: " + pUserSnapshot.getLocation().getLatitude());
@@ -320,7 +307,7 @@ public class MainActivityViewModel extends AndroidViewModel {
             Log.i(TAG, "UpdateUser TIPO NUEVA: " + pUser.getType());
             userToUpdate.setType(pUser.getType());
         }
-        if (!Objects.equals(pUser.getSpecialization(), pUserSnapshot.getSpecialization())) {
+        if (!(new HashSet<>(pUserSnapshot.getSpecialization()).containsAll(pUser.getSpecialization()) && new HashSet<>(pUser.getSpecialization()).containsAll(pUserSnapshot.getSpecialization()))) {
             Log.i("WhoDo-Log ", "UpdateUser ESPECIALIZACION ANTIGUA: " + pUserSnapshot.getSpecialization());
             Log.i(TAG, "UpdateUser ESPECIALIZACION NUEVA: " + pUser.getSpecialization());
             userToUpdate.setSpecialization(pUser.getSpecialization());
@@ -332,7 +319,11 @@ public class MainActivityViewModel extends AndroidViewModel {
         }
         Log.i(TAG, "UpdateUser : " + userToUpdate.toString());
 
-        mUserDao.update(UserMapper.toDTO(userToUpdate));
+        mUserDao.update(userToUpdate);
+    }
+
+    public void updateUserImmidiate(User pUser){
+        mUserDao.update(pUser);
     }
 
     //HANDLING WORKORDERS
@@ -373,27 +364,20 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
     //HANDLING WORKORDERS
 
-    private void LoadUserInfo(User pUser){
-        mUserDao.findUser(UserMapper.toDTO(pUser)).observeForever(userDto -> {
-            if (userDto != null) {
-                User user = UserMapper.toEntity(userDto);
+    //------- LOADING DATA -------//
+
+    private void loadUserInfo(User pUser){
+        mUserDao.findUser(pUser).observeForever(user -> {
+            if (user != null) {
                 mUser.setValue(user);
                 mSnapshotUser = user;
-                Log.i(TAG, "mUser: " + Objects.requireNonNull(mUser.getValue()).toString());
+                Log.i(TAG, "mUser: " + Objects.requireNonNull(mUser.getValue()));
                 Log.i(TAG, "mSnapshotUser: " + mSnapshotUser.toString());
-
-                //*************************** PROVIDERS ***************************//
-                //LoadUserProviders();
-                //*************************** PROVIDERS ***************************//
-
-                //*************************** WORKORDERS ***************************//
-                //LoadUserWorkOrders(user);
-                //*************************** WORKORDERS ***************************//
             }
         });
     }
-    
-    private void LoadUserWorkOrders(User pUser){
+
+    private void loadUserWorkOrders(User pUser){
         WorkOrder mWorkOrder = new WorkOrder();
         mWorkOrder.setCustomerId(pUser.getId());
         mWorkOrder.setProviderId(pUser.getId());
@@ -419,26 +403,33 @@ public class MainActivityViewModel extends AndroidViewModel {
             }
         });
     }
-    
-    private void LoadUserProviders(){
-        mUserDao.findProviders(UserMapper.toDTO(mSnapshotUser), new Callback<List<UserDTO>>() {
-            @Override
-            public void onSuccess(List<UserDTO> userDTOList) {
-                if (userDTOList != null) {
-                    List<User> AuxUserList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
 
-                    for (UserDTO userDTO : userDTOList) {
-                        User user = UserMapper.toEntity(userDTO); // Mapear UserDTO a User
-                        AuxUserList.add(user); // Agregar el objeto User a la lista
-                    }
-                    mProviders.setValue(AuxUserList);
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
+    private void loadUserProviders(User pUser,Double distance){
+        mUserDao.findProviders(pUser,distance).observeForever(providers -> {
+            if (providers != null) {
+                List<User> AuxUserList = new ArrayList<>(providers);
+                mProviders.setValue(AuxUserList);
+                Log.i(TAG, "loadUserProviders() --> onSuccess mProviders: " + mProviders);
             }
         });
     }
+
+    private void loadParameters(){
+        mParametersDao.getParameters(new Callback<ApiResponse<List<Parameter>>>() {
+            @Override
+            public void onSuccess(ApiResponse<List<Parameter>> pParametersList) {
+                if (pParametersList != null) {
+                    mParameters.setValue(pParametersList.getData());
+                    Log.d(TAG, "pParametersList -->" + pParametersList);
+
+                }
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "Error -->" + e.getMessage());
+            }
+        });
+    }
+
     
 }

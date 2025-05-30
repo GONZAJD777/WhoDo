@@ -28,11 +28,12 @@ public class User {
     private Integer type;
     private UserScore userScore;
 
+    // Constructor vacío requerido por MongoDB
     public User() {
         this.location = new Location();   //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
         this.phone = new Phone();         //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
         this.userScore = new UserScore(); //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
-    } // Constructor vacío requerido por MongoDB
+    }
 
 
 
@@ -43,16 +44,23 @@ public class User {
         this.userScore = new UserScore(); //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
     }
 
-    public User(String authId, String name, String email, String password) {
+    // User creation constructor, para el primer login
+    public User(String authId, String name, String email, String password,Integer state, Integer type, List<String> specialization, List<String> languages, String createDate) {
         this.authId=authId;
         this.name=name;
         this.email=email;
         this.password=password;
-        this.location = new Location();   //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
+        this.state=state;
+        this.type=type;
+        this.specialization=specialization;
+        this.languages=languages;
+        this.createDate=createDate;
+        this.location = new Location(0.0,0.0,null);   //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
         this.phone = new Phone();         //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
         this.userScore = new UserScore(); //Se inicializa con un objeto vacio para evitar errores de nullpointer exception en mapeo
     }
 
+    //Constructor para mapeo
     public User(User user) {
         this.id = user.id;
         this.authId = user.authId;

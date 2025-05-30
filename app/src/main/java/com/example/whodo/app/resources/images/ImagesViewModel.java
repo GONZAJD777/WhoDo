@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.whodo.app.Callback;
+import com.example.whodo.app.resources.images.Impl.ImageDaoImpl;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class ImagesViewModel extends ViewModel {
     private final MutableLiveData<List<String>> mStoredServIconNames = new MutableLiveData<>();
 
     public ImagesViewModel(){
-        mImagesDao=new FirebaseStorageImageDAO();
+        mImagesDao=new ImageDaoImpl();
 
         this.setServIconNames();
 

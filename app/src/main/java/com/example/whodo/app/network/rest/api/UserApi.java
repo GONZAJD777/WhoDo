@@ -1,7 +1,7 @@
 package com.example.whodo.app.network.rest.api;
 
+import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.domain.user.UserApiRestRequestDTO;
-import com.example.whodo.app.domain.user.UserDTO;
 
 import java.util.List;
 
@@ -16,23 +16,18 @@ import retrofit2.http.Path;
 
 public interface UserApi {
     @POST("/api/users/createUser")
-    Call<UserDTO> createUser(@Body UserApiRestRequestDTO UserApiRestRequestDTO);
+    Call<User> createUser(@Body UserApiRestRequestDTO UserApiRestRequestDTO);
 
     @PUT("/api/users/updateUser")
-    Call<UserDTO> updateUser(@Body UserApiRestRequestDTO UserApiRestRequestDTO);
+    Call<User> updateUser(@Body UserApiRestRequestDTO UserApiRestRequestDTO);
 
     @GET("/api/users/usuarios/{id}")
-    Call<UserDTO> findUser(@Path("id") String id);
+    Call<User> findUser(@Path("id") String id);
 
     @GET("/api/users/clientes")
-    Call<UserDTO> findCustomer();
+    Call<User> findCustomer();
 
     @GET("/api/users/proveedores")
-    Call<List<UserDTO>> findProviders();
+    Call<List<User>> findProviders();
 
-    @GET("/api/users/idiomas")
-    Call<List<String>> findLanguages();
-
-    @GET("/api/users/servicios")
-    Call<List<String>> findServices();
 }

@@ -1,10 +1,13 @@
-package com.example.whodo.app.network.reactive;
+package com.example.whodo.app.network.reactive.provider;
 
 import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
-import com.example.whodo.app.domain.user.UserDTO;
+
+import com.example.whodo.app.domain.user.User;
 
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -14,12 +17,12 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-public class SSELoggedUserClient {
+public class SSEProviderClient {
     private final OkHttpClient client;
     private final String SSE_URL;
-    private static final String TAG = "SSEUserClient";
+    private static final String TAG = "SSEProviderClient";
 
-    public SSELoggedUserClient(String sseUrl) {
+    public SSEProviderClient(String sseUrl) {
         try {
             // Creación de TrustManager que acepta cualquier certificado
             TrustManager[] trustAllCerts = new TrustManager[]{
@@ -54,14 +57,11 @@ public class SSELoggedUserClient {
         SSE_URL = sseUrl;
     }
 
-
-
-    public void startListening(MutableLiveData<UserDTO> mUser) {
+    public void startListening(MutableLiveData<List<User>> mUserList) {
         Log.d(TAG, "Iniciando conexión SSE con: " + SSE_URL);
-
         Log.d(TAG, "Cliente configurado con hostnameVerifier: " + client.hostnameVerifier());
         Request request = new Request.Builder().url(SSE_URL).build();
-        client.newCall(request).enqueue(new SSELoggedUserCallback(mUser));
+        client.newCall(request).enqueue(new SSEProviderCallback(mUserList));
 
     }
 }

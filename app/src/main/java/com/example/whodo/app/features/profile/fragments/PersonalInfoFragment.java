@@ -70,7 +70,7 @@ public class PersonalInfoFragment extends Fragment {
     private Spinner countryCodeSpinner;
     private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
     private final FirebaseUser currentUser=mAuth.getCurrentUser();
-    private MainActivityViewModel model;
+    private MainActivityViewModel mMainActivityViewModel;
     private User mLoggedUser;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class PersonalInfoFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.act_profile_frag_personal_info, container, false);
 
-        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
 
         UserNameSimpleEditText = root.findViewById(R.id.UserNameSimpleEditText);
         PhoneNumberSimpleEditText = root.findViewById(R.id.PhoneNumberSimpleEditText);
@@ -326,7 +326,7 @@ public class PersonalInfoFragment extends Fragment {
             saveUserData();
         });
 
-        model.getLoggedUser().observe(requireActivity(),this::loadUserData);
+        mMainActivityViewModel.getLoggedUser().observe(requireActivity(),this::loadUserData);
 
         return root;
     }
@@ -470,9 +470,7 @@ public class PersonalInfoFragment extends Fragment {
     }
     private void saveUserData (){
     try {
-        model.getLoggedUser().removeObservers(requireActivity());
-        model.getLanguages().removeObservers(requireActivity());
-        model.getServices().removeObservers(requireActivity());
+        mMainActivityViewModel.getLoggedUser().removeObservers(requireActivity());
 
         mLoggedUser.setName(LoggedUserName);
         mLoggedUser.getPhone().setNumber(LoggedUserPhoneNumber);
@@ -484,9 +482,9 @@ public class PersonalInfoFragment extends Fragment {
         }else {
             mLoggedUser.setBirthday(null);
         }
-        model.updateLoggedUser(mLoggedUser);
+        mMainActivityViewModel.updateLoggedUser(mLoggedUser);
         //model.TabLayoutVisibility(View.VISIBLE);
-        model.setSelectedFragment(4,View.VISIBLE);
+        mMainActivityViewModel.setSelectedFragment(4,View.VISIBLE);
     } catch (Exception e) {
         Log.i(TAG, "Error en saveUserData: " + e);
     }

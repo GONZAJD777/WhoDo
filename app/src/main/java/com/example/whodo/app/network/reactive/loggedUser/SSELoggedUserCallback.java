@@ -1,10 +1,10 @@
-package com.example.whodo.app.network.reactive;
+package com.example.whodo.app.network.reactive.loggedUser;
 
 import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.whodo.app.domain.user.User;
-import com.example.whodo.app.domain.user.UserDTO;
+import com.example.whodo.app.network.ApiResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -14,19 +14,17 @@ import okhttp3.Response;
 import okio.BufferedSource;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class SSELoggedUserCallback implements Callback {
     private static final String TAG = "SSELoggedUserCallback";
-    private final MutableLiveData<UserDTO> liveData; // LiveData del tipo User o List<User>
+    private final MutableLiveData<User> liveData; // LiveData del tipo User o List<User>
     private final Gson gson = new Gson();
     // Se crea el tipo para deserializar ApiResponse<T> o ApiResponse<List<T>>
 
-    public SSELoggedUserCallback(MutableLiveData<UserDTO> liveData) {
+    public SSELoggedUserCallback(MutableLiveData<User> liveData) {
         this.liveData = liveData;
     }
 
@@ -76,8 +74,8 @@ public class SSELoggedUserCallback implements Callback {
 
                     // Intentamos deserializar el JSON
                     try {
-                        Type type = new TypeToken<ApiResponse<UserDTO>>() {}.getType();
-                        ApiResponse<UserDTO> parsedResponse = gson.fromJson(jsonEvent, type);
+                        Type type = new TypeToken<ApiResponse<User>>() {}.getType();
+                        ApiResponse<User> parsedResponse = gson.fromJson(jsonEvent, type);
 
                         // Si no contiene data, lo descartamos
                         if (parsedResponse == null || parsedResponse.getData() == null) {
@@ -85,9 +83,9 @@ public class SSELoggedUserCallback implements Callback {
                             continue;
                         }
 
-                        UserDTO userDTO = parsedResponse.getData();
-                        Log.d(TAG, "Evento procesado: " + userDTO);
-                        liveData.postValue(userDTO);
+                        User mUser = parsedResponse.getData();
+                        Log.d(TAG, "Evento procesado: " + mUser);
+                        liveData.postValue(mUser);
 
                     } catch (Exception e) {
                         Log.e(TAG, "Error al parsear el evento: " + jsonEvent + " Error: " + e.getMessage());

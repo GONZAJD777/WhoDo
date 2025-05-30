@@ -1,11 +1,10 @@
-package com.example.whodo.app.network.reactive;
+package com.example.whodo.app.network.reactive.workOrder;
 
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
-import com.google.gson.Gson;
 
 import java.util.List;
 

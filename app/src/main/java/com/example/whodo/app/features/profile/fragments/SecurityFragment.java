@@ -26,7 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.whodo.R;
 import com.example.whodo.app.MainActivityViewModel;
-import com.example.whodo.app.SingletonUser;
+import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.features.profile.ProfileItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,10 +41,12 @@ import java.util.Objects;
 
 public class SecurityFragment extends Fragment {
 
-    private final String TAG1="SecurityFragment";
+    private final String TAG="SECURITY-FRAGMENT";
     private String LoggedUserEmail;
+    private String LoggedUserPass;
     private ProfileItem item_Password;
     private ProfileItem item_Wallet;
+    private User mLoggedUser;
     //----------------------------------------
     //WALLET ADDRESS VARIABLES
     private EditText WalletEmailSimpleEditText;
@@ -62,14 +64,15 @@ public class SecurityFragment extends Fragment {
     private LinearLayout BlackBackground_bottom_sheet;
 
 
+
     private final FirebaseAuth mAuth= FirebaseAuth.getInstance();
     private final FirebaseUser currentUser=mAuth.getCurrentUser();
-    private MainActivityViewModel model;
+    private MainActivityViewModel mMainActivityViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_profile_frag_security, container, false);
-        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
 
         EmailSimpleEditText = root.findViewById(R.id.EmailSimpleEditText);
         PasswordSimpleEditText = root.findViewById(R.id.PasswordSimpleEditText);
@@ -127,7 +130,7 @@ public class SecurityFragment extends Fragment {
             BlackBackground_bottom_sheet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    EmailSimpleEditText.setText(SingletonUser.getInstance().getEmail());
+                    EmailSimpleEditText.setText(LoggedUserEmail);
                     PasswordSimpleEditText.setText("");
                     NewPass1SimpleEditText.setText("");
                     NewPass2SimpleEditText.setText("");
@@ -151,7 +154,7 @@ public class SecurityFragment extends Fragment {
                         //Log.i("BottomSheetBehavior", "STATE_HIDDEN");
                         //Log.i("BottomSheetBehavior", "STATE_COLLAPSED");
                         setBottomSheetBehavior(PasswordBottomSheetBehavior,1);
-                        EmailSimpleEditText.setText(SingletonUser.getInstance().getEmail());
+                        EmailSimpleEditText.setText(LoggedUserEmail);
                         PasswordSimpleEditText.setText("");
                         NewPass1SimpleEditText.setText("");
                         NewPass2SimpleEditText.setText("");
@@ -226,11 +229,90 @@ public class SecurityFragment extends Fragment {
         Items_LinearLayout.addView(label_Wallet);
         Items_LinearLayout.addView(item_Wallet);
 
+        mMainActivityViewModel.getLoggedUser().observe(requireActivity(),this::loadUserData);
 
-        loadUserData();
+
         return root;
     }
+    private void loadUserData (User pUser) {
+        mLoggedUser=pUser.deepCopy();
+        LoggedUserEmail=mLoggedUser.getEmail();
+        EmailSimpleEditText.setText(LoggedUserEmail);
+        WalletEmailSimpleEditText.setText(LoggedUserEmail);
+        item_Wallet.setText(getString(R.string.SecurityFrag_WalletAddress_Label_Title1));
+    }
+    private void saveUserData(){
+        mMainActivityViewModel.getLoggedUser().removeObservers(requireActivity());
+        mMainActivityViewModel.setSelectedFragment(4,View.VISIBLE);
+        Log.d(TAG, "Pressed Save Button");
+    }
 
+    private void reAuthenticate (String pMail,String pPass, String action){
+            if ((pMail!=null && pPass!=null) && (!pMail.equals("") && !pPass.equals("")))
+            {
+                AuthCredential vCredentials= EmailAuthProvider.getCredential(pMail,pPass);
+
+                assert currentUser != null;
+                currentUser.reauthenticate(vCredentials).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("WHODO_LOG", "User re-authenticated.");
+
+                            if (Objects.equals(action, "UpdatePassword"))
+                            {
+                                updateAuthPassword(NewPass2SimpleEditText.getText().toString());
+                            }
+                            else if (Objects.equals(action, "UpdateWalletAddress"))
+                            {
+                                updateWalletAddress(WalletAddressSimpleEditText.getText().toString());
+                            }
+
+                        } else {
+                            Toast.makeText(requireContext(), "Wrong credentials",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(requireContext(), "Credentials cannot be null or empty",Toast.LENGTH_SHORT).show();
+            }
+
+    }
+    private void updateAuthPassword(String pPass){
+        assert currentUser != null;
+        currentUser.updatePassword(pPass).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d("WHODO_LOG", "User PASSWORD updated.");
+                    Toast.makeText(requireContext(), "User PASSWORD updated.",Toast.LENGTH_SHORT).show();
+                    mLoggedUser.setPassword(pPass);
+                    mMainActivityViewModel.updateUserImmidiate(mLoggedUser);
+                    //Actualizamos inmediatamente el password del usuario en la base
+                    //TODO: importante agregar encryptacion del password para almacenar en base de datos
+
+                } else {
+                    Toast.makeText(requireContext(), "We found a problem trying to update the PASSWORD, please check your data and try again",Toast.LENGTH_SHORT).show();
+                    Log.d("WHODO_LOG", "Error al actualizar el email " );
+                }
+            }
+        });
+    }
+    private void updateWalletAddress(String pWallet) { }
+    private void setBottomSheetBehavior (BottomSheetBehavior<LinearLayout> mBottomSheetBehavior, Integer mState){
+        if (mState==0){
+            mBottomSheetBehavior.setHideable(true);
+            mBottomSheetBehavior.setState(STATE_EXPANDED);
+            BlackBackground_bottom_sheet.setClickable(true);
+            BlackBackground_bottom_sheet.setAlpha(0.25F);
+        } else {
+            hideKeyboard(requireActivity());
+            mBottomSheetBehavior.setHideable(true);
+            mBottomSheetBehavior.setState(STATE_HIDDEN);
+            BlackBackground_bottom_sheet.setClickable(false);
+            BlackBackground_bottom_sheet.setAlpha(0);
+        }
+    }
     @SuppressLint("NonConstantResourceId")
     private void onClick(View view) {
         switch (view.getId()) {
@@ -239,7 +321,7 @@ public class SecurityFragment extends Fragment {
                 break;
             case R.id.ReadyLabelButtonPassUpdate:
                 setBottomSheetBehavior(PasswordBottomSheetBehavior,1);
-                EmailSimpleEditText.setText(SingletonUser.getInstance().getEmail());
+                EmailSimpleEditText.setText(LoggedUserEmail);
                 PasswordSimpleEditText.setText("");
                 NewPass1SimpleEditText.setText("");
                 NewPass2SimpleEditText.setText("");
@@ -291,78 +373,4 @@ public class SecurityFragment extends Fragment {
                 break;
         }
     }
-    private void reAuthenticate (String pMail,String pPass, String action){
-            if ((pMail!=null && pPass!=null) && (!pMail.equals("") && !pPass.equals("")))
-            {
-                AuthCredential vCredentials= EmailAuthProvider.getCredential(pMail,pPass);
-
-                assert currentUser != null;
-                currentUser.reauthenticate(vCredentials).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("WHODO_LOG", "User re-authenticated.");
-
-                            if (Objects.equals(action, "UpdatePassword"))
-                            {
-                                updateAuthPassword(NewPass2SimpleEditText.getText().toString());
-                            }
-                            else if (Objects.equals(action, "UpdateWalletAddress"))
-                            {
-                                updateWalletAddress(WalletAddressSimpleEditText.getText().toString());
-                            }
-
-                        } else {
-                            Toast.makeText(requireContext(), "Wrong credentials",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            } else {
-                Toast.makeText(requireContext(), "Credentials cannot be null or empty",Toast.LENGTH_SHORT).show();
-            }
-
-    }
-    private void updateAuthPassword(String pPass){
-        assert currentUser != null;
-        currentUser.updatePassword(pPass).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d("WHODO_LOG", "User PASSWORD updated.");
-                    Toast.makeText(requireContext(), "User PASSWORD updated.",Toast.LENGTH_SHORT).show();
-                    SingletonUser.getInstance().setPassword(pPass);
-                } else {
-                    Toast.makeText(requireContext(), "We found a problem trying to update the PASSWORD, please check your data and try again",Toast.LENGTH_SHORT).show();
-                    Log.d("WHODO_LOG", "Error al actualizar el email " );
-                }
-            }
-        });
-    }
-    private void updateWalletAddress(String pWallet) { }
-    private void saveUserData(){
-        model.setSelectedFragment(4,View.VISIBLE);
-        Log.d(TAG1, "Pressed Save Button");
-    }
-    private void loadUserData () {
-        LoggedUserEmail=SingletonUser.getInstance().getEmail();
-        EmailSimpleEditText.setText(LoggedUserEmail);
-        WalletEmailSimpleEditText.setText(LoggedUserEmail);
-        item_Wallet.setText(getString(R.string.SecurityFrag_WalletAddress_Label_Title1));
-    }
-
-    private void setBottomSheetBehavior (BottomSheetBehavior<LinearLayout> mBottomSheetBehavior, Integer mState){
-        if (mState==0){
-            mBottomSheetBehavior.setHideable(true);
-            mBottomSheetBehavior.setState(STATE_EXPANDED);
-            BlackBackground_bottom_sheet.setClickable(true);
-            BlackBackground_bottom_sheet.setAlpha(0.25F);
-        } else {
-            hideKeyboard(requireActivity());
-            mBottomSheetBehavior.setHideable(true);
-            mBottomSheetBehavior.setState(STATE_HIDDEN);
-            BlackBackground_bottom_sheet.setClickable(false);
-            BlackBackground_bottom_sheet.setAlpha(0);
-        }
-    }
-
 }

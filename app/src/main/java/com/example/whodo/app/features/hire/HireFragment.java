@@ -36,6 +36,8 @@ import com.example.whodo.app.resources.images.ImageManager;
 import com.example.whodo.app.resources.images.ImagesViewModel;
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.R;
+import com.example.whodo.app.resources.parameters.Parameter;
+import com.example.whodo.app.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -58,14 +60,10 @@ import java.util.Objects;
 public class HireFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "HIRE-FRAGMENT";
     boolean mLocationPermissionsGranted = false;
-    private final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private MapView mapView;
     private SeekBar DistanceFilterSeekBar;
     private LatLng DeviceLocation;
     private TextView MaxDistanceFilterLabel;
-
     private LinearLayout ReelItemsLinearLayout;
     private LinearLayout vServicesLinearLayout ;
     private FloatingActionButton FiltersButton;
@@ -224,8 +222,8 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         });
 
         mMainActivityViewModel.getLoggedUser().observe(requireActivity(), this::loadUser);
-        mMainActivityViewModel.getProviders().observe(getViewLifecycleOwner(),this::loadProviders);
-        mMainActivityViewModel.getServices().observe(getViewLifecycleOwner(),this::loadServices);
+        mMainActivityViewModel.getProviders().observe(requireActivity(),this::loadProviders);
+        mMainActivityViewModel.getParameters().observe(requireActivity(),this::loadParameters);
         mHireFragmentViewModel.getDistanceFilter().observe(getViewLifecycleOwner(),this::loadDistanceFilter);
         mHireFragmentViewModel.getPickedProvider().observe(getViewLifecycleOwner(),this::showProviderDetail);
 
@@ -238,7 +236,10 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     private void loadProviders(List<User> pProviders){
         mHireFragmentViewModel.setProviders(pProviders);
     }
-    private void loadServices(List<String> pServices){
+    private void loadParameters(List<Parameter> pParameters){
+
+        List<String> pServices = Utils.extractListFromParameters(pParameters,"SERVICES");
+
         mHireFragmentViewModel.setServices(pServices);
         loadServicesCheckBox(pServices);
     }
@@ -384,12 +385,20 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         String AvgCompletionTime = this.getResources().getString(R.string.HireFragment_MapMarkerSnipets_AvgCompletionTime);
         String OverallScore = this.getResources().getString( R.string.HireFragment_MapMarkerSnipets_OverallScore);
         LatLng UserLatLon = new LatLng(pProvider.getLocation().getLatitude(), pProvider.getLocation().getLongitude());
-        String SnippetText = pProvider.getSpecialization().toString().replaceAll(RegSeed, ",") +
-                AvgTariff + " " + pProvider.getUserScore().getAvgTariff() + "\n" +
-                AvgCompletionTime + " " + pProvider.getUserScore().getAvgCompletionTime() + "\n" +
-                OverallScore + " " + pProvider.getUserScore().getOverallScore();
+        String SnippetText ="";
+        for (int i = 0; i < pProvider.getSpecialization().size(); i++) {
+            if (i == pProvider.getSpecialization().size()-1){
+                SnippetText = SnippetText + pProvider.getSpecialization().get(i);
+            } else {
+                SnippetText = SnippetText + pProvider.getSpecialization().get(i)+",";
+            }
+        }
 
-        if (Objects.equals(pProvider.getAuthId(), mLoggedUser.getAuthId()) && Objects.equals(mLoggedUser.getType(), "1")) {
+        SnippetText = SnippetText + "\n" + AvgTariff + " " + pProvider.getUserScore().getAvgTariff() + "\n" +
+                     AvgCompletionTime + " " + pProvider.getUserScore().getAvgCompletionTime() + "\n" +
+                     OverallScore + " " + pProvider.getUserScore().getOverallScore();
+
+        if (Objects.equals(pProvider.getAuthId(), mLoggedUser.getAuthId()) && Objects.equals(mLoggedUser.getType(), 1)) {
             String mMapIconName = "my_location_customer";
             Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
@@ -397,7 +406,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                                 .snippet(SnippetText)
                                 .icon(BitmapDescriptorFactory.fromBitmap(mMapIcon))))
                                 .setTag(pProvider);
-        } else if (Objects.equals(pProvider.getAuthId(), mLoggedUser.getAuthId()) && Objects.equals(mLoggedUser.getType(), "2")) {
+        } else if (Objects.equals(pProvider.getAuthId(), mLoggedUser.getAuthId()) && Objects.equals(mLoggedUser.getType(), 2)) {
             String mMapIconName = "my_location_provider";
             Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
@@ -407,12 +416,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                                 .setTag(pProvider);
         } else {
             String mServIconName;
-            String[] mSplit = pProvider.getSpecialization().toArray(new String[0]);
-            if (mSplit.length>1) {
+            if (pProvider.getSpecialization().size()>1) {
                 mServIconName= "varios_24";
             }
             else {
-                mServIconName = pProvider.getSpecialization().toString().replaceAll(RegSeed, "") + "_64";
+                mServIconName = pProvider.getSpecialization().toString().replaceAll("^\\[|\\]$", "") + "_64";
             }
             Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mServIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
@@ -430,12 +438,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         mHireItem.setReviews(pProvider.getUserScore().getOverallScore()+"");
         mHireItem.setSpeed(pProvider.getUserScore().getAvgCompletionTime()+"");
 
-        String SpecText=pProvider.getSpecialization().toString().replaceAll(RegSeed, "");
-        ArrayList<String> SpecArrayList = new ArrayList<>(Arrays.asList(SpecText.split(",")));
-        for(int i = 0; i< SpecArrayList.size(); i++){
+
+        for(int i = 0; i< pProvider.getSpecialization().size(); i++){
 
             ImageView Spec = new ImageView(this.requireContext());
-            String mServIconName = SpecArrayList.get(i) + "_borderless_16";
+            String mServIconName = pProvider.getSpecialization().get(i) + "_borderless_16";
             Bitmap mServIconImage = ImageManager.getStoredIcon(requireContext(),mServIconName,80,80);
             Spec.setImageBitmap(mServIconImage);
             LinearLayout.LayoutParams ImageViewLP=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
@@ -483,16 +490,16 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
                 snippetSpec.setTypeface(null, Typeface.BOLD);
                 snippetSpec.setGravity(Gravity.CENTER);
                 snippetSpec.setText(marker.getSnippet());
-                //Log.d("MAPMARKER SNIPPET", "SNIPPET TEXT " +marker.getSnippet());
+                Log.d("MAPMARKER SNIPPET", "SNIPPET TEXT " +marker.getSnippet());
                 int indexStart1 = 0;
-                int indexEnd1 = Objects.requireNonNull(marker.getSnippet()).indexOf("|");
+                int indexEnd1 = Objects.requireNonNull(marker.getSnippet()).indexOf("\n");
                 //Log.d("MAPMARKER SNIPPET", "INDEXSTART " +indexStart1);
                 //Log.d("MAPMARKER SNIPPET", "INDEXEND " +indexEnd1);
                 snippetSpec.setText(Objects.requireNonNull(marker.getSnippet()).substring(indexStart1,indexEnd1));
 
                 TextView snippetInfo = new TextView(requireContext());
                 snippetInfo.setTextColor(Color.GRAY);
-                int indexStart = marker.getSnippet().indexOf("|")+1;
+                int indexStart = marker.getSnippet().indexOf("\n")+1;
                 int indexEnd = marker.getSnippet().length();
                 //Log.d("MAPMARKER SNIPPET", "INDEXSTART " +indexStart);
                 //Log.d("MAPMARKER SNIPPET", "INDEXEND " +indexEnd);
@@ -561,8 +568,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         Log.d("getLocationPermission()", "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
+        String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+        int LOCATION_PERMISSION_REQUEST_CODE = 1234;
         if(ContextCompat.checkSelfPermission(this.requireContext(),
                 FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
             if(ContextCompat.checkSelfPermission(this.requireContext(),
                     COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                  mLocationPermissionsGranted = true;
@@ -687,6 +697,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             isCons2Active=false;
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -695,20 +706,39 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onPause() {
         super.onPause();
-       //mapView.onPause();
-        //clearReel(this.ReelLinearLayout);
+        mapView.onPause();
     }
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //mapView.onDestroy();
-        //clearReel(this.ReelLinearLayout);
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+    @Override
+    public void onDestroyView() {super.onDestroyView();
+        // Liberar referencias a vistas para evitar memory leaks
+        // mapView.onDestroy() se llama aquí si no usas el fragmento del mapa
+        // pero como usas MapView directamente, su onDestroy se maneja
+        // cuando el fragmento se destruye completamente.
+        // Sin embargo, es buena práctica limpiar las referencias a las vistas aquí.
+        // Por ejemplo:
+        // AvgTime_TextView = null;
+        // ... y así para todas las vistas.
+        // O mejor aún, usar View Binding.
+        if (mapView != null) {
+            mapView.onDestroy(); // Asegúrate de llamar a onDestroy
+        }
+        mapView = null; // Liberar la referencia
+        // ... liberar otras referencias a vistas
     }
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        //mapView.onLowMemory();
-        //clearReel(this.ReelLinearLayout);
+        mapView.onLowMemory();
+    }
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
     }
 }
 

@@ -1,4 +1,4 @@
-package com.example.whodo.app.domain.workOrder.dao;
+package com.example.whodo.app.domain.workOrder.dao.Impl;
 
 
 import android.content.Context;
@@ -9,17 +9,18 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.whodo.BuildConfig;
 import com.example.whodo.app.Callback;
 import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
-import com.example.whodo.app.network.reactive.SSEWorkOrderClient;
+import com.example.whodo.app.domain.workOrder.dao.WorkOrderDao;
+import com.example.whodo.app.network.reactive.workOrder.SSEWorkOrderClient;
 import com.example.whodo.app.network.rest.RetrofitClient;
 import com.example.whodo.app.network.rest.api.WorkOrderApi;
 
 import java.util.List;
 
-public class MongoDBWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
+public class WorkOrderDaoImpl implements WorkOrderDao<WorkOrderDTO> {
     private final WorkOrderApi mWorkOrderApi;
     private final String mBaseUrl= BuildConfig.BASE_URL;
 
-    public MongoDBWorkOrderDAO(Context pContext) {
+    public WorkOrderDaoImpl(Context pContext) {
         RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl,pContext);
         this.mWorkOrderApi = retrofitClient.createService(WorkOrderApi.class);
 

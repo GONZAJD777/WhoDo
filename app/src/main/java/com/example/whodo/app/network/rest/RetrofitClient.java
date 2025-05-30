@@ -2,7 +2,7 @@ package com.example.whodo.app.network.rest;
 
 import android.content.Context;
 
-import com.example.whodo.app.network.SslUtils;
+import com.example.whodo.app.utils.SslUtils;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

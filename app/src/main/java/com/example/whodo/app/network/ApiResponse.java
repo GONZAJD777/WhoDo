@@ -1,4 +1,4 @@
-package com.example.whodo.app.network.reactive;
+package com.example.whodo.app.network;
 
 import java.util.ArrayList;
 import java.util.List;

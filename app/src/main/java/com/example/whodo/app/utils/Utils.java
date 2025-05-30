@@ -1,5 +1,7 @@
 package com.example.whodo.app.utils;
 
+import com.example.whodo.app.resources.parameters.Parameter;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,8 +11,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -75,10 +80,6 @@ public class Utils {
         return fechaFormateada;
     }
 
-    public static Date parseISODate(String isoDateString) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(isoDateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        return Date.from(zonedDateTime.toInstant()); // Convertir a Date
-    }
 
     //Conviernte una fecha en formatos simples con hora separada a formato ISO
     //***********************************************************
@@ -163,4 +164,25 @@ public class Utils {
             return false;
         }
     }
+
+    //Extrae del listado de parametros, el listado de valores de un parametro dado (LANGUAGES, SERVICES,ETC)
+    public static List<String> extractListFromParameters (List<Parameter> pParameters,String pParamId){
+        List<String> mListOfStrings = pParameters.stream()
+                .filter(p -> pParamId.toUpperCase().equals(p.getId()))
+                .map(Parameter::getValue)
+                .flatMap(value -> Arrays.stream(value.split(","))) // Si value contiene una lista separada por comas
+                .collect(Collectors.toList());
+        return mListOfStrings;
+    }
+
+    public static Parameter findParameterById(List<Parameter> parameters, String id) {
+        return parameters.stream()
+                .filter(param -> id.equals(param.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+
+
+
 }

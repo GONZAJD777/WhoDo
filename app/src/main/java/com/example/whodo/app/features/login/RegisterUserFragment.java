@@ -3,7 +3,6 @@ package com.example.whodo.app.features.login;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -21,23 +20,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.whodo.app.Callback;
-import com.example.whodo.app.domain.user.User;
 import com.example.whodo.R;
-import com.example.whodo.app.domain.user.UserDTO;
-import com.example.whodo.app.domain.user.UserMapper;
-import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
-import com.example.whodo.app.domain.user.dao.UserDao;
-import com.example.whodo.app.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
 
 public class RegisterUserFragment extends Fragment {
     private EditText MailSimpleEditText;

@@ -1,7 +1,5 @@
 package com.example.whodo.app.features.login;
 
-import static android.content.ContentValues.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,17 +22,10 @@ import com.example.whodo.app.MainActivity;
 import com.example.whodo.R;
 import com.example.whodo.app.MainActivityViewModel;
 import com.example.whodo.app.domain.user.User;
-import com.example.whodo.app.domain.user.UserDTO;
-import com.example.whodo.app.domain.user.UserMapper;
-import com.example.whodo.app.domain.user.dao.FirebaseUserDAO;
-import com.example.whodo.app.domain.user.dao.UserDao;
 import com.example.whodo.app.utils.Utils;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class SignInFragment extends Fragment {
@@ -112,13 +103,17 @@ public class SignInFragment extends Fragment {
     private void createNewUser(String pAuthId,String pUserEmail, String pUserPass){
 
         //TODO: encryptar el password antes de guardarlo
-        User NewUser = new User(pAuthId,pUserEmail,pUserEmail,pUserPass);
-        NewUser.setCreateDate(Utils.creationDateParse(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getMetadata()).getCreationTimestamp()));
+        User NewUser = new User(pAuthId,pUserEmail,pUserEmail,pUserPass,1,1,new ArrayList<>(),new ArrayList<>(),
+                Utils.creationDateParse(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getMetadata()).getCreationTimestamp()));
+        //Setea el usuario como creado y activo 1(desactivador 0)
+        //Setea el usuario como Cliente 1(proveedor 2)
+        // se establecen los lenguajes y services vacios para evitar errores de nullpointer exception
+
         Log.d(TAG, "USER CREATION DATE:" + NewUser.getCreateDate());
 
         mMainActivityViewModel.createUser(NewUser, new Callback<>() {
             @Override
-            public void onSuccess(UserDTO userDTO) {
+            public void onSuccess(User pUser) {
                 Intent intent = new Intent(requireActivity(), MainActivity.class);
                 requireActivity().startActivity(intent);
                 requireActivity().finish();

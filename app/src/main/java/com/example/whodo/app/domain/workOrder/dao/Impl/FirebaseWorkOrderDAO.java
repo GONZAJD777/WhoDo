@@ -1,4 +1,4 @@
-package com.example.whodo.app.domain.workOrder.dao;
+package com.example.whodo.app.domain.workOrder.dao.Impl;
 
 import android.util.Log;
 
@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.whodo.app.Callback;
 import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
+import com.example.whodo.app.domain.workOrder.dao.WorkOrderDao;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO>{
+public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrderDTO> {
     private final String TAG="FirebaseWorkOrderDao";
     //DATABASE REF
     private final FirebaseDatabase mDatabaseInstance = FirebaseDatabase.getInstance();
