@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.whodo.app.domain.workOrder.WorkOrder;
 import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class SSEWorkOrderClient {
         SSE_URL = sseUrl;
     }
 
-    public void startListening(MutableLiveData<List<WorkOrderDTO>> mWorkOrders) {
+    public void startListening(MutableLiveData<List<WorkOrder>> mWorkOrders) {
         Log.d(TAG, "Iniciando conexión SSE con: " + SSE_URL);
         Request request = new Request.Builder().url(SSE_URL).build();
         client.newCall(request).enqueue(new SEEWorkOrderCallback(mWorkOrders)); // Ahora SSECallback detecta automáticamente si es lista o un solo objeto

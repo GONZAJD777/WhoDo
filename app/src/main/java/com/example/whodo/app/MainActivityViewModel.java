@@ -69,7 +69,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private MediatorLiveData<Boolean> allDataReady = new MediatorLiveData<>();
 
     private UserDao<User> mUserDao;
-    private WorkOrderDao<WorkOrderDTO> mWorkOrderDao;
+    private WorkOrderDao<WorkOrder> mWorkOrderDao;
     private final ParametersDao<Parameter> mParametersDao;
 
     public MainActivityViewModel(@NonNull Application application) {
@@ -100,7 +100,7 @@ public class MainActivityViewModel extends AndroidViewModel {
                             Double distance = Double.parseDouble(value);
                             Log.d(TAG, "Distancia: " + distance);
                             loadUserProviders(mUser.getValue(), distance);
-                            //loadUserWorkOrders(Objects.requireNonNull(mUser.getValue()));
+                            loadUserWorkOrders(Objects.requireNonNull(mUser.getValue()));
                         } catch (NumberFormatException e) {
                             Log.d(TAG, "Error al convertir el valor a Double: " + e.getMessage());
                         }
@@ -270,9 +270,9 @@ public class MainActivityViewModel extends AndroidViewModel {
         }
 
         if (!(new HashSet<>(pUserSnapshot.getLanguages()).containsAll(pUser.getLanguages()) && new HashSet<>(pUser.getLanguages()).containsAll(pUserSnapshot.getLanguages())) ) {
-                Log.i(TAG, "UpdateUser IDIOMAS ANTIGUA: " + pUserSnapshot.getLanguages());
-                Log.i(TAG, "UpdateUser IDIOMAS NUEVA: " + pUser.getLanguages());
-                userToUpdate.setLanguages(pUser.getLanguages());
+            Log.i(TAG, "UpdateUser IDIOMAS ANTIGUA: " + pUserSnapshot.getLanguages());
+            Log.i(TAG, "UpdateUser IDIOMAS NUEVA: " + pUser.getLanguages());
+            userToUpdate.setLanguages(pUser.getLanguages());
         }
         if (!Objects.equals(pUser.getLocation().getLatitude(), pUserSnapshot.getLocation().getLatitude()) || !Objects.equals(pUser.getLocation().getLongitude(), pUserSnapshot.getLocation().getLongitude())) {
             Log.i(TAG, "UpdateUser LATITUD ANTIGUA: " + pUserSnapshot.getLocation().getLatitude());
@@ -328,11 +328,10 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     //HANDLING WORKORDERS
     public void createWorkOrder(WorkOrder pWorkOrder) {
-        mWorkOrderDao.create(WorkOrderMapper.toDto(pWorkOrder), new Callback<WorkOrderDTO>() {
+        mWorkOrderDao.create(pWorkOrder, new Callback<WorkOrder>() {
             @Override
-            public void onSuccess(WorkOrderDTO workOrderDTO) {
+            public void onSuccess(WorkOrder workOrder) {
             }
-
             @Override
             public void onError(Exception e) {
             }
@@ -340,11 +339,10 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     public void updateWorkOrder(WorkOrder pWorkOrder) {
-        mWorkOrderDao.update(WorkOrderMapper.toDto(pWorkOrder), new Callback<WorkOrderDTO>() {
+        mWorkOrderDao.update(pWorkOrder, new Callback<WorkOrder>() {
             @Override
-            public void onSuccess(WorkOrderDTO workOrderDTO) {
+            public void onSuccess(WorkOrder workOrder) {
             }
-
             @Override
             public void onError(Exception e) {
             }
@@ -381,16 +379,11 @@ public class MainActivityViewModel extends AndroidViewModel {
         WorkOrder mWorkOrder = new WorkOrder();
         mWorkOrder.setCustomerId(pUser.getId());
         mWorkOrder.setProviderId(pUser.getId());
-        mWorkOrderDao.find(WorkOrderMapper.toDto(mWorkOrder)).observeForever(workOrderDTOList -> {
-            if (workOrderDTOList != null) {
+        mWorkOrderDao.find(mWorkOrder).observeForever(workOrderList -> {
+            if (workOrderList != null) {
                 List<WorkOrder> AuxWorkOrderList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
-
-                for (WorkOrderDTO workOrderDTO : workOrderDTOList) {
-                    WorkOrder workOrder = WorkOrderMapper.toEntity(workOrderDTO); // Mapear UserDTO a User
-                    AuxWorkOrderList.add(workOrder); // Agregar el objeto User a la lista
-                }
                 mWorkOrders.setValue(AuxWorkOrderList);
-                Log.d(TAG, "WorkOrderObserver --> a cambiado el dataset ");
+                Log.d(TAG, "loadUserWorkOrders() --> onSuccess mWorkOrders: "+ mWorkOrders);
 
                 if (mWorkOrders.isInitialized() && mPickedWorkOrder.isInitialized()) {
                     for (WorkOrder pWorkOrder : Objects.requireNonNull(mWorkOrders.getValue())) {
@@ -399,7 +392,6 @@ public class MainActivityViewModel extends AndroidViewModel {
                         }
                     }
                 }
-
             }
         });
     }
