@@ -1,27 +1,37 @@
 package com.example.whodo.app.domain.workOrder;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
 import com.example.whodo.app.domain.user.User;
-import com.google.android.gms.maps.model.LatLng;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
-public class WorkOrder {
-
+public class WorkOrderApiRestRequestDTO {
     private String orderId;
     private Customer customer;
     private Provider provider;
     private String specialization;
     private String description;
-    private String creationDate;
-    private String timeLimit;
-    private String stateChangeDate;
+    private WorkOrderDate creationDate;
+    private WorkOrderDate timeLimit;
+    private WorkOrderDate stateChangeDate;
     private String state;
     private Inspection inspection;
     private Work work;
     private Feedback feedback;
 
-    // Getters y setters
-    public WorkOrder() {
+
+    public WorkOrderApiRestRequestDTO() {
         this.customer = new Customer();
         this.provider = new Provider();
         this.inspection= new Inspection();
@@ -29,154 +39,100 @@ public class WorkOrder {
         this.feedback = new Feedback();
     }
 
-    // assigned OPEN WORK ORDER Constructor setted ONEVALUATION State
-    public WorkOrder(String pCustomerId,String pCustomerName,String pCustomerAddress,double pCustomerLat,double pCustomerLng,String pCustomerPhoneNumber,String pCustomerPhoneCcn,
-                     String pProviderId,String pProviderName,String pProviderAddress,double pProviderLat,double pProviderLng,String pProviderPhoneNumber,String pProviderPhoneCcn,
-                     String pState, String pSpecialization,String pDescription,String pCreationDate,String pTimeLimit,String pStateChangeDate) {
-
-        this.customer = new Customer();
-        this.provider = new Provider();
-        this.inspection= new Inspection();
-        this.work = new Work();
-        this.feedback = new Feedback();
-
-        //this.OrderId = "orderId";
-        this.getCustomer().customerId = pCustomerId;
-        this.getCustomer().customerName=pCustomerName;
-        this.getCustomer().customerAddress=pCustomerAddress;
-        this.getCustomer().setCustomerLocation(new User.Location(pCustomerLat,pCustomerLng,null));
-        this.getCustomer().setCustomerPhone(new User.Phone(pCustomerPhoneNumber,pCustomerPhoneCcn));
-
-        this.getProvider().providerId = pProviderId;
-        this.getProvider().providerName=pProviderName;
-        this.getProvider().providerAddress=pProviderAddress;
-        this.getProvider().setProviderLocation(new User.Location(pProviderLat,pProviderLng,null));;
-        this.getProvider().setProviderPhone(new User.Phone(pProviderPhoneNumber,pProviderPhoneCcn));
-
-        this.specialization = pSpecialization;
-        this.description = pDescription;
-        this.creationDate = pCreationDate;
-        this.timeLimit = pTimeLimit;
-        this.state = pState;
-        this.stateChangeDate = pStateChangeDate;
-
-    }
-    // not assigned OPEN WORK ORDER Constructor
-    public WorkOrder(String pCustomerId,String pCustomerName,String pCustomerAddress,double pCustomerLat,double pCustomerLng,String pCustomerPhoneNumber,String pCustomerPhoneCcn,
-                     String pSpecialization,String pDescription,String pCreationDate,String pTimeLimit,String pStateChangeDate) {
-        this.customer = new Customer();
-        this.provider = new Provider();
-        this.inspection= new Inspection();
-        this.work = new Work();
-        this.feedback = new Feedback();
-
-        this.getCustomer().customerId = pCustomerId;
-        this.getCustomer().customerName=pCustomerName;
-        this.getCustomer().customerAddress=pCustomerAddress;
-        this.getCustomer().setCustomerLocation(new User.Location(pCustomerLat,pCustomerLng,null));
-        this.getCustomer().setCustomerPhone(new User.Phone(pCustomerPhoneNumber,pCustomerPhoneCcn));
-
-        this.specialization = pSpecialization;
-        this.description = pDescription;
-        this.creationDate = pCreationDate;
-        this.timeLimit = pTimeLimit;
-        this.state = "OPEN";
-        this.stateChangeDate = pStateChangeDate;
-    }
     public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(String prderId) {
-        orderId = prderId;
+    public void setOrderId(String pOrderId) {
+        orderId = pOrderId;
     }
 
     public String getSpecialization() {
         return specialization;
     }
 
-    public void setSpecialization(String ppecialization) {
-        specialization = ppecialization;
+    public void setSpecialization(String pSpecialization) {
+        specialization = pSpecialization;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String pescription) {
-        description = pescription;
+    public void setDescription(String pDescription) {
+        description = pDescription;
     }
 
-    public String getCreationDate() {
+    public WorkOrderDate getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(String preationDate) {
-        creationDate = preationDate;
+    public void setCreationDate(WorkOrderDate pCreationDate) {
+        creationDate = pCreationDate;
     }
 
-    public String getTimeLimit() {
+    public WorkOrderDate getTimeLimit() {
         return timeLimit;
     }
 
-    public void setTimeLimit(String pimeLimit) {
-        timeLimit = pimeLimit;
+    public void setTimeLimit(WorkOrderDate pTimeLimit) {
+        timeLimit = pTimeLimit;
     }
 
-    public String getStateChangeDate() {
+    public WorkOrderDate getStateChangeDate() {
         return stateChangeDate;
     }
 
-    public void setStateChangeDate(String ptateChangeDate) {
-        stateChangeDate = ptateChangeDate;
+    public void setStateChangeDate(WorkOrderDate pStateChangeDate) {
+        stateChangeDate = pStateChangeDate;
     }
 
     public String getState() {
         return state;
     }
 
-    public void setState(String ptate) {
-        state = ptate;
+    public void setState(String pState) {
+        state = pState;
     }
 
     public Customer getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomer(Customer pCustomer) {
+        this.customer = pCustomer;
     }
 
     public Provider getProvider() {
         return provider;
     }
 
-    public void setProvider(Provider provider) {
-        this.provider = provider;
+    public void setProvider(Provider pProvider) {
+        this.provider = pProvider;
     }
 
     public Inspection getInspection() {
         return inspection;
     }
 
-    public void setInspection(Inspection inspection) {
-        this.inspection = inspection;
+    public void setInspection(Inspection pInspection) {
+        this.inspection = pInspection;
     }
 
     public Work getWork() {
         return work;
     }
 
-    public void setWork(Work work) {
-        this.work = work;
+    public void setWork(Work pWork) {
+        this.work = pWork;
     }
 
     public Feedback getFeedback() {
         return feedback;
     }
 
-    public void setFeedback(Feedback feedback) {
-        this.feedback = feedback;
+    public void setFeedback(Feedback pFeedback) {
+        this.feedback = pFeedback;
     }
 
     public static class Customer {
@@ -187,13 +143,12 @@ public class WorkOrder {
         private User.Phone customerPhone;
 
         // Getters y setters
+        public String getCustomerId() {
+            return customerId;
+        }
 
         public void setCustomerId(String pustomerId) {
             customerId = pustomerId;
-        }
-
-        public String getCustomerId() {
-            return customerId;
         }
 
         public String getCustomerName() {
@@ -300,9 +255,9 @@ public class WorkOrder {
         }
     }
     public static class Inspection {
-        private String inspectionDate;
+        private WorkOrderDate inspectionDate;
         private Integer inspectionCharges;
-        private String inspectionTimeLimit;
+        private WorkOrderDate inspectionTimeLimit;
         private String inspectionPaymentOrder;
         private Integer inspectionFee;
         private String inspectionFullfilment;
@@ -310,68 +265,68 @@ public class WorkOrder {
 
         // Getters y setters
 
-        public String getInspectionDate() {
+        public WorkOrderDate getInspectionDate() {
             return inspectionDate;
         }
 
-        public void setInspectionDate(String pnspectionDate) {
-            inspectionDate = pnspectionDate;
+        public void setInspectionDate(WorkOrderDate pInspectionDate) {
+            inspectionDate = pInspectionDate;
         }
 
         public Integer getInspectionCharges() {
             return inspectionCharges;
         }
 
-        public void setInspectionCharges(Integer pnspectionCharges) {
-            inspectionCharges = pnspectionCharges;
+        public void setInspectionCharges(Integer pInspectionCharges) {
+            inspectionCharges = pInspectionCharges;
         }
 
-        public String getInspectionTimeLimit() {
+        public WorkOrderDate getInspectionTimeLimit() {
             return inspectionTimeLimit;
         }
 
-        public void setInspectionTimeLimit(String pnspectionTimeLimit) {
-            inspectionTimeLimit = pnspectionTimeLimit;
+        public void setInspectionTimeLimit(WorkOrderDate pInspectionTimeLimit) {
+            inspectionTimeLimit = pInspectionTimeLimit;
         }
 
         public String getInspectionPaymentOrder() {
             return inspectionPaymentOrder;
         }
 
-        public void setInspectionPaymentOrder(String pnspectionPaymentOrder) {
-            inspectionPaymentOrder = pnspectionPaymentOrder;
+        public void setInspectionPaymentOrder(String pInspectionPaymentOrder) {
+            inspectionPaymentOrder = pInspectionPaymentOrder;
         }
 
         public Integer getInspectionFee() {
             return inspectionFee;
         }
 
-        public void setInspectionFee(Integer pnspectionFee) {
-            inspectionFee = pnspectionFee;
+        public void setInspectionFee(Integer pInspectionFee) {
+            inspectionFee = pInspectionFee;
         }
 
         public String getInspectionFullfilment() {
             return inspectionFullfilment;
         }
 
-        public void setInspectionFullfilment(String pnspectionFullfilment) {
-            inspectionFullfilment = pnspectionFullfilment;
+        public void setInspectionFullfilment(String pInspectionFullfilment) {
+            inspectionFullfilment = pInspectionFullfilment;
         }
 
         public String getInspectionRescheduled() {
             return inspectionRescheduled;
         }
 
-        public void setInspectionRescheduled(String pnspectionRescheduled) {
-            inspectionRescheduled = pnspectionRescheduled;
+        public void setInspectionRescheduled(String pInspectionRescheduled) {
+            inspectionRescheduled = pInspectionRescheduled;
         }
 
         @Override
         public String toString() {
             return "Inspection{" +
-                    "inspectionDate='" + inspectionDate + '\'' +
+                    "inspectionDate=" + inspectionDate +
                     ", inspectionCharges=" + inspectionCharges +
-                    ", inspectionTimeLimit='" + inspectionTimeLimit + '\'' +
+                    ", inspectionTimeLimit=" + inspectionTimeLimit +
                     ", inspectionPaymentOrder='" + inspectionPaymentOrder + '\'' +
                     ", inspectionFee=" + inspectionFee +
                     ", inspectionFullfilment='" + inspectionFullfilment + '\'' +
@@ -380,111 +335,111 @@ public class WorkOrder {
         }
     }
     public static class Work {
-        private String proposalTimeLimitDate;
-        private String workStartDate;
-        private String workEndDate;
+        private WorkOrderDate proposalTimeLimitDate;
+        private WorkOrderDate workStartDate;
+        private WorkOrderDate workEndDate;
         private Integer workLaborCost;
         private Integer workMaterialsCost;
         private Integer workFee;
         private String detail;
         private String workPaymentOrder;
-        private String workWarrantyEndDate;
+        private WorkOrderDate workWarrantyEndDate;
         private Integer workLimitTimeExtension;
 
         // Getters y setters
 
-        public String getProposalTimeLimitDate() {
+        public WorkOrderDate getProposalTimeLimitDate() {
             return proposalTimeLimitDate;
         }
 
-        public void setProposalTimeLimitDate(String proposalTimeLimitDate) {
-            this.proposalTimeLimitDate = proposalTimeLimitDate;
+        public void setProposalTimeLimitDate(WorkOrderDate pProposalTimeLimitDate) {
+            proposalTimeLimitDate = pProposalTimeLimitDate;
         }
 
-        public String getWorkStartDate() {
+        public WorkOrderDate getWorkStartDate() {
             return workStartDate;
         }
 
-        public void setWorkStartDate(String porkStartDate) {
-            workStartDate = porkStartDate;
+        public void setWorkStartDate(WorkOrderDate pWorkStartDate) {
+            workStartDate = pWorkStartDate;
         }
 
-        public String getWorkEndDate() {
+        public WorkOrderDate getWorkEndDate() {
             return workEndDate;
         }
 
-        public void setWorkEndDate(String porkEndDate) {
-            workEndDate = porkEndDate;
+        public void setWorkEndDate(WorkOrderDate pWorkEndDate) {
+            workEndDate = pWorkEndDate;
         }
 
         public Integer getWorkLaborCost() {
             return workLaborCost;
         }
 
-        public void setWorkLaborCost(Integer porkLaborCost) {
-            workLaborCost = porkLaborCost;
+        public void setWorkLaborCost(Integer pWorkLaborCost) {
+            workLaborCost = pWorkLaborCost;
         }
 
         public Integer getWorkMaterialsCost() {
             return workMaterialsCost;
         }
 
-        public void setWorkMaterialsCost(Integer porkMaterialsCost) {
-            workMaterialsCost = porkMaterialsCost;
+        public void setWorkMaterialsCost(Integer pWorkMaterialsCost) {
+            workMaterialsCost = pWorkMaterialsCost;
         }
 
         public Integer getWorkFee() {
             return workFee;
         }
 
-        public void setWorkFee(Integer porkFee) {
-            workFee = porkFee;
+        public void setWorkFee(Integer pWorkFee) {
+            workFee = pWorkFee;
         }
 
         public String getDetail() {
             return detail;
         }
 
-        public void setDetail(String petail) {
-            detail = petail;
+        public void setDetail(String pDetail) {
+            detail = pDetail;
         }
 
         public String getWorkPaymentOrder() {
             return workPaymentOrder;
         }
 
-        public void setWorkPaymentOrder(String porkPaymentOrder) {
-            workPaymentOrder = porkPaymentOrder;
+        public void setWorkPaymentOrder(String pWorkPaymentOrder) {
+            workPaymentOrder = pWorkPaymentOrder;
         }
 
-        public String getWorkWarrantyEndDate() {
+        public WorkOrderDate getWorkWarrantyEndDate() {
             return workWarrantyEndDate;
         }
 
-        public void setWorkWarrantyEndDate(String porkWarrantyEndDate) {
-            workWarrantyEndDate = porkWarrantyEndDate;
+        public void setWorkWarrantyEndDate(WorkOrderDate pWorkWarrantyEndDate) {
+            workWarrantyEndDate = pWorkWarrantyEndDate;
         }
 
         public Integer getWorkLimitTimeExtension() {
             return workLimitTimeExtension;
         }
 
-        public void setWorkLimitTimeExtension(Integer porkLimitTimeExtension) {
-            workLimitTimeExtension = porkLimitTimeExtension;
+        public void setWorkLimitTimeExtension(Integer pWorkLimitTimeExtension) {
+            workLimitTimeExtension = pWorkLimitTimeExtension;
         }
 
         @Override
         public String toString() {
             return "Work{" +
-                    "proposalTimeLimitDate='" + proposalTimeLimitDate + '\'' +
-                    ", workStartDate='" + workStartDate + '\'' +
-                    ", workEndDate='" + workEndDate + '\'' +
+                    "proposalTimeLimitDate=" + proposalTimeLimitDate +
+                    ", workStartDate=" + workStartDate +
+                    ", workEndDate=" + workEndDate +
                     ", workLaborCost=" + workLaborCost +
                     ", workMaterialsCost=" + workMaterialsCost +
                     ", workFee=" + workFee +
                     ", detail='" + detail + '\'' +
                     ", workPaymentOrder='" + workPaymentOrder + '\'' +
-                    ", workWarrantyEndDate='" + workWarrantyEndDate + '\'' +
+                    ", workWarrantyEndDate=" + workWarrantyEndDate +
                     ", workLimitTimeExtension=" + workLimitTimeExtension +
                     '}';
         }
@@ -549,17 +504,67 @@ public class WorkOrder {
                     '}';
         }
     }
+    public static class WorkOrderDate {
+        private String dateUtc; // Fecha almacenada en UTC
+        private String timeZoneOffset; // Desplazamiento horario en formato ±hh:mm
+
+        public WorkOrderDate() {}
+
+        public WorkOrderDate(String isoDate) {
+            try {
+                System.out.println("Date To Parse send --> " + isoDate);
+
+                // Parseamos usando java.time
+                OffsetDateTime odt = OffsetDateTime.parse(isoDate);
+                OffsetDateTime utcDate = odt.withOffsetSameInstant(ZoneOffset.UTC);
+
+                // Formateamos la fecha en formato UTC con milisegundos y zona horaria
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                this.dateUtc = utcDate.format(formatter);
+
+                // Offset original, por ejemplo "+00:00"
+                this.timeZoneOffset = odt.getOffset().toString();
+
+                System.out.println("Formatted Date UTC --> " + this.dateUtc);
+                System.out.println("Offset --> " + this.timeZoneOffset);
+
+            } catch (Exception e) {
+                throw new RuntimeException("Error al convertir la fecha: " + e.getMessage());
+            }
+        }
+
+        public WorkOrderDate(String dateUtc, String timeZoneOffset) {
+            this.dateUtc = dateUtc;
+            this.timeZoneOffset = timeZoneOffset;
+        }
+
+        public String getDateUtc() { return dateUtc; }
+        public void setDateUtc(String dateUtc) { this.dateUtc = dateUtc; }
+
+        public String getTimeZoneOffset() { return timeZoneOffset; }
+        public void setTimeZoneOffset(String timeZoneOffset) { this.timeZoneOffset = timeZoneOffset; }
+
+        @Override
+        public String toString() {
+            return "WorkOrderDate{" +
+                    "dateUtc=" + dateUtc +
+                    ", timeZoneOffset='" + timeZoneOffset + '\'' +
+                    '}';
+        }
+    }
+
+
     @Override
     public String toString() {
-        return "WorkOrderResponse{" +
+        return "WorkOrder{" +
                 "orderId='" + orderId + '\'' +
                 ", customer=" + customer.toString() +
                 ", provider=" + provider.toString() +
                 ", specialization='" + specialization + '\'' +
                 ", description='" + description + '\'' +
-                ", creationDate='" + creationDate + '\'' +
-                ", timeLimit='" + timeLimit + '\'' +
-                ", stateChangeDate='" + stateChangeDate + '\'' +
+                ", creationDate=" + creationDate +
+                ", timeLimit=" + timeLimit +
+                ", stateChangeDate=" + stateChangeDate +
                 ", state='" + state + '\'' +
                 ", inspection=" + inspection.toString() +
                 ", work=" + work.toString() +

@@ -218,7 +218,7 @@ public class WorkOrderFragment extends Fragment {
         } else if (Objects.equals(pWorkOrder.getState(), "ONPROGRESS")) {
             String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
             orderId_label.setText(mOrderId);
-            if (pWorkOrder.getWorkLimitTimeExtension() >= mMaxWorkLimitTimeExt) {
+            if (pWorkOrder.getWork().getWorkLimitTimeExtension() >= mMaxWorkLimitTimeExt) {
                 startComplaintButton.setVisibility(View.VISIBLE);
             } else {
                 startComplaintButton.setVisibility(View.INVISIBLE);
@@ -253,12 +253,12 @@ public class WorkOrderFragment extends Fragment {
     //********************************** Validacion de Inspeccion **********************************//
     private void validateInspectionStatus(WorkOrder pWorkOrder) {
 
-        if (pWorkOrder != null && pWorkOrder.getInspectionDate() != null) {
+        if (pWorkOrder != null && pWorkOrder.getInspection().getInspectionDate() != null) {
             String mNow = Utils.getISOLocalDate();
-            String mInspectionDate = pWorkOrder.getInspectionDate();
+            String mInspectionDate = pWorkOrder.getInspection().getInspectionDate();
             String[] validStates = mValidStates;
 
-            if (Utils.isAfter(mNow, mInspectionDate) && Arrays.asList(validStates).contains(pWorkOrder.getState()) && pWorkOrder.getInspectionFullfilment() == null) {
+            if (Utils.isAfter(mNow, mInspectionDate) && Arrays.asList(validStates).contains(pWorkOrder.getState()) && pWorkOrder.getInspection().getInspectionFullfilment() == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle(mValidateInspectionStatusTittle)
                         .setMessage(mValidateInspectionStatusMessage)
@@ -277,10 +277,10 @@ public class WorkOrderFragment extends Fragment {
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderId);
         if (pStatus == BUTTON_POSITIVE) {
-            WO.setInspectionFullfilment("Y");
+            WO.getInspection().setInspectionFullfilment("Y");
             mMainActivityViewModel.updateWorkOrder(WO);
         } else {
-            WO.setInspectionFullfilment("N");
+            WO.getInspection().setInspectionFullfilment("N");
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle(mSetInspectionStatusTittle)
                     .setMessage(mSetInspectionStatusMessage)
@@ -296,9 +296,9 @@ public class WorkOrderFragment extends Fragment {
     }
     private void setInspectionReschStatus(WorkOrder pWorkOrder, int pStatus) {
         if (pStatus == BUTTON_POSITIVE) {
-            pWorkOrder.setInspectionRescheduled("Y");
+            pWorkOrder.getInspection().setInspectionRescheduled("Y");
         } else {
-            pWorkOrder.setInspectionRescheduled("N");
+            pWorkOrder.getInspection().setInspectionRescheduled("N");
             pWorkOrder.setStateChangeDate(Utils.getISOLocalDate());
             pWorkOrder.setState("CLOSED_FAILED_INSPECTION");
         }
@@ -355,11 +355,11 @@ public class WorkOrderFragment extends Fragment {
         String mStateChangeDate = Utils.getISOLocalDate();
 
         String mCustomerPhoneNumber = pCustomer.getPhone().getCcn() + pCustomer.getPhone().getNumber();
-        String mProviderPhoneNumber = pProvider.getPhone().getCcn() + pCustomer.getPhone().getNumber();
+        String mProviderPhoneNumber = pProvider.getPhone().getCcn() + pProvider.getPhone().getNumber();
         String mState = "ONEVALUATION";
 
-        WorkOrder WO = new WorkOrder(pCustomer.getAuthId(), pCustomer.getName(), pCustomer.getAddress(), pCustomer.getLocation().getLatitude(), pCustomer.getLocation().getLongitude(), mCustomerPhoneNumber,
-                pProvider.getAuthId(), pProvider.getName(), pProvider.getAddress(), pProvider.getLocation().getLatitude(), pProvider.getLocation().getLongitude(), mProviderPhoneNumber,
+        WorkOrder WO = new WorkOrder(pCustomer.getId(), pCustomer.getName(), pCustomer.getAddress(), pCustomer.getLocation().getLatitude(), pCustomer.getLocation().getLongitude(), pCustomer.getPhone().getNumber(),pCustomer.getPhone().getCcn(),
+                pProvider.getId(), pProvider.getName(), pProvider.getAddress(), pProvider.getLocation().getLatitude(), pProvider.getLocation().getLongitude(), pProvider.getPhone().getNumber(),pProvider.getPhone().getCcn(),
                 mState, pCategory, pDescription, pCreationDate, pLimitDate, mStateChangeDate);
 
         mMainActivityViewModel.createWorkOrder(WO);
@@ -370,9 +370,9 @@ public class WorkOrderFragment extends Fragment {
     private void onEvalStateWorkOrder(WorkOrder pWorkOrder) {
         OnEvalState mOnEvalStateItem = new OnEvalState(requireContext());
 
-        mOnEvalStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
-        mOnEvalStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
-        mOnEvalStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
+        mOnEvalStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomer().getCustomerName());
+        mOnEvalStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomer().getCustomerAddress());
+        mOnEvalStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomer().getCustomerPhone().getCcn()+pWorkOrder.getCustomer().getCustomerPhone().getNumber());
 
         mOnEvalStateItem.setLimitDate("Fecha limite: " + Utils.getISOtoDate(pWorkOrder.getTimeLimit()));
         mOnEvalStateItem.setCategory("Categoria: " + pWorkOrder.getSpecialization());
@@ -489,10 +489,10 @@ public class WorkOrderFragment extends Fragment {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
-        WO.setInspectionDate(pInspectionDate);
-        WO.setInspectionCharges(pInspectionCharges);
-        WO.setInspectionTimeLimit(pPlanLimitDate);
-        WO.setInspectionFee(pInspectionFee);
+        WO.getInspection().setInspectionDate(pInspectionDate);
+        WO.getInspection().setInspectionCharges(pInspectionCharges);
+        WO.getInspection().setInspectionTimeLimit(pPlanLimitDate);
+        WO.getInspection().setInspectionFee(pInspectionFee);
         WO.setState("PLANNED");
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
@@ -512,8 +512,8 @@ public class WorkOrderFragment extends Fragment {
     //at this point customer should accept the visit and pay the tariff if it was required
     private void plannedStateWorkOrder(WorkOrder pWorkOrder) {
         PlannedState mPlannedStateItem = new PlannedState(requireContext());
-        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
-        String mPlanLimitDate = Utils.getISOtoDate(pWorkOrder.getInspectionTimeLimit());
+        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspection().getInspectionDate());
+        String mPlanLimitDate = Utils.getISOtoDate(pWorkOrder.getInspection().getInspectionTimeLimit());
 
         boolean isEditable = this.isWorkOrderEditableByUser(mMainActivityViewModel.getLoggedUser().getValue(), pWorkOrder) && this.isWorkOrderEditableByExpiration(pWorkOrder);
         if (isEditable) {
@@ -522,15 +522,15 @@ public class WorkOrderFragment extends Fragment {
             mPlannedStateItem.disableEdition();
         }
 
-        mPlannedStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
-        mPlannedStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
-        mPlannedStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProviderPhoneNumber());
+        mPlannedStateItem.setProviderName("Nombre: " + pWorkOrder.getProvider().getProviderName());
+        mPlannedStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProvider().getProviderAddress());
+        mPlannedStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProvider().getProviderPhone().getCcn()+pWorkOrder.getProvider().getProviderPhone().getNumber());
 
         mPlannedStateItem.setPlanLimitDate("Fecha Limite de Aceptacion:" + mPlanLimitDate);
         mPlannedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
         mPlannedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
-        mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges() + "sat");
-        mPlannedStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspectionFee() + "sat");
+        mPlannedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspection().getInspectionCharges() + "sat");
+        mPlannedStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspection().getInspectionFee() + "sat");
 
         mPlannedStateItem.setGenPaymentOrderButtonOCL(v -> {
             if (!this.isWorkOrderEditableByExpiration(pWorkOrder)){
@@ -544,7 +544,7 @@ public class WorkOrderFragment extends Fragment {
             if (!this.isWorkOrderEditableByExpiration(pWorkOrder)){
                 this.orderExpiredNotificator();
             } else {
-                confirmDate(pWorkOrder.getOrderId(), pWorkOrder.getInspectionPaymentOrder());
+                confirmDate(pWorkOrder.getOrderId(), pWorkOrder.getInspection().getInspectionPaymentOrder());
                 Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
             }
 
@@ -576,7 +576,7 @@ public class WorkOrderFragment extends Fragment {
         String mStateChangeDate = Utils.getISOLocalDate();
         WorkOrder WO = new WorkOrder();
         WO.setOrderId(pWorkOrderID);
-        WO.setInspectionPaymentOrder("pPaymentOrderID-123");
+        WO.getInspection().setInspectionPaymentOrder("pPaymentOrderID-123");
         WO.setState("CONFIRMED");
         WO.setStateChangeDate(mStateChangeDate);
         mMainActivityViewModel.updateWorkOrder(WO);
@@ -593,11 +593,11 @@ public class WorkOrderFragment extends Fragment {
     //********************************** CONFIRMED STATE **********************************//
     private void confStateWorkOrder(WorkOrder pWorkOrder) {
         ConfState mConfStateItem = new ConfState(requireContext());
-        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
+        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspection().getInspectionDate());
 
-        mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
-        mConfStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
-        mConfStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
+        mConfStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomer().getCustomerName());
+        mConfStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomer().getCustomerAddress());
+        mConfStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomer().getCustomerPhone().getCcn()+pWorkOrder.getCustomer().getCustomerPhone().getNumber());
 
         mConfStateItem.setCategory("Categoria: " + pWorkOrder.getSpecialization());
         mConfStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
@@ -605,10 +605,10 @@ public class WorkOrderFragment extends Fragment {
         mConfStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
         mConfStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
 
-        mConfStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges() + "sat");
-        mConfStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspectionFee() + "sat");
+        mConfStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspection().getInspectionCharges() + "sat");
+        mConfStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspection().getInspectionFee() + "sat");
 
-        mConfStateItem.setPresentationLimitDate("Fecha limite para presentar la propuesta\n"+ Utils.getISOtoDate(Utils.getISOLocalDatePlus(mMaxDaysOnConfState,pWorkOrder.getInspectionDate())) );
+        mConfStateItem.setPresentationLimitDate("Fecha limite para presentar la propuesta\n"+ Utils.getISOtoDate(Utils.getISOLocalDatePlus(mMaxDaysOnConfState,pWorkOrder.getInspection().getInspectionDate())) );
 
         boolean isEditable = this.isWorkOrderEditableByUser(mMainActivityViewModel.getLoggedUser().getValue(), pWorkOrder) && this.isWorkOrderEditableByExpiration(pWorkOrder);
         if (isEditable) {
@@ -818,13 +818,13 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setState("DIAGNOSED");
         WO.setStateChangeDate(mStateChangeDate);
-        WO.setProposalTimeLimitDate(pProposalTimeLimit);
-        WO.setWorkStartDate(pWorkStartDate);
-        WO.setWorkEndDate(pWorkEndDate);
-        WO.setWorkLaborCost(pWorkLaborCost);
-        WO.setWorkMaterialsCost(pWorkMaterialsCost);
-        WO.setWorkFee(pWorkFee);
-        WO.setDetail(pWorkDetail);
+        WO.getWork().setProposalTimeLimitDate(pProposalTimeLimit);
+        WO.getWork().setWorkStartDate(pWorkStartDate);
+        WO.getWork().setWorkEndDate(pWorkEndDate);
+        WO.getWork().setWorkLaborCost(pWorkLaborCost);
+        WO.getWork().setWorkMaterialsCost(pWorkMaterialsCost);
+        WO.getWork().setWorkFee(pWorkFee);
+        WO.getWork().setDetail(pWorkDetail);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
     //at this point provider make the visit to diagnose, customer paid de visit and has accepted the date
@@ -846,8 +846,8 @@ public class WorkOrderFragment extends Fragment {
     //at this point customer pay the tariff and accept the diagnose and work schedule
     private void diagStateWorkOrder(WorkOrder pWorkOrder) {
         DiagState mDiagStateItem = new DiagState(requireContext());
-        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
-        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
+        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkStartDate());
+        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkEndDate());
 
         boolean isEditable = this.isWorkOrderEditableByUser(mMainActivityViewModel.getLoggedUser().getValue(), pWorkOrder) && this.isWorkOrderEditableByExpiration(pWorkOrder);
         if (isEditable) {
@@ -856,23 +856,23 @@ public class WorkOrderFragment extends Fragment {
             mDiagStateItem.disableEdition();
         }
 
-        mDiagStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
-        mDiagStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
-        mDiagStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProviderPhoneNumber());
+        mDiagStateItem.setProviderName("Nombre: " + pWorkOrder.getProvider().getProviderName());
+        mDiagStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProvider().getProviderAddress());
+        mDiagStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProvider().getProviderPhone().getCcn()+pWorkOrder.getProvider().getProviderPhone().getNumber());
 
         mDiagStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate);
         mDiagStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate);
-        mDiagStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
-        mDiagStateItem.setJobCost("Costo Mano de Obra: " + pWorkOrder.getWorkLaborCost() + "sat");
-        mDiagStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkMaterialsCost() + "sat");
-        mDiagStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee() + "sat");
-        mDiagStateItem.setAcceptanceLimitDate("Tienes hasta la fecha indicada para evaluar y aceptar la propuesta\n" + Utils.getISOtoDate(pWorkOrder.getProposalTimeLimitDate()) );
+        mDiagStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getWork().getDetail());
+        mDiagStateItem.setJobCost("Costo Mano de Obra: " + pWorkOrder.getWork().getWorkLaborCost() + "sat");
+        mDiagStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWork().getWorkMaterialsCost() + "sat");
+        mDiagStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWork().getWorkFee() + "sat");
+        mDiagStateItem.setAcceptanceLimitDate("Tienes hasta la fecha indicada para evaluar y aceptar la propuesta\n" + Utils.getISOtoDate(pWorkOrder.getWork().getProposalTimeLimitDate()) );
 
         mDiagStateItem.setAcceptButtonOCL(v -> {
             if (!this.isWorkOrderEditableByExpiration(pWorkOrder)){
                 this.orderExpiredNotificator();
             } else {
-                this.acceptContract(pWorkOrder.getOrderId(), pWorkOrder.getWorkPaymentOrder());
+                this.acceptContract(pWorkOrder.getOrderId(), pWorkOrder.getWork().getWorkPaymentOrder());
             }
             Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");
 
@@ -912,7 +912,7 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setState("ONPROGRESS");
         WO.setStateChangeDate(mStateChangeDate);
-        WO.setWorkLimitTimeExtension(0);
+        WO.getWork().setWorkLimitTimeExtension(0);
 //        WO.setWorkStartDate(pWorkStartDate);
 //        WO.setWorkEndDate(pWorkEndDate);
 //        WO.setWorkCost(pWorkCost);
@@ -934,8 +934,8 @@ public class WorkOrderFragment extends Fragment {
     //********************************** ON PROGRESS STATE **********************************//
     private void onProgStateWorkOrder(WorkOrder pWorkOrder) {
         OnProgState mOnProgStateItem = new OnProgState(requireContext());
-        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
-        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
+        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkStartDate());
+        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkEndDate());
 
         boolean isEditable = this.isWorkOrderEditableByUser(mMainActivityViewModel.getLoggedUser().getValue(), pWorkOrder) && this.isWorkOrderEditableByExpiration(pWorkOrder);
         if (isEditable) {
@@ -944,17 +944,17 @@ public class WorkOrderFragment extends Fragment {
             mOnProgStateItem.disableEdition();
         }
 
-        mOnProgStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
-        mOnProgStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
-        mOnProgStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
+        mOnProgStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomer().getCustomerName());
+        mOnProgStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomer().getCustomerAddress());
+        mOnProgStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomer().getCustomerPhone().getCcn()+pWorkOrder.getCustomer().getCustomerPhone().getNumber());
 
         mOnProgStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate);
         mOnProgStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate);
-        mOnProgStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
+        mOnProgStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getWork().getDetail());
 
-        mOnProgStateItem.setJobCost("Costo Mano de Obra: " + pWorkOrder.getWorkLaborCost() + "sat");
-        mOnProgStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkMaterialsCost() + "sat");
-        mOnProgStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee() + "sat");
+        mOnProgStateItem.setJobCost("Costo Mano de Obra: " + pWorkOrder.getWork().getWorkLaborCost() + "sat");
+        mOnProgStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWork().getWorkMaterialsCost() + "sat");
+        mOnProgStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWork().getWorkFee() + "sat");
 
 
         mOnProgStateItem.setFinishWorkOrderButtonOCL(v -> {
@@ -963,7 +963,7 @@ public class WorkOrderFragment extends Fragment {
             } else {
                 Log.d(TAG1, "LA ORDEN NO A EXPIRADO, AUN ES POSIBLE EDITAR");
                 String mClosingDate = Utils.getISOLocalDate();
-                String mBiggerDate = Utils.getBiggerISODate(pWorkOrder.getWorkEndDate(), mClosingDate);
+                String mBiggerDate = Utils.getBiggerISODate(pWorkOrder.getWork().getWorkEndDate(), mClosingDate);
                 String mWarrantyDate = Utils.getISOLocalDatePlus(mWarrantyDays, mBiggerDate);
                 finishOrder(pWorkOrder.getOrderId(),mWarrantyDate);
             }
@@ -981,7 +981,7 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setState("DONE");
         WO.setStateChangeDate(mStateChangeDate);
-        WO.setWorkWarrantyEndDate(pWarrantyEndDate);
+        WO.getWork().setWorkWarrantyEndDate(pWarrantyEndDate);
 
         mMainActivityViewModel.updateWorkOrder(WO);
     }
@@ -989,10 +989,10 @@ public class WorkOrderFragment extends Fragment {
     private void doneStateWorkOrder(WorkOrder pWorkOrder) {
         DoneState mDoneStateItem = new DoneState(requireContext());
 
-        String mWorkWarrantyEndDate = Utils.getISOtoDate(pWorkOrder.getWorkWarrantyEndDate());
+        String mWorkWarrantyEndDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkWarrantyEndDate());
         String mAutoClosingDate = Utils.getISOLocalDatePlus(mAutoClosingDays, pWorkOrder.getStateChangeDate());
 
-        Integer mWorkLimitTimeExtensionQuantity = pWorkOrder.getWorkLimitTimeExtension() + 1;
+        Integer mWorkLimitTimeExtensionQuantity = pWorkOrder.getWork().getWorkLimitTimeExtension() + 1;
         String mNowDate = Utils.getISOLocalDate();
         String mCheckDate = Utils.getBiggerISODate(mNowDate, mAutoClosingDate);
         String mAuxReviewClosingWarning = String.format(mReviewClosingWarning, Utils.getISOtoDate(mAutoClosingDate));
@@ -1041,8 +1041,8 @@ public class WorkOrderFragment extends Fragment {
                     @Override
                     public void onSuccess(String s) {
                         String mExtendedWorkEndDate = Utils.getISOLocalDateFromString(s, mStartDayTime);
-                        if (Utils.isAfter(pWorkOrder.getWorkEndDate(), mExtendedWorkEndDate)) {
-                            mExtendedWorkEndDate = pWorkOrder.getWorkEndDate();
+                        if (Utils.isAfter(pWorkOrder.getWork().getWorkEndDate(), mExtendedWorkEndDate)) {
+                            mExtendedWorkEndDate = pWorkOrder.getWork().getWorkEndDate();
                         }
                         workRejected(pWorkOrder.getOrderId(), mWorkLimitTimeExtensionQuantity, mExtendedWorkEndDate);
                         Log.d(TAG1, "Fecha Seleccionada:" + s);
@@ -1067,11 +1067,11 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setState("CLOSED_WARRANTY");
         WO.setStateChangeDate(mStateChangeDate);
-        WO.setAppereanceScore(pAppereanceScore);
-        WO.setCleanlinessScore(pCleanlinessScore);
-        WO.setSpeedScore(pSpeedScore);
-        WO.setQualityScore(pQualityScore);
-        WO.setImpressions(pImpressions);
+        WO.getFeedback().setAppereanceScore(pAppereanceScore);
+        WO.getFeedback().setCleanlinessScore(pCleanlinessScore);
+        WO.getFeedback().setSpeedScore(pSpeedScore);
+        WO.getFeedback().setQualityScore(pQualityScore);
+        WO.getFeedback().setImpressions(pImpressions);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
     private void workRejected(String pWorkOrderID, Integer pWorkLimitTimeExtensionQuantity, String pExtendedWorkEndDate) {
@@ -1080,8 +1080,8 @@ public class WorkOrderFragment extends Fragment {
         WO.setOrderId(pWorkOrderID);
         WO.setState("ONPROGRESS");
         WO.setStateChangeDate(mStateChangeDate);
-        WO.setWorkEndDate(pExtendedWorkEndDate);
-        WO.setWorkLimitTimeExtension(pWorkLimitTimeExtensionQuantity);
+        WO.getWork().setWorkEndDate(pExtendedWorkEndDate);
+        WO.getWork().setWorkLimitTimeExtension(pWorkLimitTimeExtensionQuantity);
         mMainActivityViewModel.updateWorkOrder(WO);
     }
     //********************************** CLOSED STATE **********************************//
@@ -1095,18 +1095,18 @@ public class WorkOrderFragment extends Fragment {
             mClosedStateItem.disableEdition();
         }
 
-        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWorkStartDate());
-        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWorkEndDate());
-        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspectionDate());
-        String mWarrantyDate = Utils.getISOtoDate(pWorkOrder.getWorkWarrantyEndDate());
+        String mWorkStartDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkStartDate());
+        String mWorkEndDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkEndDate());
+        String mInspectionDate = Utils.getISOtoDate(pWorkOrder.getInspection().getInspectionDate());
+        String mWarrantyDate = Utils.getISOtoDate(pWorkOrder.getWork().getWorkWarrantyEndDate());
 
-        mClosedStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomerName());
-        mClosedStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomerAddress());
-        mClosedStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomerPhoneNumber());
+        mClosedStateItem.setCustomerName("Nombre: " + pWorkOrder.getCustomer().getCustomerName());
+        mClosedStateItem.setCustomerAddress("Direccion: " + pWorkOrder.getCustomer().getCustomerAddress());
+        mClosedStateItem.setCustomerPhone("Telefono: " + pWorkOrder.getCustomer().getCustomerPhone().getCcn()+pWorkOrder.getCustomer().getCustomerPhone().getNumber());
 
-        mClosedStateItem.setProviderName("Nombre: " + pWorkOrder.getProviderName());
-        mClosedStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProviderAddress());
-        mClosedStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProviderPhoneNumber());
+        mClosedStateItem.setProviderName("Nombre: " + pWorkOrder.getProvider().getProviderName());
+        mClosedStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProvider().getProviderAddress());
+        mClosedStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProvider().getProviderPhone().getCcn()+pWorkOrder.getProvider().getProviderPhone().getNumber());
 
         mClosedStateItem.setCategory("Categoria: " + pWorkOrder.getSpecialization());
         mClosedStateItem.setDescription("Descripcion del trabajo: " + pWorkOrder.getDescription());
@@ -1114,24 +1114,24 @@ public class WorkOrderFragment extends Fragment {
         mClosedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
         mClosedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
 
-        mClosedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspectionCharges() + "sat");
-        mClosedStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspectionFee() + "sat");
+        mClosedStateItem.setMeetTariff("Tarifa de Visita: " + pWorkOrder.getInspection().getInspectionCharges() + "sat");
+        mClosedStateItem.setMeetFee("Comision Plataforma: " + pWorkOrder.getInspection().getInspectionFee() + "sat");
 
         mClosedStateItem.setWorkStartDate("Fecha Inicio: " + mWorkStartDate);
         mClosedStateItem.setWorkEndDate("Fecha Fin: " + mWorkEndDate);
-        mClosedStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getDetail());
+        mClosedStateItem.setWorkDetail("Detalle de tareas: \n" + pWorkOrder.getWork().getDetail());
 
-        mClosedStateItem.setJobCost("Costo Mano de Obra: " + pWorkOrder.getWorkLaborCost() + "sat");
-        mClosedStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWorkMaterialsCost() + "sat");
-        mClosedStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWorkFee() + "sat");
+        mClosedStateItem.setJobCost("Costo Mano de Obra: " + pWorkOrder.getWork().getWorkLaborCost() + "sat");
+        mClosedStateItem.setMaterialCost("Costo Materiales: " + pWorkOrder.getWork().getWorkMaterialsCost() + "sat");
+        mClosedStateItem.setJobFee("Comision de Plataforma: " + pWorkOrder.getWork().getWorkFee() + "sat");
 
 
-        mClosedStateItem.setProviderAppereanceScore(pWorkOrder.getAppereanceScore());
-        mClosedStateItem.setProviderCleanlinessScore(pWorkOrder.getCleanlinessScore());
-        mClosedStateItem.setProviderSpeedScore(pWorkOrder.getSpeedScore());
-        mClosedStateItem.setProviderQualityScore(pWorkOrder.getQualityScore());
+        mClosedStateItem.setProviderAppereanceScore(pWorkOrder.getFeedback().getAppereanceScore());
+        mClosedStateItem.setProviderCleanlinessScore(pWorkOrder.getFeedback().getCleanlinessScore());
+        mClosedStateItem.setProviderSpeedScore(pWorkOrder.getFeedback().getSpeedScore());
+        mClosedStateItem.setProviderQualityScore(pWorkOrder.getFeedback().getQualityScore());
 
-        mClosedStateItem.setProviderReview("Reseña del cliente:\n" + pWorkOrder.getImpressions());
+        mClosedStateItem.setProviderReview("Reseña del cliente:\n" + pWorkOrder.getFeedback().getImpressions());
         mClosedStateItem.setWarrantyMessage(mWarrantyMessage);
         mClosedStateItem.setWarrantyEndDate("Fecha limite de Garantia: " + mWarrantyDate);
 
@@ -1199,7 +1199,7 @@ public class WorkOrderFragment extends Fragment {
         timePickerDialog.show();
     }
     private void closeWorkOrderLifeCycle(){
-        if (mMainActivityViewModel.getSelectedTab().getValue()==null && mMainActivityViewModel.getSelectedTab().getValue() == 0 ) {
+        if (mMainActivityViewModel.getSelectedTab().getValue()!=null && mMainActivityViewModel.getSelectedTab().getValue() == 0 ) {
             mMainActivityViewModel.setSelectedFragment(0, View.VISIBLE);
         } else {
             mMainActivityViewModel.setSelectedFragment(2, View.VISIBLE);
@@ -1260,8 +1260,8 @@ public class WorkOrderFragment extends Fragment {
         boolean isProviderState = List.of("ONEVALUATION", "CONFIRMED", "ONPROGRESS")
                 .contains(pWorkOrder.getState());
 
-        boolean isUserAuthorized = (isCustomerState && Objects.equals(pWorkOrder.getCustomerId(), pUser.getAuthId()))
-                || (isProviderState && Objects.equals(pWorkOrder.getProviderId(), pUser.getAuthId()));
+        boolean isUserAuthorized = (isCustomerState && Objects.equals(pWorkOrder.getCustomer().getCustomerId(), pUser.getAuthId()))
+                || (isProviderState && Objects.equals(pWorkOrder.getProvider().getProviderId(), pUser.getAuthId()));
 
         return mActivateUserTypeValidation != 1 || isUserAuthorized;
     }
@@ -1289,12 +1289,12 @@ public class WorkOrderFragment extends Fragment {
     public String getFieldToValidate(WorkOrder pWorkOrder) {
         return switch (pWorkOrder.getState()) {
             case "ONEVALUATION" -> pWorkOrder.getTimeLimit();
-            case "PLANNED" -> pWorkOrder.getInspectionTimeLimit();
-            case "CONFIRMED" -> pWorkOrder.getInspectionDate(); // + 48 horas
-            case "DIAGNOSED" -> pWorkOrder.getProposalTimeLimitDate();
-            case "ONPROGRESS" -> pWorkOrder.getWorkEndDate();
-            case "DONE" -> pWorkOrder.getWorkEndDate(); // + 48 horas
-            case "CLOSED_WARRANTY" -> pWorkOrder.getWorkWarrantyEndDate();
+            case "PLANNED" -> pWorkOrder.getInspection().getInspectionTimeLimit();
+            case "CONFIRMED" -> pWorkOrder.getInspection().getInspectionDate(); // + 48 horas
+            case "DIAGNOSED" -> pWorkOrder.getWork().getProposalTimeLimitDate();
+            case "ONPROGRESS" -> pWorkOrder.getWork().getWorkEndDate();
+            case "DONE" -> pWorkOrder.getWork().getWorkEndDate(); // + 48 horas
+            case "CLOSED_WARRANTY" -> pWorkOrder.getWork().getWorkWarrantyEndDate();
             default -> null;
         };
     }

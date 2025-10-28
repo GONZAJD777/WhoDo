@@ -1,6 +1,8 @@
 package com.example.whodo.app.network.rest.api;
 
-import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
+import com.example.whodo.app.domain.workOrder.WorkOrder;
+import com.example.whodo.app.domain.workOrder.WorkOrderApiRestRequestDTO;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -11,15 +13,15 @@ import java.util.List;
 
 public interface WorkOrderApi {
 
-    @GET("workorders/{id}")
-    Call<WorkOrderDTO> find(@Path("id") String workOrderId);
+    @GET("work-orders/{id}")
+    Call<WorkOrder> find(@Path("id") String workOrderId);
 
-    @POST("workorders")
-    Call<WorkOrderDTO> create(@Body WorkOrderDTO workOrderDTO);
+    @POST("/api/work-orders/createWorkOrder")
+    Call<WorkOrder> createWorkOrder(@Body WorkOrderApiRestRequestDTO workOrderDTO);
 
-    @PUT("workorders/{id}")
-    Call<WorkOrderDTO> update(@Path("id") String workOrderId, @Body WorkOrderDTO workOrderDTO);
+    @PUT("/api/work-orders/updateWorkOrder")
+    Call<WorkOrder> updateWorkOrder(@Body WorkOrderApiRestRequestDTO workOrderDTO);
 
-    @GET("workorders")
-    Call<List<WorkOrderDTO>> findAll();
+    @GET("work-orders")
+    Call<List<WorkOrder>> findAll();
 }

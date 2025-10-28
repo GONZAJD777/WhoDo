@@ -3,10 +3,13 @@ package com.example.whodo.app.features.hire;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.whodo.app.domain.user.User;
+import com.example.whodo.app.resources.images.ImagesViewModel;
+import com.example.whodo.app.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +31,51 @@ public class HireFragmentViewModel extends ViewModel {
 
     private int mDistanceFilterPoint;
 
-    public HireFragmentViewModel() {
+    // LiveData for the final combined result
+    private MediatorLiveData<Boolean> allDataReady = new MediatorLiveData<>();
+    private MutableLiveData<List<User>> originalProviders = new MutableLiveData<>();
+    private MutableLiveData <List<String>> storedIconNames= new MutableLiveData<>();;
+    public HireFragmentViewModel() { // Pass the other ViewModel or a Repository
+
         // Valor por defecto para el filtro de distancia: 10 * DIST_MULT
         mDistanceFilter.setValue(10 * DIST_MULT);
         mDistanceFilterPoint = 3;
+
+
+        try {
+            initializeObservers();
+            allDataReady.observeForever(ready -> {
+                if (Boolean.TRUE.equals(ready)) {
+                    try {
+                        setProviders(originalProviders.getValue());
+                    } catch (NumberFormatException e) {
+                        Log.d(TAG, "Error al convertir el valor a Double: " + e.getMessage());
+                    }
+                }
+            });
+        }catch (Exception e){
+            Log.d(TAG, "Error al llamar a la base de datos --> espera a la actualizacion de datos." + e);
+        }
     }
+    private void initializeObservers() {
+        allDataReady.addSource(originalProviders, providers -> checkReady());
+        allDataReady.addSource(storedIconNames, icons -> checkReady());
+    }
+
+    private void checkReady() {
+        if (originalProviders.getValue() != null && storedIconNames.getValue() != null) {
+            allDataReady.setValue(true);
+        }
+    }
+
+    public void setServIconNames(List<String> pIconServIconNames) {
+        this.storedIconNames.setValue(pIconServIconNames);
+    }
+
+    public void setOriginalProviders(List<User> originalProviders){
+        this.originalProviders.setValue(originalProviders);
+    }
+    //==================================================================================//
 
     // Setters
     public void setUser(User user) {
@@ -165,4 +208,6 @@ public class HireFragmentViewModel extends ViewModel {
         return providerLat < latUpper && providerLat > latLower &&
                 providerLon > lonLeft && providerLon < lonRight;
     }
+
+
 }

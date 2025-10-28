@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -103,6 +104,8 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     private MainActivityViewModel mMainActivityViewModel;
     private User mLoggedUser;
 
+    private GoogleMap mGoogleMap;
+
     @Override
     public View onCreateView( LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         
@@ -140,6 +143,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         HireProviderButton.setOnClickListener(this::onClick);
 
         ProviderDetailLinearLayout=root.findViewById(R.id.ProviderDetail_bottom_sheet);
+
         FilterLinearLayout = root.findViewById(R.id.Filter_bottom_sheet);
         vServicesLinearLayout=root.findViewById(R.id.LYV);
         ReelItemsLinearLayout = root.findViewById(R.id.ReelItemsLinearLayout);
@@ -221,11 +225,22 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
+
         mMainActivityViewModel.getLoggedUser().observe(requireActivity(), this::loadUser);
-        mMainActivityViewModel.getProviders().observe(requireActivity(),this::loadProviders);
+        mMainActivityViewModel.getProviders().observe(requireActivity(),this::loadOriginalProviders);
         mMainActivityViewModel.getParameters().observe(requireActivity(),this::loadParameters);
+        mImagesViewModel.getStoredServIconNames().observe(getViewLifecycleOwner(),this::loadIconServIconName);
+        // Check if map is ready before trying to draw markers
+        // ======================================================================
         mHireFragmentViewModel.getDistanceFilter().observe(getViewLifecycleOwner(),this::loadDistanceFilter);
         mHireFragmentViewModel.getPickedProvider().observe(getViewLifecycleOwner(),this::showProviderDetail);
+        mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(), providers -> {
+            // Check if map is ready before trying to draw markers
+            if (mGoogleMap != null) {
+                this.setProviderMarkers(mGoogleMap, providers);
+            }
+        });
+        // ======================================================================
 
         return root;
     }
@@ -233,8 +248,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         mLoggedUser=pLoggedUser;
         mHireFragmentViewModel.setUser(pLoggedUser);
     }
-    private void loadProviders(List<User> pProviders){
-        mHireFragmentViewModel.setProviders(pProviders);
+    private void loadOriginalProviders(List<User> pProviders){
+        mHireFragmentViewModel.setOriginalProviders(pProviders);
+    }
+    private void loadIconServIconName(List<String> pIconServIconNames){
+        mHireFragmentViewModel.setServIconNames(pIconServIconNames);
     }
     private void loadParameters(List<Parameter> pParameters){
 
@@ -245,32 +263,18 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     }
     private void loadDistanceFilter(Double pDistanceFilter){
         DistanceFilterSeekBar.setProgress(mHireFragmentViewModel.getDistanceFilterPoint());
-        String serviceDistanceFilterLabel = (pDistanceFilter/0.009009009009009) + "Km";
+        String serviceDistanceFilterLabel = (pDistanceFilter/0.009009009009009) + "Km"; //todo agregar flexibilidad para millas
         MaxDistanceFilterLabel.setText(serviceDistanceFilterLabel);
     }
     private void openFragment(){
+        //mMainActivityViewModel.setSelectedTab(2);
         mMainActivityViewModel.setSelectedFragment(15,View.GONE);
         // model.TabLayoutVisibility(View.GONE);
     }
-
     @Override
     public void onMapReady(@NonNull GoogleMap pGoogleMap) {
+        mGoogleMap = pGoogleMap;
         pGoogleMap.getUiSettings().setMapToolbarEnabled(true);
-        //Once mas is ready, call get the providers to populate the map
-        if (!mHireFragmentViewModel.getProvidersLiveData().isInitialized()) {
-            mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(),pProviders -> {
-                this.setProviderMarkers(pGoogleMap,pProviders);
-                mImagesViewModel.getStoredServIconNames().observe(getViewLifecycleOwner(),pStoredSerIconNames -> { this.setProviderMarkers(pGoogleMap,pProviders); });
-            });
-        }else {
-            this.setProviderMarkers(pGoogleMap,mHireFragmentViewModel.getProvidersLiveData().getValue());
-            mImagesViewModel.getStoredServIconNames().observe(getViewLifecycleOwner(),pStoredSerIconNames -> {
-                this.setProviderMarkers(pGoogleMap,mHireFragmentViewModel.getProvidersLiveData().getValue());
-            });
-            mHireFragmentViewModel.getProvidersLiveData().observe(getViewLifecycleOwner(),pProviders -> {
-                this.setProviderMarkers(pGoogleMap,pProviders);
-            });
-        }
 
         pGoogleMap.setOnInfoWindowClickListener(marker -> {
             PickedUser= (User) marker.getTag();
@@ -296,6 +300,11 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             setMapConfig(pGoogleMap);
             getDeviceLocation(pGoogleMap);
             setMarkerSnippet(pGoogleMap);
+        }
+        // Important: Manually trigger a redraw in case the LiveData already has a value
+        // before the map was ready.
+        if (mHireFragmentViewModel.getProvidersLiveData().getValue() != null) {
+            setProviderMarkers(mGoogleMap, mHireFragmentViewModel.getProvidersLiveData().getValue());
         }
     }
     @SuppressLint("NonConstantResourceId")
@@ -369,6 +378,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         clearLinearLayout(ReelItemsLinearLayout);
         if (pGoogleMap != null){
             pGoogleMap.clear();
+            addMarkers(mGoogleMap, mLoggedUser); // --> Agrega el marcador del usuario
             if (pProviders != null)
             {
                 for(int i = 0; i< pProviders.size(); i++) {
@@ -403,7 +413,6 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             Bitmap mMapIcon = ImageManager.getStoredIcon(requireContext(),mMapIconName,80,80);
             Objects.requireNonNull(pGoogleMap.addMarker(new MarkerOptions().position(UserLatLon)
                                 .title("Tu Ubicacion Registrada")
-                                .snippet(SnippetText)
                                 .icon(BitmapDescriptorFactory.fromBitmap(mMapIcon))))
                                 .setTag(pProvider);
         } else if (Objects.equals(pProvider.getAuthId(), mLoggedUser.getAuthId()) && Objects.equals(mLoggedUser.getType(), 2)) {
@@ -473,6 +482,10 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             }
             @Override
             public View getInfoContents(@NonNull Marker marker) {
+
+                if (marker.getSnippet() == null) {
+                    return null;
+                }
                 LinearLayout info = new LinearLayout(requireContext());
                 LinearLayout SpecList = new LinearLayout(requireContext());
                 info.setOrientation(LinearLayout.VERTICAL);
@@ -529,6 +542,15 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
     private void showProviderDetail (@NonNull User PickedUser){
 
         try {
+            if (PickedUser.getId().equals(mLoggedUser.getId())) {
+                // Si son el mismo usuario, OCULTAMOS el botón de contratar
+                HireProviderButton.setVisibility(View.GONE);
+                Log.d("showProviderDetail", "Usuario logueado detectado. Ocultando botón.");
+            } else {
+                // Si es cualquier otro proveedor, MOSTRAMOS el botón de contratar
+                HireProviderButton.setVisibility(View.VISIBLE);
+                Log.d("showProviderDetail", "Otro proveedor detectado. Mostrando botón.");
+            }
             AvgTime_TextView.setText(PickedUser.getUserScore().getAvgCompletionTime());
             AvgTariff_TextView.setText(PickedUser.getUserScore().getAvgTariff());
             ProviderName_TextView.setText(PickedUser.getName());
@@ -547,6 +569,7 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
             AppereanceScore.setRating(PickedUser.getUserScore().getAppearanceScore().floatValue());
             CleanlinessScore.setRating(PickedUser.getUserScore().getCleanlinessScore().floatValue());
 
+
         } catch (Exception e)
         {
             Log.d(TAG, "onMapReady --> No hay informacion del proveedor " + e);
@@ -563,7 +586,6 @@ public class HireFragment extends Fragment implements OnMapReadyCallback {
         }
     }
     //***************************************************************************//
-
     private void getLocationPermission(){
         Log.d("getLocationPermission()", "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};

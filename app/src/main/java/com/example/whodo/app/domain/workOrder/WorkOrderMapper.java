@@ -1,113 +1,79 @@
 package com.example.whodo.app.domain.workOrder;
 
-
 public class WorkOrderMapper {
 
-    public static WorkOrderDTO toDto(WorkOrder pEntity) {
-        WorkOrderDTO mWorkOrderDTO = new WorkOrderDTO();
+    public static WorkOrderApiRestRequestDTO toWorkOrderApiRestRequestDTO(WorkOrder pWorkOrder) {
+        if (pWorkOrder == null) {
+            return null;
+        }
+        WorkOrderApiRestRequestDTO mWorkOrderApiRestRequestDTO = new WorkOrderApiRestRequestDTO();
 
-        mWorkOrderDTO.setOrderId(pEntity.getOrderId());
-        mWorkOrderDTO.setCustomerId(pEntity.getCustomerId());
-        mWorkOrderDTO.setCustomerName(pEntity.getCustomerName());
-        mWorkOrderDTO.setCustomerAddress(pEntity.getCustomerAddress());
-        mWorkOrderDTO.setCustomerLat(pEntity.getCustomerLat());
-        mWorkOrderDTO.setCustomerLng(pEntity.getCustomerLng());
-        mWorkOrderDTO.setCustomerPhoneNumber(pEntity.getCustomerPhoneNumber());
+        mWorkOrderApiRestRequestDTO.setOrderId(pWorkOrder.getOrderId());
+        mWorkOrderApiRestRequestDTO.setSpecialization(pWorkOrder.getSpecialization());
+        mWorkOrderApiRestRequestDTO.setDescription(pWorkOrder.getDescription());
+        mWorkOrderApiRestRequestDTO.setState(pWorkOrder.getState());
+        if(pWorkOrder.getTimeLimit()!=null){
+            mWorkOrderApiRestRequestDTO.setTimeLimit(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getTimeLimit()));
+        }
+        if(pWorkOrder.getCreationDate()!=null){
+            mWorkOrderApiRestRequestDTO.setCreationDate(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getCreationDate()));
+        }
+        if(pWorkOrder.getStateChangeDate()!=null){
+            mWorkOrderApiRestRequestDTO.setStateChangeDate(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getStateChangeDate()));
+        }
 
-        mWorkOrderDTO.setProviderId(pEntity.getProviderId());
-        mWorkOrderDTO.setProviderName(pEntity.getProviderName());
-        mWorkOrderDTO.setProviderAddress(pEntity.getProviderAddress());
-        mWorkOrderDTO.setProviderLat(pEntity.getProviderLat());
-        mWorkOrderDTO.setProviderLng(pEntity.getProviderLng());
-        mWorkOrderDTO.setProviderPhoneNumber(pEntity.getProviderPhoneNumber());
 
-        mWorkOrderDTO.setSpecialization(pEntity.getSpecialization());
-        mWorkOrderDTO.setDescription(pEntity.getDescription());
-        mWorkOrderDTO.setDetail(pEntity.getDetail());
-        mWorkOrderDTO.setTimeLimit(pEntity.getTimeLimit());
-        mWorkOrderDTO.setCreationDate(pEntity.getCreationDate());
-        mWorkOrderDTO.setState(pEntity.getState());
-        mWorkOrderDTO.setStateChangeDate(pEntity.getStateChangeDate());
+        mWorkOrderApiRestRequestDTO.getCustomer().setCustomerId(pWorkOrder.getCustomer().getCustomerId());
+        mWorkOrderApiRestRequestDTO.getCustomer().setCustomerName(pWorkOrder.getCustomer().getCustomerName());
+        mWorkOrderApiRestRequestDTO.getCustomer().setCustomerAddress(pWorkOrder.getCustomer().getCustomerAddress());
+        mWorkOrderApiRestRequestDTO.getCustomer().setCustomerLocation(pWorkOrder.getCustomer().getCustomerLocation());
+        mWorkOrderApiRestRequestDTO.getCustomer().setCustomerPhone(pWorkOrder.getCustomer().getCustomerPhone());
 
-        mWorkOrderDTO.setInspectionDate(pEntity.getInspectionDate());
-        mWorkOrderDTO.setInspectionCharges(pEntity.getInspectionCharges());
-        mWorkOrderDTO.setInspectionTimeLimit(pEntity.getInspectionTimeLimit());
-        mWorkOrderDTO.setInspectionPaymentOrder(pEntity.getInspectionPaymentOrder());
-        mWorkOrderDTO.setInspectionFee(pEntity.getInspectionFee());
-        mWorkOrderDTO.setInspectionFullfilment(pEntity.getInspectionFullfilment());
-        mWorkOrderDTO.setInspectionRescheduled(pEntity.getInspectionRescheduled());
+        mWorkOrderApiRestRequestDTO.getProvider().setProviderId(pWorkOrder.getProvider().getProviderId());
+        mWorkOrderApiRestRequestDTO.getProvider().setProviderName(pWorkOrder.getProvider().getProviderName());
+        mWorkOrderApiRestRequestDTO.getProvider().setProviderAddress(pWorkOrder.getProvider().getProviderAddress());
+        mWorkOrderApiRestRequestDTO.getProvider().setProviderLocation(pWorkOrder.getProvider().getProviderLocation());
+        mWorkOrderApiRestRequestDTO.getProvider().setProviderPhone(pWorkOrder.getProvider().getProviderPhone());
 
-        mWorkOrderDTO.setProposalTimeLimitDate(pEntity.getProposalTimeLimitDate());
-        mWorkOrderDTO.setWorkStartDate(pEntity.getWorkStartDate());
-        mWorkOrderDTO.setWorkEndDate(pEntity.getWorkEndDate());
-        mWorkOrderDTO.setWorkLaborCost(pEntity.getWorkLaborCost());
-        mWorkOrderDTO.setWorkMaterialsCost(pEntity.getWorkMaterialsCost());
-        mWorkOrderDTO.setWorkFee(pEntity.getWorkFee());
-        mWorkOrderDTO.setWorkPaymentOrder(pEntity.getWorkPaymentOrder());
-        mWorkOrderDTO.setWorkWarrantyEndDate(pEntity.getWorkWarrantyEndDate());
-        mWorkOrderDTO.setWorkLimitTimeExtension(pEntity.getWorkLimitTimeExtension());
+        if(pWorkOrder.getInspection().getInspectionDate()!=null){
+            mWorkOrderApiRestRequestDTO.getInspection().setInspectionDate(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getInspection().getInspectionDate()));
+        }
+        mWorkOrderApiRestRequestDTO.getInspection().setInspectionCharges(pWorkOrder.getInspection().getInspectionCharges());
+        if (pWorkOrder.getInspection().getInspectionTimeLimit()!=null){
+            mWorkOrderApiRestRequestDTO.getInspection().setInspectionTimeLimit(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getInspection().getInspectionTimeLimit()));
+        }
+        mWorkOrderApiRestRequestDTO.getInspection().setInspectionPaymentOrder(pWorkOrder.getInspection().getInspectionPaymentOrder());
+        mWorkOrderApiRestRequestDTO.getInspection().setInspectionFee(pWorkOrder.getInspection().getInspectionFee());
+        mWorkOrderApiRestRequestDTO.getInspection().setInspectionFullfilment(pWorkOrder.getInspection().getInspectionFullfilment());
+        mWorkOrderApiRestRequestDTO.getInspection().setInspectionRescheduled(pWorkOrder.getInspection().getInspectionRescheduled());
 
-        mWorkOrderDTO.setImpressions(pEntity.getImpressions());
-        mWorkOrderDTO.setAppereanceScore(pEntity.getAppereanceScore());
-        mWorkOrderDTO.setCleanlinessScore(pEntity.getCleanlinessScore());
-        mWorkOrderDTO.setSpeedScore(pEntity.getSpeedScore());
-        mWorkOrderDTO.setQualityScore(pEntity.getQualityScore());
 
-        return mWorkOrderDTO;
-    }
+        if(pWorkOrder.getWork().getProposalTimeLimitDate()!=null){
+            mWorkOrderApiRestRequestDTO.getWork().setProposalTimeLimitDate(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getWork().getProposalTimeLimitDate()));
+        }
+        if(pWorkOrder.getWork().getWorkStartDate()!=null){
+            mWorkOrderApiRestRequestDTO.getWork().setWorkStartDate(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getWork().getWorkStartDate()));
+        }
+        if(pWorkOrder.getWork().getWorkEndDate()!=null){
+            mWorkOrderApiRestRequestDTO.getWork().setWorkEndDate(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getWork().getWorkEndDate()));
+        }
+        if(pWorkOrder.getWork().getWorkWarrantyEndDate()!=null){
+            mWorkOrderApiRestRequestDTO.getWork().setWorkWarrantyEndDate(new WorkOrderApiRestRequestDTO.WorkOrderDate(pWorkOrder.getWork().getWorkWarrantyEndDate()));
+        }
+        mWorkOrderApiRestRequestDTO.getWork().setWorkLaborCost(pWorkOrder.getWork().getWorkLaborCost());
+        mWorkOrderApiRestRequestDTO.getWork().setWorkMaterialsCost(pWorkOrder.getWork().getWorkMaterialsCost());
+        mWorkOrderApiRestRequestDTO.getWork().setDetail(pWorkOrder.getWork().getDetail());
+        mWorkOrderApiRestRequestDTO.getWork().setWorkFee(pWorkOrder.getWork().getWorkFee());
+        mWorkOrderApiRestRequestDTO.getWork().setWorkPaymentOrder(pWorkOrder.getWork().getWorkPaymentOrder());
+        mWorkOrderApiRestRequestDTO.getWork().setWorkLimitTimeExtension(pWorkOrder.getWork().getWorkLimitTimeExtension());
 
-    public static WorkOrder toEntity(WorkOrderDTO pWorkOrderDTO) {
-        WorkOrder mEntity = new WorkOrder();
-        mEntity.setOrderId(pWorkOrderDTO.getOrderId());
+        mWorkOrderApiRestRequestDTO.getFeedback().setImpressions(pWorkOrder.getFeedback().getImpressions());
+        mWorkOrderApiRestRequestDTO.getFeedback().setAppereanceScore(pWorkOrder.getFeedback().getAppereanceScore());
+        mWorkOrderApiRestRequestDTO.getFeedback().setCleanlinessScore(pWorkOrder.getFeedback().getCleanlinessScore());
+        mWorkOrderApiRestRequestDTO.getFeedback().setSpeedScore(pWorkOrder.getFeedback().getSpeedScore());
+        mWorkOrderApiRestRequestDTO.getFeedback().setQualityScore(pWorkOrder.getFeedback().getQualityScore());
 
-        mEntity.setCustomerId(pWorkOrderDTO.getCustomerId());
-        mEntity.setCustomerName(pWorkOrderDTO.getCustomerName());
-        mEntity.setCustomerAddress(pWorkOrderDTO.getCustomerAddress());
-        mEntity.setCustomerLat(pWorkOrderDTO.getCustomerLat());
-        mEntity.setCustomerLng(pWorkOrderDTO.getCustomerLng());
-        mEntity.setCustomerPhoneNumber(pWorkOrderDTO.getCustomerPhoneNumber());
-
-        mEntity.setProviderId(pWorkOrderDTO.getProviderId());
-        mEntity.setProviderName(pWorkOrderDTO.getProviderName());
-        mEntity.setProviderAddress(pWorkOrderDTO.getProviderAddress());
-        mEntity.setProviderLat(pWorkOrderDTO.getProviderLat());
-        mEntity.setProviderLng(pWorkOrderDTO.getProviderLng());
-        mEntity.setProviderPhoneNumber(pWorkOrderDTO.getProviderPhoneNumber());
-
-        mEntity.setSpecialization(pWorkOrderDTO.getSpecialization());
-        mEntity.setDescription(pWorkOrderDTO.getDescription());
-        mEntity.setDetail(pWorkOrderDTO.getDetail());
-        mEntity.setTimeLimit(pWorkOrderDTO.getTimeLimit());
-        mEntity.setCreationDate(pWorkOrderDTO.getCreationDate());
-        mEntity.setState(pWorkOrderDTO.getState());
-        mEntity.setStateChangeDate(pWorkOrderDTO.getStateChangeDate());
-
-        mEntity.setInspectionDate(pWorkOrderDTO.getInspectionDate());
-        mEntity.setInspectionCharges(pWorkOrderDTO.getInspectionCharges());
-        mEntity.setInspectionTimeLimit(pWorkOrderDTO.getInspectionTimeLimit());
-        mEntity.setInspectionFee(pWorkOrderDTO.getInspectionFee());
-        mEntity.setInspectionPaymentOrder(pWorkOrderDTO.getInspectionPaymentOrder());
-        mEntity.setInspectionFullfilment(pWorkOrderDTO.getInspectionFullfilment());
-        mEntity.setInspectionRescheduled(pWorkOrderDTO.getInspectionRescheduled());
-
-        mEntity.setProposalTimeLimitDate(pWorkOrderDTO.getProposalTimeLimitDate());
-        mEntity.setWorkStartDate(pWorkOrderDTO.getWorkStartDate());
-        mEntity.setWorkEndDate(pWorkOrderDTO.getWorkEndDate());
-
-        mEntity.setWorkLaborCost(pWorkOrderDTO.getWorkLaborCost());
-        mEntity.setWorkMaterialsCost(pWorkOrderDTO.getWorkMaterialsCost());
-        mEntity.setWorkFee(pWorkOrderDTO.getWorkFee());
-
-        mEntity.setWorkPaymentOrder(pWorkOrderDTO.getWorkPaymentOrder());
-        mEntity.setWorkWarrantyEndDate(pWorkOrderDTO.getWorkWarrantyEndDate());
-        mEntity.setWorkLimitTimeExtension(pWorkOrderDTO.getWorkLimitTimeExtension());
-
-        mEntity.setImpressions(pWorkOrderDTO.getImpressions());
-        mEntity.setAppereanceScore(pWorkOrderDTO.getAppereanceScore());
-        mEntity.setCleanlinessScore(pWorkOrderDTO.getCleanlinessScore());
-        mEntity.setSpeedScore(pWorkOrderDTO.getSpeedScore());
-        mEntity.setQualityScore(pWorkOrderDTO.getQualityScore());
-        return mEntity;
+        return mWorkOrderApiRestRequestDTO;
     }
 }
 

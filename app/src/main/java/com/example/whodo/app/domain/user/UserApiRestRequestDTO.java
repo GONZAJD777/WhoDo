@@ -1,11 +1,15 @@
 package com.example.whodo.app.domain.user;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -190,16 +194,16 @@ public class UserApiRestRequestDTO {
             try {
                 System.out.println("Date To Parse send --> " + isoDate);
 
-                // Formato de entrada para la fecha con offset
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-                Date parsedDate = inputFormat.parse(isoDate);
+                // Parseamos usando java.time
+                OffsetDateTime odt = OffsetDateTime.parse(isoDate);
+                OffsetDateTime utcDate = odt.withOffsetSameInstant(ZoneOffset.UTC);
 
-                // Formatear la fecha en el formato esperado por el backend
-                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-                outputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                // Formateamos la fecha en formato UTC con milisegundos y zona horaria
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                this.dateUtc = utcDate.format(formatter);
 
-                this.dateUtc = outputFormat.format(parsedDate);
-                this.timeZoneOffset = isoDate.substring(isoDate.length() - 6);
+                // Offset original, por ejemplo "+00:00"
+                this.timeZoneOffset = odt.getOffset().toString();
 
                 System.out.println("Formatted Date UTC --> " + this.dateUtc);
                 System.out.println("Offset --> " + this.timeZoneOffset);
@@ -221,6 +225,14 @@ public class UserApiRestRequestDTO {
 
         public String getTimeZoneOffset() { return timeZoneOffset; }
         public void setTimeZoneOffset(String timeZoneOffset) { this.timeZoneOffset = timeZoneOffset; }
+
+        @Override
+        public String toString() {
+            return "UserDate{" +
+                    "dateUtc='" + dateUtc + '\'' +
+                    ", timeZoneOffset='" + timeZoneOffset + '\'' +
+                    '}';
+        }
     }
 
     @Override

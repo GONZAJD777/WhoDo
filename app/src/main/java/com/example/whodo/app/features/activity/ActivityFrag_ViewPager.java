@@ -91,7 +91,7 @@ public class ActivityFrag_ViewPager extends Fragment {
         String mWorkOrderType;
         String mCustomerStates = "PLANNED,DIAGNOSED,DONE";
         String mProviderStates = "ONEVALUATION,CONFIRMED,ONPROGRESS";
-        if (Objects.equals(pWorkOrder.getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getAuthId()))
+        if (Objects.equals(pWorkOrder.getCustomer().getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getAuthId()))
         {mWorkOrderType="CUSTOMER";}
         else {mWorkOrderType="PROVIDER";}
 
@@ -103,13 +103,13 @@ public class ActivityFrag_ViewPager extends Fragment {
             Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_64", 64, 64);
             Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
             mActivityWorkOrderItem.setCategoryImage(drawable);
-            mActivityWorkOrderItem.setUserName("Usuario: "+pWorkOrder.getProviderName());
+            mActivityWorkOrderItem.setUserName("Usuario: "+pWorkOrder.getProvider().getProviderName());
 
         }else {
             Bitmap mServIconName = ImageManager.getStoredIcon(requireContext(),pWorkOrder.getSpecialization() + "_orden_64", 64, 64);
             Drawable drawable = new BitmapDrawable(getResources(), mServIconName);
             mActivityWorkOrderItem.setCategoryImage(drawable);
-            mActivityWorkOrderItem.setUserName("Usuario: "+pWorkOrder.getCustomerName());
+            mActivityWorkOrderItem.setUserName("Usuario: "+pWorkOrder.getCustomer().getCustomerName());
 
         }
 

@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
-import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
 import com.example.whodo.app.network.ApiResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -37,6 +36,7 @@ public class SEEWorkOrderCallback implements Callback {
     }
     @Override
     public void onFailure(@NonNull Call call, @NonNull IOException e) {
+        Log.d(TAG, "Falla en la conexion SSE: "+ e );
 
     }
 

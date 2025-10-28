@@ -3,17 +3,13 @@ package com.example.whodo.app.network.reactive.provider;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
-
 import com.example.whodo.app.domain.user.User;
-
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 

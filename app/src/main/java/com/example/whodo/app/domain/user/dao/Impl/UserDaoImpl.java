@@ -144,9 +144,9 @@ public class UserDaoImpl implements UserDao<User> {
         double Lat2=mUserBounds.latMax;
         double Lon1=mUserBounds.lonMin;
         double Lon2=mUserBounds.lonMax;
-        SSEProviderClient SSEProviderClient = new SSEProviderClient(mBaseUrl + "users/stream/getAllUsersInBound?lat1="+ Lat1 +"&lon1="+ Lon1 +"&lat2="+ Lat2 +"&lon2="+Lon2);
+        SSEProviderClient SSEProviderClient = new SSEProviderClient(mBaseUrl + "users/stream/getAllUsersInBound?UserType=2&lat1="+ Lat1 +"&lon1="+ Lon1 +"&lat2="+ Lat2 +"&lon2="+Lon2);
         SSEProviderClient.startListening(mUser);
-        Log.d(TAG, "sseProviderClient -->" + mBaseUrl + "users/stream/getAllUsersInBound?lat1="+ Lat1 +"&lon1="+ Lon1 +"&lat2="+ Lat2 +"&lon2="+Lon2);
+        Log.d(TAG, "sseProviderClient -->" + mBaseUrl + "users/stream/getAllUsersInBound?UserType=2&lat1="+ Lat1 +"&lon1="+ Lon1 +"&lat2="+ Lat2 +"&lon2="+Lon2);
 
         return mUser;
     }

@@ -15,8 +15,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.whodo.app.domain.user.dao.Impl.UserDaoImpl;
 import com.example.whodo.app.domain.user.dao.UserDao;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
-import com.example.whodo.app.domain.workOrder.WorkOrderDTO;
-import com.example.whodo.app.domain.workOrder.WorkOrderMapper;
 import com.example.whodo.app.domain.workOrder.dao.Impl.WorkOrderDaoImpl;
 import com.example.whodo.app.domain.workOrder.dao.WorkOrderDao;
 import com.example.whodo.app.features.favorites.FavoritesFragment;
@@ -153,8 +151,10 @@ public class MainActivityViewModel extends AndroidViewModel {
         this.mSeletedTab.setValue(pTab);
     }
 
-    public void setSelectedFragment(int pTab, int pTabLayoutVisibility) {
-        switch (pTab) {
+    public void setSelectedFragment(int pFragment, int pTabLayoutVisibility) {
+        mTabLayoutVisibility.setValue(pTabLayoutVisibility);
+
+        switch (pFragment) {
             case 0:
                 mFragmentSelected.setValue(new HireFragment());
                 break;
@@ -204,7 +204,6 @@ public class MainActivityViewModel extends AndroidViewModel {
                 mFragmentSelected.setValue(new WorkOrderFragment());
                 break;
         }
-        mTabLayoutVisibility.setValue(pTabLayoutVisibility);
     }
 
     public void updateLoggedUser(User pUser) {
@@ -229,7 +228,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     public void createUser(User pUser, Callback<User> callback) {
-        mUserDao.create((pUser), new Callback<User>() {
+        mUserDao.create(pUser, new Callback<User>() {
             @Override
             public void onSuccess(User pUser) {
                 callback.onSuccess(pUser);
@@ -331,9 +330,12 @@ public class MainActivityViewModel extends AndroidViewModel {
         mWorkOrderDao.create(pWorkOrder, new Callback<WorkOrder>() {
             @Override
             public void onSuccess(WorkOrder workOrder) {
+                //callback.onSuccess(pUser);
+                Log.d(TAG, "createWorkOrder() Method --> WorkOrder has been created " + workOrder);
             }
             @Override
             public void onError(Exception e) {
+                Log.d(TAG, "createWorkOrder() Method --> WorkOrder creation error " + e);
             }
         });
     }
@@ -377,12 +379,11 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     private void loadUserWorkOrders(User pUser){
         WorkOrder mWorkOrder = new WorkOrder();
-        mWorkOrder.setCustomerId(pUser.getId());
-        mWorkOrder.setProviderId(pUser.getId());
+        mWorkOrder.getCustomer().setCustomerId(pUser.getId());
+        mWorkOrder.getProvider().setProviderId(pUser.getId());
         mWorkOrderDao.find(mWorkOrder).observeForever(workOrderList -> {
             if (workOrderList != null) {
-                List<WorkOrder> AuxWorkOrderList = new ArrayList<>(); // Crear una nueva lista para almacenar los objetos User
-                mWorkOrders.setValue(AuxWorkOrderList);
+                mWorkOrders.setValue(workOrderList);
                 Log.d(TAG, "loadUserWorkOrders() --> onSuccess mWorkOrders: "+ mWorkOrders);
 
                 if (mWorkOrders.isInitialized() && mPickedWorkOrder.isInitialized()) {
@@ -413,7 +414,6 @@ public class MainActivityViewModel extends AndroidViewModel {
                 if (pParametersList != null) {
                     mParameters.setValue(pParametersList.getData());
                     Log.d(TAG, "pParametersList -->" + pParametersList);
-
                 }
             }
             @Override
