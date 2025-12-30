@@ -6,9 +6,11 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
@@ -27,6 +30,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.whodo.R;
 import com.example.whodo.app.Callback;
 import com.example.whodo.app.MainActivityViewModel;
+import com.example.whodo.app.domain.Location;
+import com.example.whodo.app.domain.Phone;
+import com.example.whodo.app.domain.paymentOrder.PaymentRequest;
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
 import com.example.whodo.app.features.activity.workOrder.workOrderState.ConfState;
@@ -38,17 +44,20 @@ import com.example.whodo.app.features.activity.workOrder.workOrderState.OpenStat
 import com.example.whodo.app.features.activity.workOrder.workOrderState.PlannedState;
 import com.example.whodo.app.features.activity.workOrder.workOrderState.ClosedState;
 import com.example.whodo.app.features.hire.HireFragmentViewModel;
+import com.example.whodo.app.resources.parameters.Parameter;
 import com.example.whodo.app.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class WorkOrderFragment extends Fragment {
-    private final String TAG1 = "WORK-ORDER-LIFECYCLE-FRAG";
+    private final String TAG1 = "LOGGER-WORK-ORDER-LIFECYCLE-FRAG";
     private HireFragmentViewModel mHireFragmentViewModel;
     private MainActivityViewModel mMainActivityViewModel;
     private NestedScrollView work0rderStates_scrollView;
@@ -76,20 +85,17 @@ public class WorkOrderFragment extends Fragment {
     private FloatingActionButton startComplaintButton;//TODO: crear la pantalla para iniciar la mediacion
     //***************************************** Parametria, deberia levantarse de base de datos ********************//
     private String[] mValidStates = {"CONFIRMED", "DIAGNOSED"}; //Estados para validar Inspeccion
-
-    private Integer mWarrantyDays = 7;// dias otorgados como garantia una vez completada la reseña.
-    private Integer mAutoClosingDays = 2;//periodo para que el cliente complete la reseña, de lo contrario la orden se cierra y pierde derecho a reclamo
-    private Integer mFeePercent = 10;
-    private Integer mInspetionFeePercent = 10;
-    private Integer mInspectionMaxCost = 2000;
-    private Integer mMaxWorkLimitTimeExt = 3;//Maxima cantidad de devoluciones de estado DONE a estado ONPROGRESS antes de activar el boton de reclamo para proveedor
-
-    private Integer mMaxDaysWorkEndDateExt = 9;//Maxima cantidad de devoluciones de estado DONE a estado ONPROGRESS antes de activar el boton de reclamo para proveedor
-    private Integer mMinDaysWorkEndDateExt = 2;//Maxima cantidad de devoluciones de estado DONE a estado ONPROGRESS antes de activar el boton de reclamo para proveedor
-    private Integer mMaxDaysLimitOpenState = 7; //Maxima cantidad de dias en los que una orden en estado OPEN y ONEVALUATION estaran disponible para ser aceptada por un proveedor
-    private Integer mMaxDaysMeetOnEvalState = 15; //Maxima cantidad de dias para planificar una cita o visita en ONEVALUATION STATE.
-    private Integer mMaxDaysOnConfState = 2; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
-    private Integer mActivateUserTypeValidation=0; // Activa = 1 o Desactiva=2 la validacion del tipo de cliente (customer o provider) lo que hara que dependiendo del estado de la orden
+    private Integer mAutoClosingDays;//periodo para que el cliente complete la reseña, de lo contrario la orden se cierra y pierde derecho a reclamo
+    private Integer mFeePercent;
+    private Integer mInspetionFeePercent;
+    private Integer mInspectionMaxCost;
+    private Integer mMaxWorkLimitTimeExt;//Maxima cantidad de devoluciones de estado DONE a estado ONPROGRESS antes de activar el boton de reclamo para proveedor
+    private Integer mMaxDaysWorkEndDateExt;//Maxima cantidad de DIAS de extension al pasar de estado DONE a estado ONPROGRESS por parte del cliente
+    private Integer mMinDaysWorkEndDateExt;//Minima cantidad de DIAS de extension al pasar de estado DONE a estado ONPROGRESS por parte del cliente
+    private Integer mMaxDaysLimitOpenState; //Maxima cantidad de dias en los que una orden en estado OPEN y ONEVALUATION estaran disponible para ser aceptada por un proveedor
+    private Integer mMaxDaysMeetOnEvalState; //Maxima cantidad de dias para planificar una cita o visita en ONEVALUATION STATE.
+    private Integer mMaxDaysOnConfState; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
+    private Integer mActivateUserTypeValidation; // Activa = 1 o Desactiva=2 la validacion del tipo de cliente (customer o provider) lo que hara que dependiendo del estado de la orden
                                                     // la interfaz sea editable o no en funcion de si quien consulta la orden es el cliente o el proveedor. Si se desactiva, cualquier usuario
                                                     // puede transicionar la orden a travez de todos los estados, destinado al Testeo.
 
@@ -121,8 +127,8 @@ public class WorkOrderFragment extends Fragment {
     private String mReviewClosingWarning = "Tienes tiempo hasta el %1$s, luego de esta fecha la orden se cerrara, se liberara el pago al proveedor y no podras iniciar reclamos por fallas.";
     private String mReviewClosingWarningOutOfDate = "Tenias tiempo hasta el %1$s, la orden ya no esta disponible para reclamos y será cerrada automaticamente.";
 
-    private String mWarrantyMessage = "Tiene hasta la siguiente fecha para iniciar el reclamo por alguna falla en el servicio prestado, que no pudiera ser resuelto entre las partes.";
-
+    private Integer mWarrantyDays;// dias otorgados como garantia una vez completada la reseña.
+    private String mWarrantyMessage;
     private String mStrDiagTtlOpenState = "Fecha limite para tomar orden";
     private String mStrDiagTtlConfState = "Fecha limite para aceptar Contrato";
     private String mStrDiagTtlOnEvalState = "Fecha de Inspeccion";
@@ -137,12 +143,16 @@ public class WorkOrderFragment extends Fragment {
     private String mStartComplaintButton ="#FFFF0000";
 
     //**************************************************************************************************************//
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_work_order_lifecycle, container, false);
         mHireFragmentViewModel = new ViewModelProvider(requireActivity()).get(HireFragmentViewModel.class);
         mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        mMainActivityViewModel.getParameters().observe(getViewLifecycleOwner(), this::setParameters);
         mMainActivityViewModel.getPickedWorkOrder().observe(getViewLifecycleOwner(), this::setWorkOrderView);
+        mMainActivityViewModel.getPayment().observe(getViewLifecycleOwner(), this::redirectToPayment);
 
         orderId_label = root.findViewById(R.id.orderId_label);
         saveChangesButton = root.findViewById(R.id.saveChangesButton);
@@ -182,6 +192,22 @@ public class WorkOrderFragment extends Fragment {
         mVertLineBackTintMode = closedStateDetail_vertLine.getBackgroundTintMode();
 
         return root;
+    }
+
+    private void setParameters(List<Parameter> parameters) {
+        mWarrantyDays = Integer.parseInt(Utils.findParameterById(parameters, "WO_WARRANTY_DAYS").getValue());
+        mWarrantyMessage = Utils.findParameterById(parameters, "WO_WARRANTY_MESSAGE").getValue();
+        mAutoClosingDays = Integer.parseInt(Utils.findParameterById(parameters, "WO_AUTO_CLOSING_DAYS").getValue());
+        mFeePercent = Integer.parseInt(Utils.findParameterById(parameters, "WO_FEE_PERCENT").getValue());
+        mInspetionFeePercent = Integer.parseInt(Utils.findParameterById(parameters, "WO_INSPECTION_FEE_PERCENT").getValue());
+        mInspectionMaxCost = Integer.parseInt(Utils.findParameterById(parameters, "WO_INSPECTION_MAX_COST").getValue());
+        mMaxWorkLimitTimeExt = Integer.parseInt(Utils.findParameterById(parameters, "WO_WORK_EXTENSION_LIMIT").getValue());
+        mMaxDaysWorkEndDateExt = Integer.parseInt(Utils.findParameterById(parameters, "WO_WORK_EXT_DAYS_UPPER_LIMIT").getValue());
+        mMinDaysWorkEndDateExt = Integer.parseInt(Utils.findParameterById(parameters, "WO_WORK_EXT_DAYS_LOWER_LIMIT").getValue());
+        mMaxDaysLimitOpenState = Integer.parseInt(Utils.findParameterById(parameters, "WO_OPEN_STATE_LIMIT_DAYS").getValue());
+        mMaxDaysMeetOnEvalState = Integer.parseInt(Utils.findParameterById(parameters, "WO_ON_EVAL_STATE_LIMIT_DAYS").getValue());
+        mMaxDaysOnConfState = Integer.parseInt(Utils.findParameterById(parameters, "WO_ON_CONF_STATE_LIMIT_DAYS").getValue());
+        mActivateUserTypeValidation = Integer.parseInt(Utils.findParameterById(parameters, "WO_USER_TYPE_VALIDATION").getValue());
     }
     private void setWorkOrderView(WorkOrder pWorkOrder) {
         //TODO: verificar fechas de vencimiento de plazos en cada estado, y desactivar los botones para evitar acciones hasta q el proceso batch las remueva.
@@ -358,9 +384,29 @@ public class WorkOrderFragment extends Fragment {
         String mProviderPhoneNumber = pProvider.getPhone().getCcn() + pProvider.getPhone().getNumber();
         String mState = "ONEVALUATION";
 
-        WorkOrder WO = new WorkOrder(pCustomer.getId(), pCustomer.getName(), pCustomer.getAddress(), pCustomer.getLocation().getLatitude(), pCustomer.getLocation().getLongitude(), pCustomer.getPhone().getNumber(),pCustomer.getPhone().getCcn(),
-                pProvider.getId(), pProvider.getName(), pProvider.getAddress(), pProvider.getLocation().getLatitude(), pProvider.getLocation().getLongitude(), pProvider.getPhone().getNumber(),pProvider.getPhone().getCcn(),
-                mState, pCategory, pDescription, pCreationDate, pLimitDate, mStateChangeDate);
+        WorkOrder WO = WorkOrder.builder()
+                .customer(WorkOrder.Customer.builder()
+                        .customerId(pCustomer.getId())
+                        .customerName(pCustomer.getName())
+                        .customerAddress(pCustomer.getAddress())
+                        .customerLocation(new Location(pCustomer.getLocation().getLatitude(), pCustomer.getLocation().getLongitude(), null))
+                        .customerPhone(new Phone(pCustomer.getPhone().getNumber(),pCustomer.getPhone().getCcn()))
+                        .build())
+                .provider(WorkOrder.Provider.builder()
+                        .providerId(pProvider.getId())
+                        .providerName(pProvider.getName())
+                        .providerAddress(pProvider.getAddress())
+                        .providerLocation(new Location(pProvider.getLocation().getLatitude(), pProvider.getLocation().getLongitude(), null))
+                        .providerPhone(new Phone(pProvider.getPhone().getNumber(),pProvider.getPhone().getCcn()))
+                        .build())
+                .specialization(pCategory)
+                .description(pDescription)
+                .creationDate(pCreationDate)
+                .timeLimit(pLimitDate)
+                .state(mState)
+                .stateChangeDate(mStateChangeDate)
+                .build();
+
 
         mMainActivityViewModel.createWorkOrder(WO);
         mMainActivityViewModel.setSelectedTab(2);
@@ -435,42 +481,57 @@ public class WorkOrderFragment extends Fragment {
             }
         });
         mOnEvalStateItem.setAcceptButtonOCL(v -> {
-            if (!this.isWorkOrderEditableByExpiration(pWorkOrder)){
+            Log.d(TAG1, "Click botón aceptar");
+
+            if (!this.isWorkOrderEditableByExpiration(pWorkOrder)) {
+                Log.d(TAG1, "Orden expirada → notificando");
                 this.orderExpiredNotificator();
             } else {
-                if (mOnEvalStateItem.getMeetDate().isEmpty() || mOnEvalStateItem.getMeetTime().isEmpty() || mOnEvalStateItem.getPlanLimitDate().isEmpty()) {
+                if (mOnEvalStateItem.getMeetDate().isEmpty()
+                        || mOnEvalStateItem.getMeetTime().isEmpty()
+                        || mOnEvalStateItem.getPlanLimitDate().isEmpty()) {
+                    Log.d(TAG1, "Campos vacíos → notificando");
                     emptyFieldsNotificator();
                 } else {
                     int mInspectionCharges = 0;
                     if (!mOnEvalStateItem.getMeetTariff().isEmpty()) {
-                        mInspectionCharges = Integer.parseInt(mOnEvalStateItem.getMeetTariff());
+                        try {
+                            mInspectionCharges = Integer.parseInt(mOnEvalStateItem.getMeetTariff());
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG1, "Error parseando tarifa: " + e.getMessage());
+                            mInspectionCharges = 0;
+                        }
                     }
-                    String mPlanLimitDate= Utils.getISOLocalDateFromString(mOnEvalStateItem.getPlanLimitDate(), mEndDayTime);//TODO: Aqui es necesario permitir agregar la hora manualmente
-                    String mInspectionDate = Utils.getISOLocalDateFromString(mOnEvalStateItem.getMeetDate(), mOnEvalStateItem.getMeetTime());
+
+                    String mPlanLimitDate = Utils.getISOLocalDateFromString(
+                            mOnEvalStateItem.getPlanLimitDate(), mEndDayTime);
+                    String mInspectionDate = Utils.getISOLocalDateFromString(
+                            mOnEvalStateItem.getMeetDate(), mOnEvalStateItem.getMeetTime());
                     int mInspectionFee = (int) (mInspectionCharges * (mInspetionFeePercent / 100.0));
 
                     String mNow = Utils.getISOLocalDate();
 
                     Log.d(TAG1, "mNow: " + mNow);
                     Log.d(TAG1, "mInspectionDate: " + mInspectionDate);
+                    Log.d(TAG1, "mInspectionCharges: " + mInspectionCharges);
+                    Log.d(TAG1, "mInspectionFee: " + mInspectionFee);
 
-                    if (mInspectionCharges>mInspectionMaxCost){
+                    if (mInspectionCharges > mInspectionMaxCost) {
+                        Log.d(TAG1, "Costo supera máximo permitido");
                         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                         builder.setTitle("Información Importante")
-                                .setMessage("El costo de la inspeccion no puede superar "+mInspectionMaxCost)
-                                .setPositiveButton("Aceptar", null) // Botón "Aceptar"
+                                .setMessage("El costo de la inspección no puede superar " + mInspectionMaxCost)
+                                .setPositiveButton("Aceptar", null)
                                 .show();
                     } else if (Utils.isAfter(mPlanLimitDate, mInspectionDate)) {
-                        dateCorrelationErrorNotificator(mOnEvalStateDatesErrorTitle,mOnEvalStateDatesErrorMessage);
+                        Log.d(TAG1, "Error correlación de fechas → notificando");
+                        dateCorrelationErrorNotificator(mOnEvalStateDatesErrorTitle, mOnEvalStateDatesErrorMessage);
                     } else {
-                        Log.d(TAG1, "mInspectionCharges: " + mInspectionCharges);
-                        Log.d(TAG1, "mInspectionFee: " + mInspectionFee);
-                        Log.d(TAG1, "BOTON ACEPTAR ORDEN PRESIONADO");
-                        planDate(pWorkOrder.getOrderId(),mPlanLimitDate, mInspectionDate, mInspectionCharges, mInspectionFee);
+                        Log.d(TAG1, "BOTÓN ACEPTAR ORDEN PRESIONADO → ejecutando planDate");
+                        planDate(pWorkOrder.getOrderId(), mPlanLimitDate, mInspectionDate, mInspectionCharges, mInspectionFee);
                     }
                 }
             }
-
         });
         mOnEvalStateItem.setRejectButtonOCL(v -> {
             if (!this.isWorkOrderEditableByExpiration(pWorkOrder)){
@@ -526,6 +587,8 @@ public class WorkOrderFragment extends Fragment {
         mPlannedStateItem.setProviderAddress("Direccion: " + pWorkOrder.getProvider().getProviderAddress());
         mPlannedStateItem.setProviderPhone("Telefono: " + pWorkOrder.getProvider().getProviderPhone().getCcn()+pWorkOrder.getProvider().getProviderPhone().getNumber());
 
+        mPlannedStateItem.setPaymentOrder("Orden de Pago: " + pWorkOrder.getInspection().getInspectionPaymentOrder());
+
         mPlannedStateItem.setPlanLimitDate("Fecha Limite de Aceptacion:" + mPlanLimitDate);
         mPlannedStateItem.setMeetDate("Fecha de Cita: " + mInspectionDate.substring(0, 11));
         mPlannedStateItem.setMeetTime("Hora de Cita: " + mInspectionDate.substring(13, 20));
@@ -537,8 +600,41 @@ public class WorkOrderFragment extends Fragment {
                 this.orderExpiredNotificator();
             } else {
                 Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");
-            }
 
+                // Crear un item
+                PaymentRequest.ItemRequest item = PaymentRequest.ItemRequest.builder()
+                        .id(pWorkOrder.getOrderId())
+                        .title("Service suplied from "+ pWorkOrder.getProvider().getProviderName() + " to " + pWorkOrder.getCustomer().getCustomerName())
+                        .description(pWorkOrder.getDescription())
+                        .pictureUrl("")
+                        .categoryId(pWorkOrder.getSpecialization())
+                        .quantity(1)
+                        .currencyId("ARS")
+                        .unitPrice(new BigDecimal(pWorkOrder.getInspection().getInspectionCharges()))
+                        .build();
+
+        // Crear los back urls
+                PaymentRequest.BackUrlsRequest backUrls = PaymentRequest.BackUrlsRequest.builder()
+                        .success("https://example.com/payment/success")
+                        .pending("https://example.com/payment/pending")
+                        .failure("https://example.com/payment/failure")
+                        .build();
+
+        // Crear el PaymentRequest con builder
+                PaymentRequest mPaymentRequest = PaymentRequest.builder()
+                        .items(List.of(item))
+                        .backUrls(backUrls)
+                        .notificationUrl("https://unabandoned-dashiest-rhoda.ngrok-free.dev/webhook/payment/success")
+                        .externalReference(pWorkOrder.getInspection().getInspectionPaymentOrder())
+                        .metadata(Map.of(
+                                "payment_order_id", pWorkOrder.getInspection().getInspectionPaymentOrder(),
+                                "work_order_id", pWorkOrder.getOrderId()
+                        ))
+                        .build();
+
+        // Usar el request en tu ViewModel
+                mMainActivityViewModel.createPayment(mPaymentRequest);
+            }
         });
         mPlannedStateItem.setAcceptButtonOCL(v -> {
             if (!this.isWorkOrderEditableByExpiration(pWorkOrder)){
@@ -571,6 +667,10 @@ public class WorkOrderFragment extends Fragment {
         plannedStateDetail_LinearLayout.addView(mPlannedStateItem);
         plannedStateDetail_vertLine.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.dotted_line));
         plannedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
+    }
+    private void redirectToPayment(String pPaymentUrl) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(pPaymentUrl));
+        startActivity(browserIntent);
     }
     private void confirmDate(String pWorkOrderID, String pPaymentOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();

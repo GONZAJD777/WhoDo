@@ -1,10 +1,10 @@
 package com.example.whodo.app.features.profile.fragments;
 
-import static com.example.whodo.app.features.profile.ProfileHolderActivity.hideKeyboard;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
+import static com.google.android.material.internal.ViewUtils.hideKeyboard;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -62,7 +62,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 13f;
-    private static final String TAG = "EDIT-PROFILE-FRAGMENT";
+    private static final String TAG = "LOGGER-EDIT-PROFILE-FRAGMENT";
     private CustomMapView mapView;
     private GoogleMap mMap;
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
@@ -454,7 +454,7 @@ public class EditProfileFragment extends Fragment implements OnMapReadyCallback 
             mBottomSheetBehavior.setState(STATE_HIDDEN);
             BlackBackground_bottom_sheet.setClickable(false);
             BlackBackground_bottom_sheet.setAlpha(0);
-            hideKeyboard(requireActivity());
+            //hideKeyboard(  );
         }
     }
     public void addMarkers(GoogleMap googleMap,LatLng LatLng){

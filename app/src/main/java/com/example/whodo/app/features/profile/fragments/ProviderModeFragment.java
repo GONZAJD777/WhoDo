@@ -1,8 +1,8 @@
 package com.example.whodo.app.features.profile.fragments;
 
-import static com.example.whodo.app.features.profile.ProfileHolderActivity.hideKeyboard;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
+import static com.google.android.material.internal.ViewUtils.hideKeyboard;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -120,8 +120,8 @@ public class ProviderModeFragment extends Fragment {
     }
 
     private void saveUserData (){
-        mMainActivityViewModel.getLoggedUser().removeObservers(requireActivity());
-        mMainActivityViewModel.getParameters().removeObservers(requireActivity());
+        //mMainActivityViewModel.getLoggedUser().removeObservers(requireActivity());
+        //mMainActivityViewModel.getParameters().removeObservers(requireActivity());
 
         if(mProfileSwitchItem.getSwitchState()){
             LoggedUserType="2";
@@ -222,7 +222,7 @@ public class ProviderModeFragment extends Fragment {
             mBottomSheetBehavior.setState(STATE_HIDDEN);
             BlackBackground_bottom_sheet.setClickable(false);
             BlackBackground_bottom_sheet.setAlpha(0);
-            hideKeyboard(requireActivity());
+            //hideKeyboard(requireActivity());
         }
     }
 

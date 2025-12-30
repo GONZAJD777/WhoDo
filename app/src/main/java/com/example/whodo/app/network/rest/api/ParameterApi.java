@@ -10,8 +10,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface ParameterApi {
-
     @GET("/api/parameters/getAllParametersByStatus/{status}")
     Call<ApiResponse<List<Parameter>>> getAllParametersByStatus(@Path("status") String status);
-
 }

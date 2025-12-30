@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="false">
+    <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">192.168.56.1</domain>
+        <domain includeSubdomains="true">192.168.0.12</domain>
         <trust-anchors>
-            <certificates src="@raw/keystore" />
+            <certificates src="@raw/whodo_paymentorder_serv_cert"/>
+            <certificates src="@raw/whodo_workorder_serv_cert"/>
         </trust-anchors>
     </domain-config>
 </network-security-config>

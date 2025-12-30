@@ -22,6 +22,7 @@ import com.example.whodo.app.MainActivity;
 import com.example.whodo.R;
 import com.example.whodo.app.MainActivityViewModel;
 import com.example.whodo.app.domain.user.User;
+import com.example.whodo.app.domain.user.UserFactory;
 import com.example.whodo.app.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -103,7 +104,7 @@ public class SignInFragment extends Fragment {
     private void createNewUser(String pAuthId,String pUserEmail, String pUserPass){
 
         //TODO: encryptar el password antes de guardarlo
-        User NewUser = new User(pAuthId,pUserEmail,pUserEmail,pUserPass,1,1,new ArrayList<>(),new ArrayList<>(),
+        User NewUser = UserFactory.newLoginUser(pAuthId,pUserEmail,pUserEmail,pUserPass,1,1,new ArrayList<>(),new ArrayList<>(),
                 Utils.creationDateParse(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getMetadata()).getCreationTimestamp()));
         //Setea el usuario como creado y activo 1(desactivador 0)
         //Setea el usuario como Cliente 1(proveedor 2)

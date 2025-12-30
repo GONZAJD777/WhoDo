@@ -23,9 +23,6 @@
 # Mantener la clase User sin cambios
 -keep class com.example.whodo.app.domain.user.User { *; }
 
-# Mantener la clase UserDTO sin cambios
--keep class com.example.whodo.app.domain.user.UserDTO { *; }
-
 # Mantener todas las clases del paquete DTO
 -keep class com.example.whodo.app.domain.user.** { *; }
 

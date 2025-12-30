@@ -35,9 +35,7 @@ public class MainProfileFragment extends Fragment {
     private ImageView Profile_Picture;
     private MainActivityViewModel model;
 
-    @SuppressLint({"LongLogTag", "MissingInflatedId"})
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.act_main_frag_profile, container, false);
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
@@ -128,7 +126,6 @@ public class MainProfileFragment extends Fragment {
         item_Profile_PrivacyPolitics.setImage(R.drawable.banco_24);
         item_Profile_PrivacyPolitics.setOnClickListener(v -> {
             openFragment(14);
-
         });
         //----------------------------------------------------------
         TextView label_CloseSession = new TextView(getContext());

@@ -1,6 +1,7 @@
 package com.example.whodo.app;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import com.example.whodo.R;
 import com.example.whodo.app.resources.images.ImageManager;
@@ -72,7 +73,6 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 });
         }
-
         private void LoadImages(List<String> mapIconList){
             List<String> mMissingIconNames = ImageManager.checkMissingIcons(mapIconList, this);
             if(!mMissingIconNames.isEmpty()){
@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
     }
+
 }
 
 

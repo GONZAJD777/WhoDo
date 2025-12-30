@@ -11,7 +11,14 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
+import com.example.whodo.app.domain.paymentOrder.PaymentOrder;
+import com.example.whodo.app.domain.paymentOrder.PaymentRequest;
+import com.example.whodo.app.domain.paymentOrder.PaymentResponse;
+import com.example.whodo.app.domain.paymentOrder.dao.Impl.PaymentOrderDaoImpl;
+import com.example.whodo.app.domain.paymentOrder.dao.PaymentOrderDao;
+import com.example.whodo.app.domain.user.UserFactory;
 import com.example.whodo.app.domain.user.dao.Impl.UserDaoImpl;
 import com.example.whodo.app.domain.user.dao.UserDao;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
@@ -48,28 +55,33 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivityViewModel extends AndroidViewModel {
+public class MainActivityViewModel extends AndroidViewModel implements ViewModelInterface {
 
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final String TAG = "MAIN-ACTIVITY-VIEWMODEL";
-
+    private final String TAG = "LOGGER-MAIN-ACTIVITY-VIEWMODEL";
+    private Integer mProvidersUpdateCounter;
+    private Integer mProvidersUpdateTimer;
+    private Double mMaxProviderDistance;
+    private final List<Observer<?>> observers = new ArrayList<>();
     private User mSnapshotUser= new User(); // No es LiveData
     private final MutableLiveData<User> mWorkOrdersCustomer = new MutableLiveData<>();
     private final MutableLiveData<Fragment> mFragmentSelected = new MutableLiveData<>();
     private final MutableLiveData<Integer> mTabLayoutVisibility = new MutableLiveData<>();
     private final MutableLiveData<Integer> mSeletedTab = new MutableLiveData<>();
     private final MutableLiveData<WorkOrder> mPickedWorkOrder = new MutableLiveData<>();
-
     private final MutableLiveData<User> mUser = new MutableLiveData<>();
     private final MutableLiveData<List<WorkOrder>> mWorkOrders = new MutableLiveData<>();
     private final MutableLiveData<List<User>> mProviders = new MutableLiveData<>();
     private final MutableLiveData<List<Parameter>> mParameters = new MutableLiveData<>();
+    private final MutableLiveData<String> mPayment = new MutableLiveData<>();
     private MediatorLiveData<Boolean> allDataReady = new MediatorLiveData<>();
-
     private UserDao<User> mUserDao;
     private WorkOrderDao<WorkOrder> mWorkOrderDao;
+    private PaymentOrderDao<PaymentOrder> mPaymentOrderDao;
     private final ParametersDao<Parameter> mParametersDao;
+    private boolean workOrdersSubscribed = false;
 
+    ////******************************************************************************////
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
 
@@ -77,33 +89,41 @@ public class MainActivityViewModel extends AndroidViewModel {
         mUserDao = new UserDaoImpl(application.getApplicationContext());
         mWorkOrderDao= new WorkOrderDaoImpl(application.getApplicationContext());
         mParametersDao= new ParametersDaoImpl(application.getApplicationContext());
+        mPaymentOrderDao=new PaymentOrderDaoImpl(application.getApplicationContext());
 
         mSeletedTab.setValue(0);
         mTabLayoutVisibility.setValue(View.VISIBLE);
         mFragmentSelected.setValue(new HireFragment());
+        mProvidersUpdateCounter=0;
+        mProvidersUpdateTimer=2;
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            User currentUser = new User(user.getUid());
+            User currentUser = UserFactory.withAuthId(user.getUid());
             Log.d(TAG, "mAuth no es nulo y currentUser: " + currentUser);
             StartUserUpdateThread();
             try {
                 initializeObservers();
-                loadUserInfo(currentUser);
+                loadLoggedUser(currentUser);
                 loadParameters();
-                allDataReady.observeForever(ready -> {
-                    if (Boolean.TRUE.equals(ready)) {
+                Observer<Boolean> readyObserver =ready -> {
+                    if (Boolean.TRUE.equals(ready) && !workOrdersSubscribed) {
                         try {
                             String value = Utils.findParameterById(Objects.requireNonNull(mParameters.getValue()), "USR_MAX_DISTANCE").getValue();
-                            Double distance = Double.parseDouble(value);
-                            Log.d(TAG, "Distancia: " + distance);
-                            loadUserProviders(mUser.getValue(), distance);
+                            mMaxProviderDistance = Double.parseDouble(value);
+                            Log.d(TAG, "Distancia: " + mMaxProviderDistance);
+                            loadUserProviders(mUser.getValue(), mMaxProviderDistance);
                             loadUserWorkOrders(Objects.requireNonNull(mUser.getValue()));
+                            workOrdersSubscribed = true;
                         } catch (NumberFormatException e) {
                             Log.d(TAG, "Error al convertir el valor a Double: " + e.getMessage());
                         }
                     }
-                });
+                };
+                // Lo guardás en tu lista
+                observers.add(readyObserver);
+                // Lo registrás con observeForever
+                allDataReady.observeForever(readyObserver);
             }catch (Exception e){
                 Log.d(TAG, "Error al llamar a la base de datos --> espera a la actualizacion de datos." + e);
             }
@@ -112,36 +132,85 @@ public class MainActivityViewModel extends AndroidViewModel {
         }
 
     }
-
     private void initializeObservers() {
         allDataReady.addSource(mUser, user -> checkReady());
         allDataReady.addSource(mParameters, params -> checkReady());
     }
-
     private void checkReady() {
         if (mUser.getValue() != null && mParameters.getValue() != null) {
             allDataReady.setValue(true);
         }
     }
+    ////------- LOADING DATA -------////
+    private void loadLoggedUser(User pUser){
+        mUserDao.findUser(pUser, new Callback<User>() {
+            @Override
+            public void onSuccess(User user) {
+            setLoggedUser(user);
+            }
 
-    public LiveData<User> getLoggedUser() {
-        return this.mUser;
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "loadUser() Method --> Problem trying to load loggedUser Info " + e);
+            }
+        });
     }
-    public LiveData<List<User>> getProviders() {
-        return this.mProviders;
+    private void loadUserProviders(User pUser,Double distance){
+        mUserDao.findProviders(pUser, distance, new Callback<List<User>>() {
+            @Override
+            public void onSuccess(List<User> providersList) {
+                setProviders(providersList);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "loadUserProviders() Method --> Problem trying to load user providers" + e);
+
+            }
+        });
     }
+    private void loadUserWorkOrders(User pUser){
+        WorkOrder mWorkOrder = new WorkOrder();
+        mWorkOrder.getCustomer().setCustomerId(pUser.getId());
+        mWorkOrder.getProvider().setProviderId(pUser.getId());
+        mWorkOrderDao.find(this, mWorkOrder);
+        mWorkOrderDao.findByUserID(mWorkOrder, new Callback<List<WorkOrder>>() {
+            @Override
+            public void onSuccess(List<WorkOrder> workOrderList) {
+                Log.d(TAG, "loadUserWorkOrders() --> onSuccess mWorkOrders: "+ mWorkOrders);
+                mWorkOrders.setValue(workOrderList);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "loadUserWorkOrders() Method --> Problem trying to load user work orders" + e);
+            }
+        });
+    }
+    private void loadParameters(){
+        mParametersDao.getParameters(new Callback<ApiResponse<List<Parameter>>>() {
+            @Override
+            public void onSuccess(ApiResponse<List<Parameter>> pParametersList) {
+                if (pParametersList != null) {
+                    mParameters.setValue(pParametersList.getData());
+                    Log.d(TAG, "pParametersList -->" + pParametersList);
+                }
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "Error -->" + e.getMessage());
+            }
+        });
+    }
+    ////------- LOADING DATA -------////
+
     public LiveData<List<Parameter>> getParameters() {
         return this.mParameters;
     }
-
     public LiveData<Fragment> getSelectedFragment() {
         return this.mFragmentSelected;
     }
-
     public LiveData<Integer> getTabLayoutVisibility() {
         return this.mTabLayoutVisibility;
     }
-
     public LiveData<Integer> getSelectedTab() {
         return this.mSeletedTab;
     }
@@ -150,7 +219,6 @@ public class MainActivityViewModel extends AndroidViewModel {
     public void setSelectedTab(int pTab) {
         this.mSeletedTab.setValue(pTab);
     }
-
     public void setSelectedFragment(int pFragment, int pTabLayoutVisibility) {
         mTabLayoutVisibility.setValue(pTabLayoutVisibility);
 
@@ -205,11 +273,6 @@ public class MainActivityViewModel extends AndroidViewModel {
                 break;
         }
     }
-
-    public void updateLoggedUser(User pUser) {
-        this.mUser.setValue(pUser);
-    }
-
     private void StartUserUpdateThread() {
         final Handler handler = new Handler();
         new Thread(new Runnable() {
@@ -218,15 +281,48 @@ public class MainActivityViewModel extends AndroidViewModel {
                     Log.i(TAG, "mUser : " + Objects.requireNonNull(mUser.getValue()).toString());
                     Log.i(TAG, "mSnapshotUser : " + mSnapshotUser.toString());
                     updateUser(Objects.requireNonNull(mUser.getValue()), Objects.requireNonNull(mSnapshotUser));
+                    if(Objects.equals(mProvidersUpdateCounter, mProvidersUpdateTimer)){
+                        loadUserProviders(mUser.getValue(),mMaxProviderDistance);
+                    }
                 } catch (Exception e) {
                     Log.i(TAG, "StartUserUpdateThread --> BackgroundUpdateUser.UpdateUser(): " + e);
                 } finally {
+                    mProvidersUpdateCounter=(mProvidersUpdateCounter+1)%(mProvidersUpdateTimer+1);
                     handler.postDelayed(this, 60000);
                 }
             }
         }).start();
     }
+    public void updateLoggedUser(User pUser) {
+        this.mUser.setValue(pUser);
+    }
+    public void updateUserImmidiate(User pUser){
+        mUserDao.update(pUser, new Callback<User>() {
+            @Override
+            public void onSuccess(User user) {
 
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+    ////HANDLING LOGGED USER////
+    @Override
+    public LiveData<User> getLoggedUser() {
+        return this.mUser;
+    }
+    @Override
+    public void setLoggedUser(User pUser) {
+        if (pUser != null) {
+            mUser.setValue(pUser);
+            mSnapshotUser = pUser;
+            Log.i(TAG, "mUser: " + Objects.requireNonNull(mUser.getValue()));
+            Log.i(TAG, "mSnapshotUser: " + mSnapshotUser.toString());
+        }
+    }
     public void createUser(User pUser, Callback<User> callback) {
         mUserDao.create(pUser, new Callback<User>() {
             @Override
@@ -242,7 +338,6 @@ public class MainActivityViewModel extends AndroidViewModel {
             }
         });
     }
-
     private void updateUser(User pUser, User pUserSnapshot) {
         Log.i(TAG, "Operacion CRUD.UpdateUser() Se actualizara el usuario:" + "USERS/" + pUser.getId());
         User userToUpdate = new User();
@@ -252,28 +347,30 @@ public class MainActivityViewModel extends AndroidViewModel {
             Log.i(TAG, "UpdateUser DIRECCION NUEVA: " + pUser.getAddress());
             userToUpdate.setAddress(pUser.getAddress());
         }
-        if (!Objects.equals(pUser.getBirthday(), pUserSnapshot.getBirthday())) {
+        if (!Objects.equals(pUserSnapshot.getBirthday(), pUser.getBirthday())) {
             Log.i(TAG, "UpdateUser CUMPLEAÑOS ANTIGUA: " + pUserSnapshot.getBirthday());
             Log.i(TAG, "UpdateUser CUMPLEAÑOS NUEVA: " + pUser.getBirthday());
             userToUpdate.setBirthday(pUser.getBirthday());
         }
-        if (!Objects.equals(pUser.getDescription(), pUserSnapshot.getDescription())) {
+        if (!Objects.equals(pUserSnapshot.getDescription(), pUser.getDescription())) {
             Log.i(TAG, "UpdateUser DESCRIPCION ANTIGUA: " + pUserSnapshot.getDescription());
             Log.i(TAG, "UpdateUser DESCRIPCION NUEVA: " + pUser.getDescription());
             userToUpdate.setDescription(pUser.getDescription());
         }
-        if (!Objects.equals(pUser.getEmail(), pUserSnapshot.getEmail())) {
+        if (!Objects.equals(pUserSnapshot.getEmail(), pUser.getEmail())) {
             Log.i(TAG, "UpdateUser CORREO ANTIGUA: " + pUserSnapshot.getEmail());
             Log.i(TAG, "UpdateUser CORREO NUEVA: " + pUser.getEmail());
             userToUpdate.setEmail(pUser.getEmail());
         }
 
-        if (!(new HashSet<>(pUserSnapshot.getLanguages()).containsAll(pUser.getLanguages()) && new HashSet<>(pUser.getLanguages()).containsAll(pUserSnapshot.getLanguages())) ) {
+        if (!(new HashSet<>(pUser.getLanguages()).containsAll(pUserSnapshot.getLanguages()) &&
+                new HashSet<>(pUserSnapshot.getLanguages()).containsAll(pUser.getLanguages()))) {
             Log.i(TAG, "UpdateUser IDIOMAS ANTIGUA: " + pUserSnapshot.getLanguages());
             Log.i(TAG, "UpdateUser IDIOMAS NUEVA: " + pUser.getLanguages());
             userToUpdate.setLanguages(pUser.getLanguages());
         }
-        if (!Objects.equals(pUser.getLocation().getLatitude(), pUserSnapshot.getLocation().getLatitude()) || !Objects.equals(pUser.getLocation().getLongitude(), pUserSnapshot.getLocation().getLongitude())) {
+        if (!Objects.equals(pUserSnapshot.getLocation().getLatitude(), pUser.getLocation().getLatitude()) ||
+                !Objects.equals(pUserSnapshot.getLocation().getLongitude(), pUser.getLocation().getLongitude())) {
             Log.i(TAG, "UpdateUser LATITUD ANTIGUA: " + pUserSnapshot.getLocation().getLatitude());
             Log.i(TAG, "UpdateUser LATITUD NUEVA: " + pUser.getLocation().getLatitude());
             Log.i(TAG, "UpdateUser LONGITUD ANTIGUA: " + pUserSnapshot.getLocation().getLongitude());
@@ -281,51 +378,79 @@ public class MainActivityViewModel extends AndroidViewModel {
             userToUpdate.getLocation().setLatitude(pUser.getLocation().getLatitude());
             userToUpdate.getLocation().setLongitude(pUser.getLocation().getLongitude());
         }
-        if (!Objects.equals(pUser.getName(), pUserSnapshot.getName())) {
+        if (!Objects.equals(pUserSnapshot.getName(), pUser.getName())) {
             Log.i(TAG, "UpdateUser NOMBRE ANTIGUA: " + pUserSnapshot.getName());
             Log.i(TAG, "UpdateUser NOMBRE NUEVA: " + pUser.getName());
             userToUpdate.setName(pUser.getName());
         }
-        if (!Objects.equals(pUser.getPassword(), pUserSnapshot.getPassword())) {
+        if (!Objects.equals(pUserSnapshot.getPassword(), pUser.getPassword())) {
             Log.i(TAG, "UpdateUser PASSWORD ANTIGUA: " + pUserSnapshot.getPassword());
             Log.i(TAG, "UpdateUser PASSWORD NUEVA: " + pUser.getPassword());
             userToUpdate.setPassword(pUser.getPassword());
         }
-        if (!Objects.equals(pUser.getPhone().getNumber(), pUserSnapshot.getPhone().getNumber())) {
+        if (!Objects.equals(pUserSnapshot.getPhone().getNumber(), pUser.getPhone().getNumber())) {
             Log.i(TAG, "UpdateUser TELEFONO ANTIGUA: " + pUserSnapshot.getPhone().getNumber());
             Log.i(TAG, "UpdateUser TELEFONO NUEVA: " + pUser.getPhone().getNumber());
             userToUpdate.getPhone().setNumber(pUser.getPhone().getNumber());
         }
-        if (!Objects.equals(pUser.getPhone().getCcn(), pUserSnapshot.getPhone().getCcn())) {
+        if (!Objects.equals(pUserSnapshot.getPhone().getCcn(), pUser.getPhone().getCcn())) {
             Log.i(TAG, "UpdateUser CCN ANTIGUA: " + pUserSnapshot.getPhone().getCcn());
             Log.i(TAG, "UpdateUser CCN NUEVA: " + pUser.getPhone().getCcn());
             userToUpdate.getPhone().setCcn(pUser.getPhone().getCcn());
         }
-        if (!Objects.equals(pUser.getType(), pUserSnapshot.getType())) {
+        if (!Objects.equals(pUserSnapshot.getType(), pUser.getType())) {
             Log.i(TAG, "UpdateUser TIPO ANTIGUA: " + pUserSnapshot.getType());
             Log.i(TAG, "UpdateUser TIPO NUEVA: " + pUser.getType());
             userToUpdate.setType(pUser.getType());
         }
-        if (!(new HashSet<>(pUserSnapshot.getSpecialization()).containsAll(pUser.getSpecialization()) && new HashSet<>(pUser.getSpecialization()).containsAll(pUserSnapshot.getSpecialization()))) {
+        if (!(new HashSet<>(pUser.getSpecialization()).containsAll(pUserSnapshot.getSpecialization()) &&
+                new HashSet<>(pUserSnapshot.getSpecialization()).containsAll(pUser.getSpecialization()))) {
             Log.i("WhoDo-Log ", "UpdateUser ESPECIALIZACION ANTIGUA: " + pUserSnapshot.getSpecialization());
             Log.i(TAG, "UpdateUser ESPECIALIZACION NUEVA: " + pUser.getSpecialization());
             userToUpdate.setSpecialization(pUser.getSpecialization());
         }
-        if (!Objects.equals(pUser.getProfilePicture(), pUserSnapshot.getProfilePicture())) {
+        if (!Objects.equals(pUserSnapshot.getProfilePicture(), pUser.getProfilePicture())) {
             Log.i(TAG, "UpdateUser IMAGEN ANTIGUA: " + pUserSnapshot.getProfilePicture());
             Log.i(TAG, "UpdateUser IMAGEN NUEVA: " + pUser.getProfilePicture());
             userToUpdate.setProfilePicture(pUser.getProfilePicture());
         }
+
         Log.i(TAG, "UpdateUser : " + userToUpdate.toString());
 
-        mUserDao.update(userToUpdate);
+        mUserDao.update(userToUpdate, new Callback<User>() {
+            @Override
+            public void onSuccess(User user) {
+                //Log.d(TAG, "updateUser() Method --> This is the image url: " + user.getProfilePicture());
+                mSnapshotUser=user;
+                // como el objeto mUser es el que actualiza la interfaz, y la uri de la imagen aun no se define sino que la direccion es la del storage
+                // una vez actualizado el usuario, y obtenida la uri de la imagen subida al storage debemos actualizarla en en objeto para que no este indefinidamente
+                // intentando actualizar, de lo contrario siempre esta comparando las strings de uri y siempre seran diferentes.
+                Objects.requireNonNull(mUser.getValue()).setProfilePicture(user.getProfilePicture());
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "updateUser() Method --> User couldn't been updated " + e);
+            }
+        });
     }
+    ////HANDLING LOGGED USER////
 
-    public void updateUserImmidiate(User pUser){
-        mUserDao.update(pUser);
+    ////HANDLING PROVIDERS////
+    @Override
+    public LiveData<List<User>> getProviders() {
+        return this.mProviders;
     }
+    @Override
+    public void setProviders (List<User> pProvidersList) {
+        if (pProvidersList != null) {
+            mProviders.setValue(pProvidersList);
+            Log.i(TAG, "loadUserProviders() --> onSuccess mProviders: " + mProviders);
+        }
+    }
+    ////HANDLING PROVIDERS////
 
-    //HANDLING WORKORDERS
+    ////HANDLING WORKORDERS////
+    @Override
     public void createWorkOrder(WorkOrder pWorkOrder) {
         mWorkOrderDao.create(pWorkOrder, new Callback<WorkOrder>() {
             @Override
@@ -339,89 +464,73 @@ public class MainActivityViewModel extends AndroidViewModel {
             }
         });
     }
-
+    @Override
     public void updateWorkOrder(WorkOrder pWorkOrder) {
         mWorkOrderDao.update(pWorkOrder, new Callback<WorkOrder>() {
             @Override
             public void onSuccess(WorkOrder workOrder) {
+                Log.d(TAG, "Se actualizo la orden de trabajo: " + workOrder.toString() );
             }
             @Override
             public void onError(Exception e) {
+                Log.d(TAG, "Error al actualizar la orden de trabajo: " + e.toString() );
             }
         });
     }
-
+    @Override
     public LiveData<List<WorkOrder>> getWorkOrder() {
         return mWorkOrders;
     }
-
-    public void setPickedWorkOrder(WorkOrder pPickedWorkOrder) {
-        mPickedWorkOrder.setValue(pPickedWorkOrder);
-    }
-
-    public LiveData<WorkOrder> getPickedWorkOrder() {
-        return mPickedWorkOrder;
-    }
-    //HANDLING WORKORDERS
-
-    //------- LOADING DATA -------//
-
-    private void loadUserInfo(User pUser){
-        mUserDao.findUser(pUser).observeForever(user -> {
-            if (user != null) {
-                mUser.setValue(user);
-                mSnapshotUser = user;
-                Log.i(TAG, "mUser: " + Objects.requireNonNull(mUser.getValue()));
-                Log.i(TAG, "mSnapshotUser: " + mSnapshotUser.toString());
-            }
-        });
-    }
-
-    private void loadUserWorkOrders(User pUser){
-        WorkOrder mWorkOrder = new WorkOrder();
-        mWorkOrder.getCustomer().setCustomerId(pUser.getId());
-        mWorkOrder.getProvider().setProviderId(pUser.getId());
-        mWorkOrderDao.find(mWorkOrder).observeForever(workOrderList -> {
-            if (workOrderList != null) {
-                mWorkOrders.setValue(workOrderList);
-                Log.d(TAG, "loadUserWorkOrders() --> onSuccess mWorkOrders: "+ mWorkOrders);
-
-                if (mWorkOrders.isInitialized() && mPickedWorkOrder.isInitialized()) {
-                    for (WorkOrder pWorkOrder : Objects.requireNonNull(mWorkOrders.getValue())) {
-                        if (mPickedWorkOrder.getValue() != null && Objects.equals(mPickedWorkOrder.getValue().getOrderId(), pWorkOrder.getOrderId())) {
-                            mPickedWorkOrder.setValue(pWorkOrder);
-                        }
+    @Override
+    public void setWorkOrder(List<WorkOrder> pWorkOrdersList) {
+        if (pWorkOrdersList != null) {
+            mWorkOrders.setValue(pWorkOrdersList);
+            Log.d(TAG, "loadUserWorkOrders() --> onSuccess mWorkOrders: "+ mWorkOrders);
+            if (mWorkOrders.isInitialized() && mPickedWorkOrder.isInitialized()) {
+                for (WorkOrder pWorkOrder : Objects.requireNonNull(mWorkOrders.getValue())) {
+                    if (mPickedWorkOrder.getValue() != null && Objects.equals(mPickedWorkOrder.getValue().getOrderId(), pWorkOrder.getOrderId())) {
+                        mPickedWorkOrder.setValue(pWorkOrder);
                     }
                 }
             }
-        });
+        }
     }
-
-    private void loadUserProviders(User pUser,Double distance){
-        mUserDao.findProviders(pUser,distance).observeForever(providers -> {
-            if (providers != null) {
-                List<User> AuxUserList = new ArrayList<>(providers);
-                mProviders.setValue(AuxUserList);
-                Log.i(TAG, "loadUserProviders() --> onSuccess mProviders: " + mProviders);
-            }
-        });
+    public void setPickedWorkOrder(WorkOrder pPickedWorkOrder) {
+        mPickedWorkOrder.setValue(pPickedWorkOrder);
     }
+    public LiveData<WorkOrder> getPickedWorkOrder() {
+        return mPickedWorkOrder;
+    }
+    ////HANDLING WORKORDERS////
 
-    private void loadParameters(){
-        mParametersDao.getParameters(new Callback<ApiResponse<List<Parameter>>>() {
+    ////HANDLING PAYMENTORDERS////
+    public void createPayment(PaymentRequest pPaymentRequest) {
+        mPaymentOrderDao.createPayment(pPaymentRequest, new Callback<>() {
             @Override
-            public void onSuccess(ApiResponse<List<Parameter>> pParametersList) {
-                if (pParametersList != null) {
-                    mParameters.setValue(pParametersList.getData());
-                    Log.d(TAG, "pParametersList -->" + pParametersList);
-                }
+            public void onSuccess(PaymentResponse pPaymentUrl) {
+                setPayment(pPaymentUrl.getUrl());
+                Log.d(TAG, "createPayment() Method --> Payment has been created " + pPaymentUrl);
             }
+
             @Override
             public void onError(Exception e) {
-                Log.d(TAG, "Error -->" + e.getMessage());
+                Log.d(TAG, "createPayment() Method --> Payment creation error " + e);
             }
         });
     }
+    public void setPayment (String pPaymentUrl){
+        mPayment.setValue(pPaymentUrl);
+    }
+    public LiveData<String> getPayment (){
+        return mPayment;
+    }
+    ////HANDLING PAYMENTORDERS////
 
-    
+    @Override
+    public void onCleared() {
+        super.onCleared();
+        mWorkOrderDao.closeConnection();
+        mUserDao.closeConnection();
+        Log.d(TAG, "se cierran las conexiones de SSE clients");
+    }
 }

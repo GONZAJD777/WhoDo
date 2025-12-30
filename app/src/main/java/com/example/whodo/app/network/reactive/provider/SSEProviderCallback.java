@@ -1,9 +1,12 @@
 package com.example.whodo.app.network.reactive.provider;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
-import androidx.lifecycle.MutableLiveData;
+import androidx.annotation.NonNull;
 
+import com.example.whodo.app.ViewModelInterface;
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.network.ApiResponse;
 import com.google.gson.Gson;
@@ -21,90 +24,89 @@ import okhttp3.Response;
 import okio.BufferedSource;
 
 public class SSEProviderCallback implements Callback {
-    private static final String TAG = "SSEProviderCallback";
-    private final MutableLiveData<List<User>> liveData;
+    private static final String TAG = "LOGGER-SSE-PROV-Callback";
     private final Gson gson = new Gson();
-
-    // Mapa para almacenar la última versión procesada de cada User (clave: user.id)
+    private final ViewModelInterface mViewModelInterface;
     private final Map<String, User> lastProcessedUsers = new HashMap<>();
-
-    public SSEProviderCallback(MutableLiveData<List<User>> liveData) {
-        this.liveData = liveData;
+    public SSEProviderCallback(ViewModelInterface pViewModel) {
+        this.mViewModelInterface = pViewModel;
     }
-
     @Override
-    public void onFailure(Call call, IOException e) {
-        Log.e(TAG, "Error en conexión SSE: " + e.getMessage());
-    }
-
-    @Override
-    public void onResponse(Call call, Response response) {
+    public void onResponse(@NonNull Call call, Response response) {
         Log.d(TAG, "Conexión SSE establecida correctamente.");
-        try {
-            if (response.body() != null) {
-                BufferedSource source = response.body().source();
-                while (!source.exhausted()) {
-                    String line = source.readUtf8Line();
+        if (response.body() == null) {
+            Log.e(TAG, "Respuesta SSE sin body, se descarta.");
+            return;
+        }
 
-                    // Descarta líneas nulas o vacías
-                    if (line == null || line.trim().isEmpty()) {
+        try (BufferedSource source = response.body().source()) {
+            while (!source.exhausted()) {
+                String line;
+                try {
+                    line = source.readUtf8Line();
+                } catch (IOException ioEx) {
+                    Log.e(TAG, "Error leyendo línea SSE", ioEx);
+                    break; // cortamos el loop si falla lectura
+                }
+
+                if (line == null || line.trim().isEmpty()) {
+                    continue;
+                }
+
+                if (!line.startsWith("data:")) {
+                    continue; // ignoramos comentarios/keep-alives
+                }
+
+                String jsonEvent = line.substring("data:".length()).trim();
+                if (jsonEvent.isEmpty()) {
+                    continue;
+                }
+
+                Log.d(TAG, "Evento SSE válido recibido: " + jsonEvent);
+
+                try {
+                    Type type = new TypeToken<ApiResponse<List<User>>>() {}.getType();
+                    ApiResponse<List<User>> parsedResponse = gson.fromJson(jsonEvent, type);
+
+                    if (parsedResponse == null || parsedResponse.getData() == null) {
+                        Log.d(TAG, "Evento descartado por no tener data: " + jsonEvent);
                         continue;
                     }
 
-                    // Procesa solo líneas que comiencen con "data:"
-                    if (!line.startsWith("data:")) {
-                        continue; // Podrían llegar comentarios o keep-alives
-                    }
+                    List<User> providerList = parsedResponse.getData();
+                    boolean hasChanges = false;
 
-                    // Remueve el prefijo "data:" y recorta espacios
-                    String jsonEvent = line.substring("data:".length()).trim();
-
-                    // Si el contenido es vacío, lo descartamos
-                    if (jsonEvent.isEmpty()) {
-                        continue;
-                    }
-
-                    Log.d(TAG, "Evento SSE válido recibido: " + jsonEvent);
-
-                    try {
-                        Type type = new TypeToken<ApiResponse<List<User>>>() {}.getType();
-                        ApiResponse<List<User>> parsedResponse = gson.fromJson(jsonEvent, type);
-
-                        // Si no contiene data se descarta el evento
-                        if (parsedResponse == null || parsedResponse.getData() == null) {
-                            Log.d(TAG, "Evento descartado por no tener data: " + jsonEvent);
-                            continue;
+                    for (User user : providerList) {
+                        User previousUser = lastProcessedUsers.get(user.getId());
+                        if (previousUser == null || !previousUser.equals(user)) {
+                            hasChanges = true;
+                            lastProcessedUsers.put(user.getId(), user);
                         }
+                    }
 
-                        List<User> userList = parsedResponse.getData();
-                        boolean hasChanges = false;
-
-                        // Recorremos cada User y comparamos con la última versión procesada
-                        for (User user : userList) {
-                            User previousUser = lastProcessedUsers.get(user.getId());
-
-                            // Si es un usuario nuevo o ha cambiado, marcamos cambios
-                            if (previousUser == null || !previousUser.equals(user)) {
-                                hasChanges = true;
-                                lastProcessedUsers.put(user.getId(), user);
+                    if (hasChanges) {
+                        Log.d(TAG, "Evento procesado con cambios: " + providerList);
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            try {
+                                mViewModelInterface.setProviders(providerList);
+                            } catch (Exception uiEx) {
+                                Log.e(TAG, "Error actualizando ViewModel con providers", uiEx);
                             }
-                        }
-
-                        // Sólo notificamos si al menos uno de los usuarios presenta un cambio
-                        if (hasChanges) {
-                            Log.d(TAG, "Evento procesado con cambios: " + userList);
-                            liveData.postValue(userList);
-                        } else {
-                            Log.d(TAG, "Evento descartado; no contiene cambios: " + jsonEvent);
-                        }
-
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error al parsear el evento: " + jsonEvent + " Error: " + e.getMessage());
+                        });
+                    } else {
+                        Log.d(TAG, "Evento descartado; no contiene cambios.");
                     }
+
+                } catch (Exception parseEx) {
+                    Log.e(TAG, "Error al parsear evento SSE: " + jsonEvent, parseEx);
                 }
             }
         } catch (IOException e) {
-            Log.e(TAG, "Error al procesar eventos SSE: " + e.getMessage());
+            Log.e(TAG, "Error procesando eventos SSE", e);
         }
+    }
+    @Override
+    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+        Log.e(TAG, "Error en conexión SSE", e);
     }
 }

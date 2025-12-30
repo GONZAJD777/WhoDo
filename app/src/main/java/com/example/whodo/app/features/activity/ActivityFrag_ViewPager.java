@@ -29,7 +29,7 @@ import java.util.Objects;
 
 
 public class ActivityFrag_ViewPager extends Fragment {
-
+    private final String TAG = "LOGGER-ACTIVITY-FRAG-VIEWPAGER";
     private Integer FragType=0;
 
     private LinearLayout LinearLayoutItems;
@@ -53,13 +53,16 @@ public class ActivityFrag_ViewPager extends Fragment {
         Log.d("onCreateView", "MessViewPagerFragment agregando message_list");
         LinearLayoutItems = root.findViewById(R.id.viewPager_linearLayout);
         mMainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-
         mMainActivityViewModel.getWorkOrder().observe(getViewLifecycleOwner(),this::addFragments);
-
+        if (mMainActivityViewModel.getWorkOrder().getValue()!=null){
+            addFragments(mMainActivityViewModel.getWorkOrder().getValue());
+        }
         return root;
     }
 
     private void addFragments(List<WorkOrder> workOrders) {
+        Log.d(TAG, "addFragments --> SE AGREGAN LOS WORKORDER ITEMS A LA LISTA" );
+
         LinearLayoutItems.removeAllViews();
         if (FragType==0) {
             for (WorkOrder mWorkOrder : workOrders) {

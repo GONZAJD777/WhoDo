@@ -1,27 +1,21 @@
 package com.example.whodo.app.domain.workOrder.dao.Impl;
 
-
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.whodo.BuildConfig;
 import com.example.whodo.app.Callback;
-import com.example.whodo.app.domain.user.User;
-import com.example.whodo.app.domain.user.UserApiRestRequestDTO;
-import com.example.whodo.app.domain.user.UserMapper;
+
+import com.example.whodo.app.ViewModelInterface;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
-import com.example.whodo.app.domain.workOrder.WorkOrderApiRestRequestDTO;
-import com.example.whodo.app.domain.workOrder.WorkOrderMapper;
 import com.example.whodo.app.domain.workOrder.dao.WorkOrderDao;
+import com.example.whodo.app.network.ApiResponse;
 import com.example.whodo.app.network.reactive.workOrder.SSEWorkOrderClient;
-import com.example.whodo.app.network.rest.RetrofitClient;
+import com.example.whodo.app.network.rest.RetrofitFactory;
 import com.example.whodo.app.network.rest.api.WorkOrderApi;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,31 +25,47 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class WorkOrderDaoImpl implements WorkOrderDao<WorkOrder> {
-    private final String TAG = "MONGODB-WORKORDER-DAO";
-    private final WorkOrderApi mWorkOrderApi;
-    private final String mBaseUrl= BuildConfig.BASE_URL;
+    private final String TAG = "LOGGER-MONGODB-WORKORDER-DAO";
+    private final WorkOrderApi mWorkOrderApi ;
+    private final String mBaseUrl= BuildConfig.BASE_URL_WORKORDER_SERVICE;
+    private final SSEWorkOrderClient mSSEWorkOrderClient ;
     public WorkOrderDaoImpl(Context pContext) {
-        RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl,pContext);
-        this.mWorkOrderApi = retrofitClient.createService(WorkOrderApi.class);
-
+        this.mWorkOrderApi = RetrofitFactory.createService(WorkOrderApi.class, mBaseUrl, pContext);
+        mSSEWorkOrderClient = new SSEWorkOrderClient();
     }
     @Override
-    public LiveData<List<WorkOrder>> find(WorkOrder workOrder) {
-
-        MutableLiveData<List<WorkOrder>> mWorkOrder = new MutableLiveData<>();
-        SSEWorkOrderClient sseWorkOrderClient = new SSEWorkOrderClient(mBaseUrl + "work-orders/stream/getAllUserWorkOrders?userId="+workOrder.getCustomer().getCustomerId());
-        Log.d(TAG, "sseWorkOrderClient -->" + mBaseUrl + "work-orders/stream/getAllUserWorkOrders?userId=" + workOrder.getCustomer().getCustomerId());
-
-        sseWorkOrderClient.startListening(mWorkOrder);
-
-        return mWorkOrder;
+    public void find(ViewModelInterface pViewModel, WorkOrder pWorkOrder) {
+        String URLRequest = mBaseUrl + "work-orders/stream/getAllUserWorkOrders?userId=" + pWorkOrder.getCustomer().getCustomerId();
+        Log.d(TAG, "sseWorkOrderClient -->" + URLRequest);
+        mSSEWorkOrderClient.startListening(pViewModel,URLRequest);
     }
     @Override
-    public void create(WorkOrder workOrder, Callback<WorkOrder> callback) {
-        WorkOrderApiRestRequestDTO mWorkOrderApiRestRequestDTO = WorkOrderMapper.toWorkOrderApiRestRequestDTO(workOrder);
-        Call<WorkOrder> call = mWorkOrderApi.createWorkOrder(mWorkOrderApiRestRequestDTO);
-        Log.d(TAG, "Endpoint Requested -->" + mWorkOrderApi.createWorkOrder(mWorkOrderApiRestRequestDTO).request().url());
-        Log.d(TAG, "create() -->" + mWorkOrderApiRestRequestDTO.toString() );
+    public void findByUserID(WorkOrder pWorkOrder, Callback<List<WorkOrder>> callback) {
+
+        Call<ApiResponse<List<WorkOrder>>> call = mWorkOrderApi.getAllWorkOrdersByUserId(pWorkOrder.getCustomer().getCustomerId());
+        Log.d(TAG, "Endpoint Requested -->" + call.request().url());
+
+        call.enqueue(new retrofit2.Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<WorkOrder>>> call, @NonNull Response<ApiResponse<List<WorkOrder>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body().getData());
+                } else {
+                    callback.onError(new Exception("Error en la respuesta: " + response.code()));
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<WorkOrder>>> call, @NonNull Throwable t) {
+                callback.onError(new Exception(t));
+            }
+        });
+    }
+    @Override
+    public void create(WorkOrder pWorkOrder, Callback<WorkOrder> callback) {
+        //WorkOrderApiRestRequestDTO mWorkOrderApiRestRequestDTO = WorkOrderMapper.toWorkOrderApiRestRequestDTO(pWorkOrder);
+        Call<WorkOrder> call = mWorkOrderApi.createWorkOrder(pWorkOrder);
+        Log.d(TAG, "Endpoint Requested -->" + mWorkOrderApi.createWorkOrder(pWorkOrder).request().url());
+        Log.d(TAG, "create() -->" + pWorkOrder.toString() );
 
         call.enqueue(new retrofit2.Callback<>() {
             @Override
@@ -75,10 +85,10 @@ public class WorkOrderDaoImpl implements WorkOrderDao<WorkOrder> {
     @Override
     public void update(WorkOrder pWorkOrder, Callback<WorkOrder> callback) {
         if (!validateUpdate(pWorkOrder).isEmpty()){
-                WorkOrderApiRestRequestDTO mWorkOrderApiRestRequestDTO = WorkOrderMapper.toWorkOrderApiRestRequestDTO(pWorkOrder);
-                Log.d(TAG, "Endpoint Requested -->" + mWorkOrderApi.updateWorkOrder(mWorkOrderApiRestRequestDTO).request().url());
+                //WorkOrderApiRestRequestDTO mWorkOrderApiRestRequestDTO = WorkOrderMapper.toWorkOrderApiRestRequestDTO(pWorkOrder);
+                Log.d(TAG, "Endpoint Requested -->" + mWorkOrderApi.updateWorkOrder(pWorkOrder).request().url());
                 Log.d(TAG, "Update -->" + pWorkOrder);
-                Call<WorkOrder> call = mWorkOrderApi.updateWorkOrder(mWorkOrderApiRestRequestDTO);
+                Call<WorkOrder> call = mWorkOrderApi.updateWorkOrder(pWorkOrder);
 
                 call.enqueue(new retrofit2.Callback<>() {
                     @Override
@@ -86,17 +96,24 @@ public class WorkOrderDaoImpl implements WorkOrderDao<WorkOrder> {
                         if (response.isSuccessful() && response.body() != null) {
                             callback.onSuccess(response.body());
                         } else {
-                            callback.onError(new Exception("Error en la respuesta: " + response.code()));
+                            Log.d(TAG, "Error al actualizar la orden de trabajo: " + response.code() + " " + response.message() );
+                            callback.onError(new Exception("Error en la respuesta: " + response.code()+ " " + response.message()));
                         }
                     }
                     @Override
                     public void onFailure(@NonNull Call<WorkOrder> call, @NonNull Throwable t) {
+                        Log.d(TAG, "Error al actualizar la orden de trabajo: " + t.getMessage() );
                         callback.onError(new Exception(t));
+
                     }
                 });
             } else {
             Log.d(TAG, "Update Canceled --> Nothing to Update" );
         }
+    }
+    @Override
+    public void closeConnection() {
+        mSSEWorkOrderClient.stopListening();
     }
     private Map<String, Object> validateUpdate(WorkOrder workOrder){
         Map<String, Object> updates = new HashMap<>();

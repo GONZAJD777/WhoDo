@@ -1,304 +1,71 @@
 package com.example.whodo.app.domain.workOrder;
 
-import com.example.whodo.app.domain.user.User;
-import com.google.android.gms.maps.model.LatLng;
+import com.example.whodo.app.domain.Location;
+import com.example.whodo.app.domain.Phone;
 
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@Data
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class WorkOrder {
 
     private String orderId;
-    private Customer customer;
-    private Provider provider;
+    @Builder.Default
+    private Customer customer = new Customer();
+    @Builder.Default
+    private Provider provider = new Provider();
     private String specialization;
     private String description;
     private String creationDate;
     private String timeLimit;
     private String stateChangeDate;
     private String state;
-    private Inspection inspection;
-    private Work work;
-    private Feedback feedback;
+    @Builder.Default
+    private Inspection inspection = new Inspection();
+    @Builder.Default
+    private Work work = new Work();
+    @Builder.Default
+    private Feedback feedback = new Feedback();
 
-    // Getters y setters
-    public WorkOrder() {
-        this.customer = new Customer();
-        this.provider = new Provider();
-        this.inspection= new Inspection();
-        this.work = new Work();
-        this.feedback = new Feedback();
-    }
-
-    // assigned OPEN WORK ORDER Constructor setted ONEVALUATION State
-    public WorkOrder(String pCustomerId,String pCustomerName,String pCustomerAddress,double pCustomerLat,double pCustomerLng,String pCustomerPhoneNumber,String pCustomerPhoneCcn,
-                     String pProviderId,String pProviderName,String pProviderAddress,double pProviderLat,double pProviderLng,String pProviderPhoneNumber,String pProviderPhoneCcn,
-                     String pState, String pSpecialization,String pDescription,String pCreationDate,String pTimeLimit,String pStateChangeDate) {
-
-        this.customer = new Customer();
-        this.provider = new Provider();
-        this.inspection= new Inspection();
-        this.work = new Work();
-        this.feedback = new Feedback();
-
-        //this.OrderId = "orderId";
-        this.getCustomer().customerId = pCustomerId;
-        this.getCustomer().customerName=pCustomerName;
-        this.getCustomer().customerAddress=pCustomerAddress;
-        this.getCustomer().setCustomerLocation(new User.Location(pCustomerLat,pCustomerLng,null));
-        this.getCustomer().setCustomerPhone(new User.Phone(pCustomerPhoneNumber,pCustomerPhoneCcn));
-
-        this.getProvider().providerId = pProviderId;
-        this.getProvider().providerName=pProviderName;
-        this.getProvider().providerAddress=pProviderAddress;
-        this.getProvider().setProviderLocation(new User.Location(pProviderLat,pProviderLng,null));;
-        this.getProvider().setProviderPhone(new User.Phone(pProviderPhoneNumber,pProviderPhoneCcn));
-
-        this.specialization = pSpecialization;
-        this.description = pDescription;
-        this.creationDate = pCreationDate;
-        this.timeLimit = pTimeLimit;
-        this.state = pState;
-        this.stateChangeDate = pStateChangeDate;
-
-    }
-    // not assigned OPEN WORK ORDER Constructor
-    public WorkOrder(String pCustomerId,String pCustomerName,String pCustomerAddress,double pCustomerLat,double pCustomerLng,String pCustomerPhoneNumber,String pCustomerPhoneCcn,
-                     String pSpecialization,String pDescription,String pCreationDate,String pTimeLimit,String pStateChangeDate) {
-        this.customer = new Customer();
-        this.provider = new Provider();
-        this.inspection= new Inspection();
-        this.work = new Work();
-        this.feedback = new Feedback();
-
-        this.getCustomer().customerId = pCustomerId;
-        this.getCustomer().customerName=pCustomerName;
-        this.getCustomer().customerAddress=pCustomerAddress;
-        this.getCustomer().setCustomerLocation(new User.Location(pCustomerLat,pCustomerLng,null));
-        this.getCustomer().setCustomerPhone(new User.Phone(pCustomerPhoneNumber,pCustomerPhoneCcn));
-
-        this.specialization = pSpecialization;
-        this.description = pDescription;
-        this.creationDate = pCreationDate;
-        this.timeLimit = pTimeLimit;
-        this.state = "OPEN";
-        this.stateChangeDate = pStateChangeDate;
-    }
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String prderId) {
-        orderId = prderId;
-    }
-
-    public String getSpecialization() {
-        return specialization;
-    }
-
-    public void setSpecialization(String ppecialization) {
-        specialization = ppecialization;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String pescription) {
-        description = pescription;
-    }
-
-    public String getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(String preationDate) {
-        creationDate = preationDate;
-    }
-
-    public String getTimeLimit() {
-        return timeLimit;
-    }
-
-    public void setTimeLimit(String pimeLimit) {
-        timeLimit = pimeLimit;
-    }
-
-    public String getStateChangeDate() {
-        return stateChangeDate;
-    }
-
-    public void setStateChangeDate(String ptateChangeDate) {
-        stateChangeDate = ptateChangeDate;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String ptate) {
-        state = ptate;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(Provider provider) {
-        this.provider = provider;
-    }
-
-    public Inspection getInspection() {
-        return inspection;
-    }
-
-    public void setInspection(Inspection inspection) {
-        this.inspection = inspection;
-    }
-
-    public Work getWork() {
-        return work;
-    }
-
-    public void setWork(Work work) {
-        this.work = work;
-    }
-
-    public Feedback getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(Feedback feedback) {
-        this.feedback = feedback;
-    }
-
+    @Data
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Customer {
         private String customerId;
         private String customerName;
         private String customerAddress;
-        private User.Location customerLocation;
-        private User.Phone customerPhone;
-
-        // Getters y setters
-
-        public void setCustomerId(String pustomerId) {
-            customerId = pustomerId;
-        }
-
-        public String getCustomerId() {
-            return customerId;
-        }
-
-        public String getCustomerName() {
-            return customerName;
-        }
-
-        public void setCustomerName(String pustomerName) {
-            customerName = pustomerName;
-        }
-
-        public String getCustomerAddress() {
-            return customerAddress;
-        }
-
-        public void setCustomerAddress(String pustomerAddress) {
-            customerAddress = pustomerAddress;
-        }
-
-        public User.Location getCustomerLocation() {
-            return customerLocation;
-        }
-
-        public void setCustomerLocation(User.Location customerLocation) {
-            this.customerLocation = customerLocation;
-        }
-
-        public void setCustomerPhone(User.Phone customerPhone) {
-            this.customerPhone = customerPhone;
-        }
-
-        public User.Phone getCustomerPhone() {
-            return customerPhone;
-        }
-
-        @Override
-        public String toString() {
-            return "Customer{" +
-                    "customerId='" + customerId + '\'' +
-                    ", customerName='" + customerName + '\'' +
-                    ", customerAddress='" + customerAddress + '\'' +
-                    ", customerLocation=" + customerLocation +
-                    ", customerPhoneNumber=" + customerPhone +
-                    '}';
-        }
+        private Location customerLocation;
+        private Phone customerPhone;
     }
+
+    @Data
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Provider {
         private String providerId;
         private String providerName;
         private String providerAddress;
-        private User.Location providerLocation;
-        private User.Phone providerPhone;
+        private Location providerLocation;
+        private Phone providerPhone;
 
-        // Getters y setters
-
-        public String getProviderId() {
-            return providerId;
-        }
-
-        public void setProviderId(String providerId) {
-            this.providerId = providerId;
-        }
-
-        public String getProviderName() {
-            return providerName;
-        }
-
-        public void setProviderName(String providerName) {
-            this.providerName = providerName;
-        }
-
-        public String getProviderAddress() {
-            return providerAddress;
-        }
-
-        public void setProviderAddress(String providerAddress) {
-            this.providerAddress = providerAddress;
-        }
-
-        public User.Location getProviderLocation() {
-            return providerLocation;
-        }
-
-        public void setProviderLocation(User.Location providerLocation) {
-            this.providerLocation = providerLocation;
-        }
-
-        public User.Phone getProviderPhone() {
-            return providerPhone;
-        }
-
-        public void setProviderPhone(User.Phone providerPhone) {
-            this.providerPhone = providerPhone;
-        }
-
-        @Override
-        public String toString() {
-            return "Provider{" +
-                    "providerId='" + providerId + '\'' +
-                    ", providerName='" + providerName + '\'' +
-                    ", providerAddress='" + providerAddress + '\'' +
-                    ", providerLocation=" + providerLocation +
-                    ", providerPhoneNumber=" + providerPhone +
-                    '}';
-        }
     }
+
+    @Data
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Inspection {
         private String inspectionDate;
         private Integer inspectionCharges;
@@ -307,78 +74,13 @@ public class WorkOrder {
         private Integer inspectionFee;
         private String inspectionFullfilment;
         private String inspectionRescheduled;
-
-        // Getters y setters
-
-        public String getInspectionDate() {
-            return inspectionDate;
-        }
-
-        public void setInspectionDate(String pnspectionDate) {
-            inspectionDate = pnspectionDate;
-        }
-
-        public Integer getInspectionCharges() {
-            return inspectionCharges;
-        }
-
-        public void setInspectionCharges(Integer pnspectionCharges) {
-            inspectionCharges = pnspectionCharges;
-        }
-
-        public String getInspectionTimeLimit() {
-            return inspectionTimeLimit;
-        }
-
-        public void setInspectionTimeLimit(String pnspectionTimeLimit) {
-            inspectionTimeLimit = pnspectionTimeLimit;
-        }
-
-        public String getInspectionPaymentOrder() {
-            return inspectionPaymentOrder;
-        }
-
-        public void setInspectionPaymentOrder(String pnspectionPaymentOrder) {
-            inspectionPaymentOrder = pnspectionPaymentOrder;
-        }
-
-        public Integer getInspectionFee() {
-            return inspectionFee;
-        }
-
-        public void setInspectionFee(Integer pnspectionFee) {
-            inspectionFee = pnspectionFee;
-        }
-
-        public String getInspectionFullfilment() {
-            return inspectionFullfilment;
-        }
-
-        public void setInspectionFullfilment(String pnspectionFullfilment) {
-            inspectionFullfilment = pnspectionFullfilment;
-        }
-
-        public String getInspectionRescheduled() {
-            return inspectionRescheduled;
-        }
-
-        public void setInspectionRescheduled(String pnspectionRescheduled) {
-            inspectionRescheduled = pnspectionRescheduled;
-        }
-
-        @Override
-        public String toString() {
-            return "Inspection{" +
-                    "inspectionDate='" + inspectionDate + '\'' +
-                    ", inspectionCharges=" + inspectionCharges +
-                    ", inspectionTimeLimit='" + inspectionTimeLimit + '\'' +
-                    ", inspectionPaymentOrder='" + inspectionPaymentOrder + '\'' +
-                    ", inspectionFee=" + inspectionFee +
-                    ", inspectionFullfilment='" + inspectionFullfilment + '\'' +
-                    ", inspectionRescheduled='" + inspectionRescheduled + '\'' +
-                    '}';
-        }
     }
+
+    @Data
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Work {
         private String proposalTimeLimitDate;
         private String workStartDate;
@@ -390,105 +92,13 @@ public class WorkOrder {
         private String workPaymentOrder;
         private String workWarrantyEndDate;
         private Integer workLimitTimeExtension;
-
-        // Getters y setters
-
-        public String getProposalTimeLimitDate() {
-            return proposalTimeLimitDate;
-        }
-
-        public void setProposalTimeLimitDate(String proposalTimeLimitDate) {
-            this.proposalTimeLimitDate = proposalTimeLimitDate;
-        }
-
-        public String getWorkStartDate() {
-            return workStartDate;
-        }
-
-        public void setWorkStartDate(String porkStartDate) {
-            workStartDate = porkStartDate;
-        }
-
-        public String getWorkEndDate() {
-            return workEndDate;
-        }
-
-        public void setWorkEndDate(String porkEndDate) {
-            workEndDate = porkEndDate;
-        }
-
-        public Integer getWorkLaborCost() {
-            return workLaborCost;
-        }
-
-        public void setWorkLaborCost(Integer porkLaborCost) {
-            workLaborCost = porkLaborCost;
-        }
-
-        public Integer getWorkMaterialsCost() {
-            return workMaterialsCost;
-        }
-
-        public void setWorkMaterialsCost(Integer porkMaterialsCost) {
-            workMaterialsCost = porkMaterialsCost;
-        }
-
-        public Integer getWorkFee() {
-            return workFee;
-        }
-
-        public void setWorkFee(Integer porkFee) {
-            workFee = porkFee;
-        }
-
-        public String getDetail() {
-            return detail;
-        }
-
-        public void setDetail(String petail) {
-            detail = petail;
-        }
-
-        public String getWorkPaymentOrder() {
-            return workPaymentOrder;
-        }
-
-        public void setWorkPaymentOrder(String porkPaymentOrder) {
-            workPaymentOrder = porkPaymentOrder;
-        }
-
-        public String getWorkWarrantyEndDate() {
-            return workWarrantyEndDate;
-        }
-
-        public void setWorkWarrantyEndDate(String porkWarrantyEndDate) {
-            workWarrantyEndDate = porkWarrantyEndDate;
-        }
-
-        public Integer getWorkLimitTimeExtension() {
-            return workLimitTimeExtension;
-        }
-
-        public void setWorkLimitTimeExtension(Integer porkLimitTimeExtension) {
-            workLimitTimeExtension = porkLimitTimeExtension;
-        }
-
-        @Override
-        public String toString() {
-            return "Work{" +
-                    "proposalTimeLimitDate='" + proposalTimeLimitDate + '\'' +
-                    ", workStartDate='" + workStartDate + '\'' +
-                    ", workEndDate='" + workEndDate + '\'' +
-                    ", workLaborCost=" + workLaborCost +
-                    ", workMaterialsCost=" + workMaterialsCost +
-                    ", workFee=" + workFee +
-                    ", detail='" + detail + '\'' +
-                    ", workPaymentOrder='" + workPaymentOrder + '\'' +
-                    ", workWarrantyEndDate='" + workWarrantyEndDate + '\'' +
-                    ", workLimitTimeExtension=" + workLimitTimeExtension +
-                    '}';
-        }
     }
+
+    @Data
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Feedback {
         private String impressions;
         private Integer appereanceScore;
@@ -496,74 +106,6 @@ public class WorkOrder {
         private Integer speedScore;
         private Integer qualityScore;
 
-        // Getters y setters
-
-        public String getImpressions() {
-            return impressions;
-        }
-
-        public void setImpressions(String pmpressions) {
-            impressions = pmpressions;
-        }
-
-        public Integer getAppereanceScore() {
-            return appereanceScore;
-        }
-
-        public void setAppereanceScore(Integer pppereanceScore) {
-            appereanceScore = pppereanceScore;
-        }
-
-        public Integer getCleanlinessScore() {
-            return cleanlinessScore;
-        }
-
-        public void setCleanlinessScore(Integer pleanlinessScore) {
-            cleanlinessScore = pleanlinessScore;
-        }
-
-        public Integer getSpeedScore() {
-            return speedScore;
-        }
-
-        public void setSpeedScore(Integer ppeedScore) {
-            speedScore = ppeedScore;
-        }
-
-        public Integer getQualityScore() {
-            return qualityScore;
-        }
-
-        public void setQualityScore(Integer pualityScore) {
-            qualityScore = pualityScore;
-        }
-
-        @Override
-        public String toString() {
-            return "Feedback{" +
-                    "impressions='" + impressions + '\'' +
-                    ", appereanceScore=" + appereanceScore +
-                    ", cleanlinessScore=" + cleanlinessScore +
-                    ", speedScore=" + speedScore +
-                    ", qualityScore=" + qualityScore +
-                    '}';
-        }
     }
-    @Override
-    public String toString() {
-        return "WorkOrderResponse{" +
-                "orderId='" + orderId + '\'' +
-                ", customer=" + customer.toString() +
-                ", provider=" + provider.toString() +
-                ", specialization='" + specialization + '\'' +
-                ", description='" + description + '\'' +
-                ", creationDate='" + creationDate + '\'' +
-                ", timeLimit='" + timeLimit + '\'' +
-                ", stateChangeDate='" + stateChangeDate + '\'' +
-                ", state='" + state + '\'' +
-                ", inspection=" + inspection.toString() +
-                ", work=" + work.toString() +
-                ", feedback=" + feedback.toString() +
-                '}';
-    }
+
 }

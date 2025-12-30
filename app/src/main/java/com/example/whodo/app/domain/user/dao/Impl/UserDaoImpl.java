@@ -5,17 +5,14 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+
 import com.example.whodo.BuildConfig;
 import com.example.whodo.app.Callback;
 import com.example.whodo.app.domain.user.User;
-import com.example.whodo.app.domain.user.UserApiRestRequestDTO;
-import com.example.whodo.app.domain.user.UserMapper;
 import com.example.whodo.app.domain.user.dao.UserDao;
+import com.example.whodo.app.network.ApiResponse;
 import com.example.whodo.app.network.reactive.loggedUser.SSELoggedUserClient;
-import com.example.whodo.app.network.reactive.provider.SSEProviderClient;
-import com.example.whodo.app.network.rest.RetrofitClient;
+import com.example.whodo.app.network.rest.RetrofitFactory;
 import com.example.whodo.app.network.rest.api.UserApi;
 import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
@@ -34,46 +31,77 @@ import retrofit2.Response;
 
 public class UserDaoImpl implements UserDao<User> {
 
-    private final String TAG = "MONGODB-USER-DAO";
+    private final String TAG = "LOGGER-MONGODB-USER-DAO";
     private final UserApi mUserApi;
-    private final String mBaseUrl= BuildConfig.BASE_URL;
+    private final String mBaseUrl= BuildConfig.BASE_URL_WORKORDER_SERVICE;
     //IMAGES STORAGE REF
     private final FirebaseStorage mStorageInstance = FirebaseStorage.getInstance();
     private final StorageReference mStorageReference = mStorageInstance.getReference();
     private final StorageReference mImageStorageRef = mStorageReference.child("WHODO-IMAGES");
 
-
-
-
     public UserDaoImpl(Context pContext) {
         Log.d(TAG, "mBaseUrl -->" + mBaseUrl);
+        this.mUserApi = RetrofitFactory.createService(UserApi.class, mBaseUrl, pContext);
+    }
+    @Override
+    public void findUser(User pUser, Callback<User> callback) {
+        Call<ApiResponse<User>> call = mUserApi.findUser(pUser.getAuthId());
+        Log.d(TAG, "Endpoint Requested -->" + call.request().url());
 
-        RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl,pContext.getApplicationContext());
-        this.mUserApi = retrofitClient.createService(UserApi.class);
+        call.enqueue(new retrofit2.Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<User>> call, @NonNull Response<ApiResponse<User>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body().getData());
+                } else {
+                    callback.onError(new Exception("Error en la respuesta: " + response.code()));
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<User>> call, @NonNull Throwable t) {
+                callback.onError(new Exception(t));
+                Log.d(TAG, " findProviders() onFailure -->" + t);
+            }
+        });
+
     }
 
     @Override
-    public LiveData<User> findUser(User pUser) {
+    public void findProviders(User pUser, Double distance, Callback<List<User>> callback) {
+        LatLonBounds mUserBounds= getBoundsForDistance(pUser.getLocation().getLatitude(), pUser.getLocation().getLongitude(), distance);
+        double Lat1=mUserBounds.latMin;
+        double Lat2=mUserBounds.latMax;
+        double Lon1=mUserBounds.lonMin;
+        double Lon2=mUserBounds.lonMax;
 
-        MutableLiveData<User> mUser = new MutableLiveData<>();
-        SSELoggedUserClient SSELoggedUserClient = new SSELoggedUserClient(mBaseUrl + "users/stream/userByAuth/" + pUser.getAuthId());
-        SSELoggedUserClient.startListening(mUser);
-        Log.d(TAG, "sseUserClient -->" + mBaseUrl + "users/stream/userByAuth/" + pUser.getAuthId());
+        Call<ApiResponse<List<User>>> call = mUserApi.findProviders(2,Lat1,Lon1,Lat2,Lon2);
+        Log.d(TAG, "Endpoint Requested -->" + call.request().url());
 
-        return mUser;
+        call.enqueue(new retrofit2.Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<User>>> call, @NonNull Response<ApiResponse<List<User>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body().getData());
+                } else {
+                    callback.onError(new Exception("Error en la respuesta: " + response.code()));
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<User>>> call, Throwable t) {
+                callback.onError(new Exception(t));
+                Log.d(TAG, " findProviders() onFailure -->" + t);
+            }
+        });
     }
-
     @Override
-    public void findCustomer(User pUser, Callback<User> callback) {
-
-    }
+    public void findCustomer(User pUser, Callback<User> callback) { }
 
     @Override
     public void create(User pUser, Callback<User> callback) {
-        UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiRestRequestDTO(pUser);
-        Call<User> call = mUserApi.createUser(mUserApiRestRequestDTO);
-        Log.d(TAG, "Endpoint Requested -->" + mUserApi.createUser(mUserApiRestRequestDTO).request().url());
-        Log.d(TAG, "create() -->" + mUserApiRestRequestDTO.toString() );
+        //UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiRestRequestDTO(pUser);
+        Call<User> call = mUserApi.createUser(pUser);
+        Log.d(TAG, "Endpoint Requested -->" + mUserApi.createUser(pUser).request().url());
+        Log.d(TAG, "create() -->" + pUser.toString() );
 
         call.enqueue(new retrofit2.Callback<>() {
             @Override
@@ -92,7 +120,7 @@ public class UserDaoImpl implements UserDao<User> {
     }
 
     @Override
-    public void update(User pUser) {
+    public void update(User pUser, Callback<User> callback) {
 
         if (!validateUpdate(pUser).isEmpty()){
             if (pUser.getProfilePicture() != null) {
@@ -100,34 +128,45 @@ public class UserDaoImpl implements UserDao<User> {
                     String profilePictureUri = uri.toString();
                     pUser.setProfilePicture(profilePictureUri);
 
-                    UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiRestRequestDTO(pUser);
-                    Call<User> call = mUserApi.updateUser(mUserApiRestRequestDTO);
-                    Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateUser(mUserApiRestRequestDTO).request().url());
+                    //UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiRestRequestDTO(pUser);
+                    Call<ApiResponse<User>> call = mUserApi.updateUser(pUser);
+                    Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateUser(pUser).request().url());
                     Log.d(TAG, "Update -->" + pUser);
                     call.enqueue(new retrofit2.Callback<>() {
                         @Override
-                        public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) { }
+                        public void onResponse(@NonNull Call<ApiResponse<User>> call, @NonNull Response<ApiResponse<User>> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                callback.onSuccess(response.body().getData());
+                            } else {
+                                callback.onError(new Exception("Error en la respuesta: " + response.code()));
+                            }
+                        }
                         @Override
-                        public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                        public void onFailure(@NonNull Call<ApiResponse<User>> call, @NonNull Throwable t) {
                             Log.d(TAG, "mUserApi.updateUser() - OnFailure --> " + new Exception(t));
+
                         }
                     });
 
                 };
                 uploadProfileImage(pUser, downloadUrlListener);
             } else {
-                UserApiRestRequestDTO mUserApiRestRequestDTO = UserMapper.toApiRestRequestDTO(pUser);
-                Call<User> call = mUserApi.updateUser(mUserApiRestRequestDTO);
-                Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateUser(mUserApiRestRequestDTO).request().url());
+                Call<ApiResponse<User>> call = mUserApi.updateUser(pUser);
+                Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateUser(pUser).request().url());
                 Log.d(TAG, "Update -->" + pUser);
                 call.enqueue(new retrofit2.Callback<>() {
                     @Override
-                    public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-
+                    public void onResponse(@NonNull Call<ApiResponse<User>> call, @NonNull Response<ApiResponse<User>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            callback.onSuccess(response.body().getData());
+                        } else {
+                            callback.onError(new Exception("Error en la respuesta: " + response.code()));
+                        }
                     }
                     @Override
-                    public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<ApiResponse<User>> call, @NonNull Throwable t) {
                         Log.d(TAG, "mUserApi.updateUser() - OnFailure --> " + new Exception(t));
+
                     }
                 });
             }
@@ -135,22 +174,9 @@ public class UserDaoImpl implements UserDao<User> {
             Log.d(TAG, "Update Canceled --> Nothing to Update" );
         }
     }
-
     @Override
-    public LiveData<List<User>> findProviders(User pUser, Double distance ) {
-        MutableLiveData<List<User>> mUser = new MutableLiveData<>();
-        LatLonBounds mUserBounds= getBoundsForDistance(pUser.getLocation().getLatitude(), pUser.getLocation().getLongitude(), distance);
-        double Lat1=mUserBounds.latMin;
-        double Lat2=mUserBounds.latMax;
-        double Lon1=mUserBounds.lonMin;
-        double Lon2=mUserBounds.lonMax;
-        SSEProviderClient SSEProviderClient = new SSEProviderClient(mBaseUrl + "users/stream/getAllUsersInBound?UserType=2&lat1="+ Lat1 +"&lon1="+ Lon1 +"&lat2="+ Lat2 +"&lon2="+Lon2);
-        SSEProviderClient.startListening(mUser);
-        Log.d(TAG, "sseProviderClient -->" + mBaseUrl + "users/stream/getAllUsersInBound?UserType=2&lat1="+ Lat1 +"&lon1="+ Lon1 +"&lat2="+ Lat2 +"&lon2="+Lon2);
-
-        return mUser;
+    public void closeConnection() {
     }
-
     public static LatLonBounds getBoundsForDistance(double lat, double lon, double distanceKm) {
         // Aproximación: 1 grado de latitud ≈ 111 km
         double LATITUDE_KM = 111.0;
@@ -178,8 +204,6 @@ public class UserDaoImpl implements UserDao<User> {
                         '}';
             }
         }
-
-
     private Map<String, Object> validateUpdate(User pUser){
         if (pUser == null) {
             Log.e(TAG, "buildUpdate: UserDTO es null");

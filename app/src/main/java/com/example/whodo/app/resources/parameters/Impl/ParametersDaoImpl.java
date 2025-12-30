@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import com.example.whodo.BuildConfig;
 import com.example.whodo.app.Callback;
 import com.example.whodo.app.network.ApiResponse;
-import com.example.whodo.app.network.rest.RetrofitClient;
+import com.example.whodo.app.network.rest.RetrofitFactory;
 import com.example.whodo.app.network.rest.api.ParameterApi;
 import com.example.whodo.app.resources.parameters.Parameter;
 import com.example.whodo.app.resources.parameters.ParametersDao;
@@ -20,15 +20,13 @@ import retrofit2.Response;
 
 public class ParametersDaoImpl implements ParametersDao<Parameter> {
 
-    private final String TAG = "MONGODB-PARAMETER-DAO";
+    private final String TAG = "LOGGER-MONGODB-PARAMETER-DAO";
     private final ParameterApi mParameterApi;
-    private final String mBaseUrl= BuildConfig.BASE_URL;
+    private final String mBaseUrl= BuildConfig.BASE_URL_WORKORDER_SERVICE;
 
     public ParametersDaoImpl(Context pContext) {
         Log.d(TAG, "mBaseUrl -->" + mBaseUrl);
-
-        RetrofitClient retrofitClient = new RetrofitClient(mBaseUrl,pContext.getApplicationContext());
-        this.mParameterApi = retrofitClient.createService(ParameterApi.class);
+        this.mParameterApi = RetrofitFactory.createService(ParameterApi.class, mBaseUrl, pContext);
     }
 
 

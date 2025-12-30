@@ -17,11 +17,13 @@ android {
     buildTypes {
         debug {
             buildConfigField "String", "DATABASE", "\"MONGODB\""
-            buildConfigField "String", "BASE_URL", "\"https://192.168.0.12:8443/\""
+            buildConfigField "String", "BASE_URL_WORKORDER_SERVICE", "\"https://192.168.0.11:8443/\""
+            buildConfigField "String", "BASE_URL_PAYMENT_SERVICE", "\"https://192.168.0.11:8444/\""
         }
         release {
             buildConfigField "String", "DATABASE", "\"MONGODB\""
-            buildConfigField "String", "BASE_URL", "\"https://192.168.0.12:8443/\""
+            buildConfigField "String", "BASE_URL_WORKORDER_SERVICE", "\"https://192.168.0.11:8443/\""
+            buildConfigField "String", "BASE_URL_PAYMENT_SERVICE", "\"https://192.168.0.11:8444/\""
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             minifyEnabled true
         }
@@ -35,6 +37,7 @@ android {
 }
 
 dependencies {
+
     // Google dependencies
     implementation 'com.google.android.gms:play-services-maps:19.2.0'
     implementation 'com.google.android.gms:play-services-auth:21.3.0'
@@ -54,6 +57,7 @@ dependencies {
     implementation 'com.firebase:geofire-android-common:3.1.0'
 
     // AndroidX dependencies (Solo para Java)
+    implementation "androidx.browser:browser:1.4.0"
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.navigation:navigation-fragment:2.8.9'
@@ -74,4 +78,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3' // Para depuración de llamadas HTTP
+
+// Lombok (Updated)
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
 }

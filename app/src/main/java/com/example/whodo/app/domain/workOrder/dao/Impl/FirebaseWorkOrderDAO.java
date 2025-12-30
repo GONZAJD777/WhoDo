@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.whodo.app.Callback;
+import com.example.whodo.app.MainActivityViewModel;
+import com.example.whodo.app.ViewModelInterface;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
 import com.example.whodo.app.domain.workOrder.dao.WorkOrderDao;
 import com.google.firebase.database.DataSnapshot;
@@ -28,68 +30,11 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrder> {
     private final DatabaseReference WorkOrderDBRef = mDatabaseReference.child("WORK_ORDERS");
 
     @Override
-    public LiveData<List<WorkOrder>> find(WorkOrder pWorkOrder) {
+    public void find(ViewModelInterface pViewModel, WorkOrder pWorkOrder) {
+    }
 
-        MutableLiveData<List<WorkOrder>> mWorkOrderDTO = new MutableLiveData<>();
-        List<WorkOrder> mProviderIdWorkOrders = new ArrayList<>();
-        List<WorkOrder> mCustomerIdWorkOrders = new ArrayList<>();
-        List<WorkOrder> mAllWorkOrders = new ArrayList<>();
-        Log.i(TAG,  "find --> String recibido como parametro: " + pWorkOrder);
-
-        ValueEventListener mCustomerIdListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mCustomerIdWorkOrders.clear();
-                mAllWorkOrders.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    try {
-                        WorkOrder auxWorkOrder=ds.getValue(WorkOrder.class);
-                        mCustomerIdWorkOrders.add(auxWorkOrder);
-                        assert auxWorkOrder != null;
-                        Log.i(TAG,  "find:onDataChange -->" + auxWorkOrder.getOrderId());
-                    } catch (Exception e) {
-                        Log.i(TAG,  "Exception Mapping Snapshot to UserDTO: " + e);
-                    }
-                }
-                mAllWorkOrders.addAll(mProviderIdWorkOrders);
-                mAllWorkOrders.addAll(mCustomerIdWorkOrders);
-                mWorkOrderDTO.setValue(mAllWorkOrders);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "findOne:onCancelled -->" + databaseError.toException());
-            }
-        };
-        ValueEventListener mProviderIdListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mProviderIdWorkOrders.clear();
-                mAllWorkOrders.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    try {
-                        WorkOrder auxWorkOrder=ds.getValue(WorkOrder.class);
-                        mProviderIdWorkOrders.add(auxWorkOrder);
-                        assert auxWorkOrder != null;
-                        Log.i(TAG,  "find:onDataChange -->" + auxWorkOrder.getOrderId());
-                    } catch (Exception e) {
-                        Log.i(TAG,  "Exception Mapping Snapshot to UserDTO: " + e);
-                    }
-                }
-                mAllWorkOrders.addAll(mProviderIdWorkOrders);
-                mAllWorkOrders.addAll(mCustomerIdWorkOrders);
-                mWorkOrderDTO.setValue(mAllWorkOrders);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "findOne:onCancelled -->" + databaseError.toException());
-            }
-        };
-        WorkOrderDBRef.orderByChild("customerId").equalTo(pWorkOrder.getCustomer().getCustomerId()).addValueEventListener(mCustomerIdListener);
-        WorkOrderDBRef.orderByChild("providerId").equalTo(pWorkOrder.getProvider().getProviderId()).addValueEventListener(mProviderIdListener);
-
-        return mWorkOrderDTO;
+    @Override
+    public void findByUserID(WorkOrder workOrder, Callback<List<WorkOrder>> callback) {
 
     }
 
@@ -261,6 +206,10 @@ public class FirebaseWorkOrderDAO implements WorkOrderDao<WorkOrder> {
                 .addOnFailureListener(e -> {
                     Log.i(TAG, " update() operation --> WorkOrder Update Failed: " + e);
                 });
+    }
+
+    @Override
+    public void closeConnection() {
     }
 
 }
