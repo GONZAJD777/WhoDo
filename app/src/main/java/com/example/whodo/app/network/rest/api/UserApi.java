@@ -20,11 +20,14 @@ public interface UserApi {
     Call<User> createUser(@Body User user);
     @PUT("/api/users/updateUser")
     Call<ApiResponse<User>> updateUser(@Body User user);
+    @PUT("/api/users/updateUserFcmToken")
+    Call<ApiResponse<User>> updateFcmToken(@Body User user);
     @GET("api/users/getAllUsersInBound")
     Call<ApiResponse<List<User>>> findProviders(@Query("userType") int userType, @Query("lat1") Double lat1, @Query("lon1") Double lon1, @Query("lat2") Double lat2, @Query("lon2") Double lon2 );
     @GET("/api/users/userByAuth/{authId}")
     Call<ApiResponse<User>> findUser(@Path("authId") String id);
     @GET("/api/users/clientes")
     Call<User> findCustomer();
+
 
 }

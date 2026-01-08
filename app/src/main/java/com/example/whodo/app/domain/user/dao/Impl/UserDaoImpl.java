@@ -11,7 +11,6 @@ import com.example.whodo.app.Callback;
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.domain.user.dao.UserDao;
 import com.example.whodo.app.network.ApiResponse;
-import com.example.whodo.app.network.reactive.loggedUser.SSELoggedUserClient;
 import com.example.whodo.app.network.rest.RetrofitFactory;
 import com.example.whodo.app.network.rest.api.UserApi;
 import com.firebase.geofire.GeoFireUtils;
@@ -177,6 +176,29 @@ public class UserDaoImpl implements UserDao<User> {
     @Override
     public void closeConnection() {
     }
+    @Override
+    public void updateFcmToken(User pUser) {
+
+                Call<ApiResponse<User>> call = mUserApi.updateFcmToken(pUser);
+                Log.d(TAG, "Endpoint Requested -->" + mUserApi.updateFcmToken(pUser).request().url());
+                Log.d(TAG, "Update FCM token -->" + pUser.getFcmToken());
+                call.enqueue(new retrofit2.Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ApiResponse<User>> call, @NonNull Response<ApiResponse<User>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Log.d(TAG, "mUserApi.updateFcmToken() --> se actualizo el token MFC");
+                        } else {
+                            Log.d(TAG, "mUserApi.updateFcmToken() --> Error en la respuesta: " + response.code());
+                        }
+                    }
+                    @Override
+                    public void onFailure(@NonNull Call<ApiResponse<User>> call, @NonNull Throwable t) {
+                        Log.d(TAG, "mUserApi.updateFcmToken() - OnFailure --> " + new Exception(t));
+
+                    }
+                });
+
+    }
     public static LatLonBounds getBoundsForDistance(double lat, double lon, double distanceKm) {
         // Aproximación: 1 grado de latitud ≈ 111 km
         double LATITUDE_KM = 111.0;
@@ -260,6 +282,9 @@ public class UserDaoImpl implements UserDao<User> {
         }
         if (pUser.getType() != null) {
             updates.put("type", pUser.getType());
+        }
+        if(pUser.getFcmToken()!=null){
+            updates.put("fcmToken", pUser.getFcmToken());
         }
         if (pUser.getSpecialization() != null) {
             updates.put("specialization", pUser.getSpecialization());

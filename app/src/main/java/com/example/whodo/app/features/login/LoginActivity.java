@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkLoggedUser (){
         if(currentUser != null){
+
             Intent intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
             this.finish();

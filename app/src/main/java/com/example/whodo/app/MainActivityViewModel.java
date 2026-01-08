@@ -48,6 +48,7 @@ import com.example.whodo.app.resources.parameters.ParametersDao;
 import com.example.whodo.app.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 import java.util.ArrayList;
@@ -56,7 +57,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class MainActivityViewModel extends AndroidViewModel implements ViewModelInterface {
-
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String TAG = "LOGGER-MAIN-ACTIVITY-VIEWMODEL";
     private Integer mProvidersUpdateCounter;
@@ -114,6 +114,7 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
                             Log.d(TAG, "Distancia: " + mMaxProviderDistance);
                             loadUserProviders(mUser.getValue(), mMaxProviderDistance);
                             loadUserWorkOrders(Objects.requireNonNull(mUser.getValue()));
+                            verifyAndUpdateFcmToken(mUser.getValue());
                             workOrdersSubscribed = true;
                         } catch (NumberFormatException e) {
                             Log.d(TAG, "Error al convertir el valor a Double: " + e.getMessage());
@@ -299,12 +300,12 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
     public void updateUserImmidiate(User pUser){
         mUserDao.update(pUser, new Callback<User>() {
             @Override
-            public void onSuccess(User user) {
-
+            public void onSuccess(User pUser) {
+                Log.i(TAG, "Logged User FMC token Updated in DB");
             }
-
             @Override
             public void onError(Exception e) {
+                Log.i(TAG, "Error updating FMC token in DB: " +e);
 
             }
         });
@@ -433,6 +434,21 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
             }
         });
     }
+    public void verifyAndUpdateFcmToken(User user) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+                    String currentToken = task.getResult();
+                    if (currentToken != null && !currentToken.equals(user.getFcmToken())) {
+                        // Llamar al repositorio para actualizar en backend
+                        mUserDao.updateFcmToken(UserFactory.withAuthIdAndFcmToken(user.getAuthId(),currentToken));
+                    }
+                });
+    }
+
     ////HANDLING LOGGED USER////
 
     ////HANDLING PROVIDERS////

@@ -32,6 +32,7 @@ public class User {
     private List<String> specialization;
     private Integer state;
     private Integer type;
+    private String fcmToken;
     @Builder.Default
     private UserScore userScore = new UserScore();
 

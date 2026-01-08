@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class SignInFragment extends Fragment {
-    private String TAG = "SIGN-IN-FRAGMENT";
+    private String TAG = "LOGGER-SIGN-IN-FRAGMENT";
     private ImageButton ButtonShowHide;
     private Button ButtonLoginConfirmation;
     private Button ButtonLoginGoogle;

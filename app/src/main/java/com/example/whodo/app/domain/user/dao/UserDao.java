@@ -15,4 +15,5 @@ public interface UserDao<T> {
     void create(T t, Callback<T> callback);
     void update(T t,Callback<T> callback);
     void closeConnection();
+    void updateFcmToken(User pUser);
 }

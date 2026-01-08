@@ -18,6 +18,17 @@ public class UserFactory {
                 .build();
     }
 
+    /** Crear usuario con authId y fcmToken */
+    public static User withAuthIdAndFcmToken(String authId, String fcmToken) {
+        return User.builder()
+                .authId(authId)
+                .fcmToken(fcmToken)
+                .location(new Location())
+                .phone(new Phone())
+                .userScore(new User.UserScore())
+                .build();
+    }
+
     /** Crear usuario en primer login */
     public static User newLoginUser(String authId,
                                     String name,
@@ -66,6 +77,7 @@ public class UserFactory {
                 .state(user.getState())
                 .type(user.getType())
                 .userScore(user.getUserScore())
+                .fcmToken(user.getFcmToken())
                 .build();
     }
 
