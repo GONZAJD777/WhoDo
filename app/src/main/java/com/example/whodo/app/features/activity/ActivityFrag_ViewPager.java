@@ -61,7 +61,7 @@ public class ActivityFrag_ViewPager extends Fragment {
     }
 
     private void addFragments(List<WorkOrder> workOrders) {
-        Log.d(TAG, "addFragments --> SE AGREGAN LOS WORKORDER ITEMS A LA LISTA" );
+        //Log.d(TAG, "addFragments --> SE AGREGAN LOS WORKORDER ITEMS A LA LISTA" );
 
         LinearLayoutItems.removeAllViews();
         if (FragType==0) {
@@ -88,13 +88,12 @@ public class ActivityFrag_ViewPager extends Fragment {
     }
 
 
-
     private void addActivityItem (WorkOrder pWorkOrder){
         ActivityWorkOrderItem mActivityWorkOrderItem = new ActivityWorkOrderItem(requireContext());
         String mWorkOrderType;
         String mCustomerStates = "PLANNED,DIAGNOSED,DONE";
         String mProviderStates = "ONEVALUATION,CONFIRMED,ONPROGRESS";
-        if (Objects.equals(pWorkOrder.getCustomer().getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getAuthId()))
+        if (Objects.equals(pWorkOrder.getCustomer().getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getId()))
         {mWorkOrderType="CUSTOMER";}
         else {mWorkOrderType="PROVIDER";}
 

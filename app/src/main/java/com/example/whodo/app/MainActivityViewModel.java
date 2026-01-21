@@ -59,6 +59,10 @@ import java.util.Objects;
 public class MainActivityViewModel extends AndroidViewModel implements ViewModelInterface {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String TAG = "LOGGER-MAIN-ACTIVITY-VIEWMODEL";
+    private final Handler handler = new Handler();
+    private Runnable updateRunnable;
+    private boolean isRunning = false;
+    private String mFcmToken;
     private Integer mProvidersUpdateCounter;
     private Integer mProvidersUpdateTimer;
     private Double mMaxProviderDistance;
@@ -101,7 +105,7 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
         if (user != null) {
             User currentUser = UserFactory.withAuthId(user.getUid());
             Log.d(TAG, "mAuth no es nulo y currentUser: " + currentUser);
-            StartUserUpdateThread();
+            startUserUpdateThread();
             try {
                 initializeObservers();
                 loadLoggedUser(currentUser);
@@ -173,12 +177,12 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
         WorkOrder mWorkOrder = new WorkOrder();
         mWorkOrder.getCustomer().setCustomerId(pUser.getId());
         mWorkOrder.getProvider().setProviderId(pUser.getId());
-        mWorkOrderDao.find(this, mWorkOrder);
+        //mWorkOrderDao.find(this, mWorkOrder);
         mWorkOrderDao.findByUserID(mWorkOrder, new Callback<List<WorkOrder>>() {
             @Override
             public void onSuccess(List<WorkOrder> workOrderList) {
                 Log.d(TAG, "loadUserWorkOrders() --> onSuccess mWorkOrders: "+ mWorkOrders);
-                mWorkOrders.setValue(workOrderList);
+                setWorkOrder(workOrderList);
             }
             @Override
             public void onError(Exception e) {
@@ -274,25 +278,36 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
                 break;
         }
     }
-    private void StartUserUpdateThread() {
-        final Handler handler = new Handler();
-        new Thread(new Runnable() {
+    private void startUserUpdateThread() {
+        isRunning = true;
+        updateRunnable = new Runnable() {
+            @Override
             public void run() {
+                if (!isRunning) return; // no re-agendar si está detenido
                 try {
                     Log.i(TAG, "mUser : " + Objects.requireNonNull(mUser.getValue()).toString());
                     Log.i(TAG, "mSnapshotUser : " + mSnapshotUser.toString());
-                    updateUser(Objects.requireNonNull(mUser.getValue()), Objects.requireNonNull(mSnapshotUser));
-                    if(Objects.equals(mProvidersUpdateCounter, mProvidersUpdateTimer)){
-                        loadUserProviders(mUser.getValue(),mMaxProviderDistance);
+                    updateUser(Objects.requireNonNull(mUser.getValue()), mSnapshotUser);
+                    if (Objects.equals(mProvidersUpdateCounter, mProvidersUpdateTimer)) {
+                        loadUserProviders(mUser.getValue(), mMaxProviderDistance);
+                        //loadUserWorkOrders(mUser.getValue());
                     }
+
                 } catch (Exception e) {
                     Log.i(TAG, "StartUserUpdateThread --> BackgroundUpdateUser.UpdateUser(): " + e);
                 } finally {
-                    mProvidersUpdateCounter=(mProvidersUpdateCounter+1)%(mProvidersUpdateTimer+1);
+                    mProvidersUpdateCounter = (mProvidersUpdateCounter + 1) % (mProvidersUpdateTimer + 1);
                     handler.postDelayed(this, 60000);
                 }
             }
-        }).start();
+        };
+        handler.post(updateRunnable);
+    }
+    public void stopUserUpdateThread() {
+        isRunning = false;
+        if (updateRunnable != null) {
+            handler.removeCallbacks(updateRunnable);
+        }
     }
     public void updateLoggedUser(User pUser) {
         this.mUser.setValue(pUser);
@@ -415,6 +430,11 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
             Log.i(TAG, "UpdateUser IMAGEN NUEVA: " + pUser.getProfilePicture());
             userToUpdate.setProfilePicture(pUser.getProfilePicture());
         }
+        if (!Objects.equals(pUserSnapshot.getFcmToken(), pUser.getFcmToken())) {
+            Log.i(TAG, "UpdateUser FCMToken ANTIGUA: " + pUserSnapshot.getFcmToken());
+            Log.i(TAG, "UpdateUser FCMToken NUEVA: " + pUser.getFcmToken());
+            userToUpdate.setFcmToken(pUser.getFcmToken());
+        }
 
         Log.i(TAG, "UpdateUser : " + userToUpdate.toString());
 
@@ -434,6 +454,10 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
             }
         });
     }
+    public void updateFcmToken(User user){
+        mUserDao.updateFcmToken(user);
+        Objects.requireNonNull(mUser.getValue()).setFcmToken(user.getFcmToken());
+    }
     public void verifyAndUpdateFcmToken(User user) {
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
@@ -444,11 +468,13 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
                     String currentToken = task.getResult();
                     if (currentToken != null && !currentToken.equals(user.getFcmToken())) {
                         // Llamar al repositorio para actualizar en backend
-                        mUserDao.updateFcmToken(UserFactory.withAuthIdAndFcmToken(user.getAuthId(),currentToken));
+                        mFcmToken=currentToken;
+                        updateFcmToken(UserFactory.withAuthIdAndFcmToken(user.getAuthId(),currentToken));
+                    }else{
+                        mFcmToken=currentToken;
                     }
                 });
     }
-
     ////HANDLING LOGGED USER////
 
     ////HANDLING PROVIDERS////
@@ -471,8 +497,8 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
         mWorkOrderDao.create(pWorkOrder, new Callback<WorkOrder>() {
             @Override
             public void onSuccess(WorkOrder workOrder) {
-                //callback.onSuccess(pUser);
                 Log.d(TAG, "createWorkOrder() Method --> WorkOrder has been created " + workOrder);
+                loadUserWorkOrders(Objects.requireNonNull(mUser.getValue()));
             }
             @Override
             public void onError(Exception e) {
@@ -486,6 +512,7 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
             @Override
             public void onSuccess(WorkOrder workOrder) {
                 Log.d(TAG, "Se actualizo la orden de trabajo: " + workOrder.toString() );
+                loadUserWorkOrders(Objects.requireNonNull(mUser.getValue()));
             }
             @Override
             public void onError(Exception e) {
@@ -516,6 +543,11 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
     }
     public LiveData<WorkOrder> getPickedWorkOrder() {
         return mPickedWorkOrder;
+    }
+    public void refreshWorkOrder(){
+        if (mUser.getValue() != null){
+            loadUserWorkOrders(mUser.getValue());
+        }
     }
     ////HANDLING WORKORDERS////
 

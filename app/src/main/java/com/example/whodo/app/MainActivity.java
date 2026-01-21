@@ -1,5 +1,12 @@
 package com.example.whodo.app;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +23,8 @@ import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -31,6 +40,7 @@ public class MainActivity extends AppCompatActivity  {
     private FragmentManager mFragmentManager;
     private ImagesViewModel mImagesViewModel;
 
+    private BroadcastReceiver workOrderRefreshReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +54,18 @@ public class MainActivity extends AppCompatActivity  {
         mMainActivityViewModel.getSelectedFragment().observe(this,this::setSelectedFragment);
         mMainActivityViewModel.getTabLayoutVisibility().observe(this,this::setTabLayoutVisibility);
         mMainActivityViewModel.getSelectedTab().observe(this,this::setSelectedTab);
+        getPermissions();
 
+        workOrderRefreshReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("FCM-EVENT", "Señal de actualización recibida");
+                // 👉 LLAMADA A TU MÉTODO
+                if (mMainActivityViewModel != null) {
+                    mMainActivityViewModel.refreshWorkOrder();
+                }
+            }
+        };
 
         mImagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
         mImagesViewModel.getServIconNames().observe(this,this::LoadImages);
@@ -72,8 +93,8 @@ public class MainActivity extends AppCompatActivity  {
                     public void onTabReselected(TabLayout.Tab tab) {
                     }
                 });
-        }
-        private void LoadImages(List<String> mapIconList){
+    }
+    private void LoadImages(List<String> mapIconList){
             List<String> mMissingIconNames = ImageManager.checkMissingIcons(mapIconList, this);
             if(!mMissingIconNames.isEmpty()){
                 mImagesViewModel.getServIconImages().observe(this,mServIconImages -> {
@@ -93,20 +114,19 @@ public class MainActivity extends AppCompatActivity  {
                 mImagesViewModel.setStoredServIconNames(ImageManager.checkStoredIcons(this));
             }
 
-        }
-
-        private void setSelectedTab(int pTab) {
+    }
+    private void setSelectedTab(int pTab) {
             Objects.requireNonNull(Main_TabLayout.getTabAt(pTab)).select();
-       }
-        private void setTabLayoutVisibility(int pVisibility){
+    }
+    private void setTabLayoutVisibility(int pVisibility){
             Main_TabLayout.setVisibility(pVisibility);
-        }
-        private void setSelectedFragment(Fragment pFragment){
+    }
+    private void setSelectedFragment(Fragment pFragment){
             FragmentTransaction mFragmentTransaction = mFragmentManager.beginTransaction();
             mFragmentTransaction.replace(R.id.FrameLayout, pFragment);
             mFragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             mFragmentTransaction.commit();
-        }
+    }
     private void checkGooglePlayVersion(){
         AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
         Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
@@ -120,6 +140,27 @@ public class MainActivity extends AppCompatActivity  {
                 );
             }
         });
+    }
+    private void getPermissions (){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+                }
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+            // Registramos el receptor para que solo escuche cuando la app está abierta
+            registerReceiver(workOrderRefreshReceiver,
+                    new IntentFilter("ACTION_REFRESH_WORK_ORDERS"),
+                    Context.RECEIVER_NOT_EXPORTED); // Seguridad para Android 13+
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Importante: dejar de escuchar para ahorrar batería y evitar errores
+        unregisterReceiver(workOrderRefreshReceiver);
     }
 
 }

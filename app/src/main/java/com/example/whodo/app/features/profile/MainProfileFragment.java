@@ -20,10 +20,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.whodo.app.MainActivityViewModel;
 import com.example.whodo.app.domain.user.User;
+import com.example.whodo.app.domain.user.UserFactory;
 import com.example.whodo.app.features.login.LoginActivity;
 import com.example.whodo.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
 
 
 public class MainProfileFragment extends Fragment {
@@ -185,7 +188,8 @@ public class MainProfileFragment extends Fragment {
     }
 
     private void LogoutUser (){
-        //Toast.makeText(getContext(), "Remplazar por tu codigo", Toast.LENGTH_LONG).show();
+        model.updateFcmToken(UserFactory.withAuthIdAndFcmToken(Objects.requireNonNull(model.getLoggedUser().getValue()).getAuthId(),"Not Logged in any device"));
+        model.stopUserUpdateThread();
         Intent intent = new Intent(requireActivity(), LoginActivity.class);
         requireActivity().startActivity(intent);
         FirebaseAuth.getInstance().signOut();
