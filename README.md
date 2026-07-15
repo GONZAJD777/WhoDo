@@ -20,7 +20,7 @@ La arquitectura móvil fue estructurada priorizando la mantenibilidad, el bajo c
 *   **Componentes de UI:** Diseño responsivo con patrones nativos de Android, listas dinámicas y vistas asíncronas.
 *   **Lógica de Negocio Local:** Sistema integrado de mensajería, reputación interna de usuarios y módulo de auditoría de estado.
 
-## ⚙️ Características Técnicas Principales (Foco Líder Técnico)
+## ⚙️ Características Técnicas Principales
 
 1.  **Ecosistema de Notificaciones Reactivas:** Orquesta manejadores de servicios en segundo plano (`FirebaseMessagingService`) para procesar notificaciones incluso si la app está en segundo plano, sincronizando de forma segura los estados de las órdenes locales.
 2.  **Ciclo de Vida Limpio (UI/UX Resiliente):** Gestión robusta del ciclo de vida de las *Activities* y *Fragments* para evitar fugas de memoria (*Memory Leaks*) durante la espera de respuestas asíncronas de la red o pasarelas de pago.
