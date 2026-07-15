@@ -24,7 +24,8 @@ La arquitectura móvil fue estructurada priorizando la mantenibilidad, el bajo c
 
 1.  **Ecosistema de Notificaciones Reactivas:** Orquesta manejadores de servicios en segundo plano (`FirebaseMessagingService`) para procesar notificaciones incluso si la app está en segundo plano, sincronizando de forma segura los estados de las órdenes locales.
 2.  **Ciclo de Vida Limpio (UI/UX Resiliente):** Gestión robusta del ciclo de vida de las *Activities* y *Fragments* para evitar fugas de memoria (*Memory Leaks*) durante la espera de respuestas asíncronas de la red o pasarelas de pago.
-3.  **Arquitectura de Datos Desacoplada:** Diseñada para actuar como un cliente liviano, delegando las reglas duras de negocio y validación transaccional al backend y concentrándose en el procesamiento y renderizado fluido del payload recibido.
+3.  **Arquitectura de Datos Desacoplada:** Diseñada para actuar como un cliente liviano, delegando las reglas duras de negocio, el control de estados de cobro diferidos y la validación transaccional al backend, concentrándose en el procesamiento y renderizado fluido del payload recibido.
+
 
 ## 📁 Estructura del Proyecto
 
