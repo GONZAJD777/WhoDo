@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity  {
     private FragmentManager mFragmentManager;
     private ImagesViewModel mImagesViewModel;
 
-    private BroadcastReceiver workOrderRefreshReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +55,12 @@ public class MainActivity extends AppCompatActivity  {
         mMainActivityViewModel.getSelectedTab().observe(this,this::setSelectedTab);
         getPermissions();
 
-        workOrderRefreshReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.d("FCM-EVENT", "Señal de actualización recibida");
-                // 👉 LLAMADA A TU MÉTODO
-                if (mMainActivityViewModel != null) {
-                    mMainActivityViewModel.refreshWorkOrder();
-                }
+        mMainActivityViewModel.getRefreshSignals().observe(this, signal -> {
+            if (Boolean.TRUE.equals(signal)) {
+                mMainActivityViewModel.refreshWorkOrder();
             }
-        };
+        });
+
 
         mImagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
         mImagesViewModel.getServIconNames().observe(this,this::LoadImages);
@@ -147,20 +142,6 @@ public class MainActivity extends AppCompatActivity  {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
                 }
         }
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-            // Registramos el receptor para que solo escuche cuando la app está abierta
-            registerReceiver(workOrderRefreshReceiver,
-                    new IntentFilter("ACTION_REFRESH_WORK_ORDERS"),
-                    Context.RECEIVER_NOT_EXPORTED); // Seguridad para Android 13+
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // Importante: dejar de escuchar para ahorrar batería y evitar errores
-        unregisterReceiver(workOrderRefreshReceiver);
     }
 
 }

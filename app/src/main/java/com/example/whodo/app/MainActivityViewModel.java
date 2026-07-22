@@ -42,6 +42,7 @@ import com.example.whodo.app.features.profile.fragments.SecurityFragment;
 import com.example.whodo.app.features.profile.fragments.SupportFragment;
 import com.example.whodo.app.features.profile.fragments.TutorialFragment;
 import com.example.whodo.app.network.ApiResponse;
+import com.example.whodo.app.network.notifications.RefreshEventBus;
 import com.example.whodo.app.resources.parameters.Impl.ParametersDaoImpl;
 import com.example.whodo.app.resources.parameters.Parameter;
 import com.example.whodo.app.resources.parameters.ParametersDao;
@@ -68,7 +69,7 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
     private Double mMaxProviderDistance;
     private final List<Observer<?>> observers = new ArrayList<>();
     private User mSnapshotUser= new User(); // No es LiveData
-    private final MutableLiveData<User> mWorkOrdersCustomer = new MutableLiveData<>();
+    private final MutableLiveData<PaymentOrder> mPaymentOrder = new MutableLiveData<>();
     private final MutableLiveData<Fragment> mFragmentSelected = new MutableLiveData<>();
     private final MutableLiveData<Integer> mTabLayoutVisibility = new MutableLiveData<>();
     private final MutableLiveData<Integer> mSeletedTab = new MutableLiveData<>();
@@ -77,7 +78,7 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
     private final MutableLiveData<List<WorkOrder>> mWorkOrders = new MutableLiveData<>();
     private final MutableLiveData<List<User>> mProviders = new MutableLiveData<>();
     private final MutableLiveData<List<Parameter>> mParameters = new MutableLiveData<>();
-    private final MutableLiveData<String> mPayment = new MutableLiveData<>();
+    private final SingleLiveEvent<String> mPayment = new SingleLiveEvent<>();
     private MediatorLiveData<Boolean> allDataReady = new MediatorLiveData<>();
     private UserDao<User> mUserDao;
     private WorkOrderDao<WorkOrder> mWorkOrderDao;
@@ -146,6 +147,9 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
             allDataReady.setValue(true);
         }
     }
+    public LiveData<Boolean> getRefreshSignals() {
+        return RefreshEventBus.getInstance().getSignals();
+    }
     ////------- LOADING DATA -------////
     private void loadLoggedUser(User pUser){
         mUserDao.findUser(pUser, new Callback<User>() {
@@ -202,6 +206,19 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
             @Override
             public void onError(Exception e) {
                 Log.d(TAG, "Error -->" + e.getMessage());
+            }
+        });
+    }
+    public void loadPaymentOrder(String pPaymentOrderId){
+        mPaymentOrderDao.find(pPaymentOrderId, new Callback<PaymentOrder>() {
+            @Override
+            public void onSuccess(PaymentOrder paymentOrder) {
+                Log.d(TAG, "loadPaymentOrder() --> onSuccess paymentOrder: "+ paymentOrder);
+                setPaymentOrder(paymentOrder);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "loadPaymentOrder() Method --> Problem trying to load payment order" + e);
             }
         });
     }
@@ -567,10 +584,19 @@ public class MainActivityViewModel extends AndroidViewModel implements ViewModel
         });
     }
     public void setPayment (String pPaymentUrl){
+        Log.d(TAG, "setPayment() Method --> Payment has been created " + pPaymentUrl);
         mPayment.setValue(pPaymentUrl);
     }
     public LiveData<String> getPayment (){
+        Log.d(TAG, "getPayment() Method --> Payment has been created " + mPayment.getValue());
         return mPayment;
+    }
+
+    public LiveData<PaymentOrder> getPaymentOrder(){
+        return mPaymentOrder;
+    }
+    public void setPaymentOrder(PaymentOrder pPaymentOrder){
+        mPaymentOrder.setValue(pPaymentOrder);
     }
     ////HANDLING PAYMENTORDERS////
 

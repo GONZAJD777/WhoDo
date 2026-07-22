@@ -54,6 +54,14 @@ public class PlannedState extends RelativeLayout {
         acceptWorkOrder_button= root.findViewById(R.id.acceptWorkOrder_button);
         rejectWorkOrder_button= root.findViewById(R.id.rejectWorkOrder_button);
 
+
+        invoice_value.setVisibility(View.GONE);
+        invoice_value.setEnabled(false);
+        acceptWorkOrder_button.setVisibility(View.GONE);   // lo oculta
+        acceptWorkOrder_button.setEnabled(false);          // lo deshabilita
+        invoice_inputLayout.setVisibility(View.GONE);
+        invoice_inputLayout.setEnabled(false);
+
         this.disableEdition();
     }
 
@@ -86,16 +94,16 @@ public class PlannedState extends RelativeLayout {
     }
 
     public void disableEdition(){
-        invoice_inputLayout.setEndIconVisible(false);
+        //invoice_inputLayout.setEndIconVisible(false);
         genPaymentOrder_button.setEnabled(false);
-        acceptWorkOrder_button.setEnabled(false);
+        //acceptWorkOrder_button.setEnabled(false);
         rejectWorkOrder_button.setEnabled(false);
     }
 
     public void enableEdition(){
-        invoice_inputLayout.setEndIconVisible(true);
+        //invoice_inputLayout.setEndIconVisible(true);
         genPaymentOrder_button.setEnabled(true);
-        acceptWorkOrder_button.setEnabled(true);
+        //acceptWorkOrder_button.setEnabled(true);
         rejectWorkOrder_button.setEnabled(true);
     }
 }

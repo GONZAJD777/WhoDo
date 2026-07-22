@@ -127,10 +127,10 @@
                 android:text="Orden de Pago" />
 
             <Button
-                android:id="@+id/genPaymentOrder_button"
+                android:id="@+id/acceptWorkOrder_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pagar" />
+                android:text="Aceptar" />
         </TableRow>
 
         <TableRow
@@ -187,11 +187,11 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/acceptWorkOrder_button"
+                android:id="@+id/genPaymentOrder_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="aceptar" />
+                android:text="Pagar" />
 
             <Space
                 android:layout_width="5dp"
@@ -203,7 +203,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="rechazar" />
+                android:text="Rechazar" />
         </LinearLayout>
     </TableLayout>
 

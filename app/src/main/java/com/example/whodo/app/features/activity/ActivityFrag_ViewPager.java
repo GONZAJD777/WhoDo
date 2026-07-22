@@ -31,19 +31,13 @@ import java.util.Objects;
 public class ActivityFrag_ViewPager extends Fragment {
     private final String TAG = "LOGGER-ACTIVITY-FRAG-VIEWPAGER";
     private Integer FragType=0;
-
     private LinearLayout LinearLayoutItems;
-
     private MainActivityViewModel mMainActivityViewModel;
-
-    private final String [] mStates = {"ONEVALUATION","CONFIRMED","ONPROGRESS","PLANNED","DIAGNOSED"};
-
-
+    private final String [] mStates = {"ONEVALUATION","CONFIRMED","ONPROGRESS","PLANNED","DIAGNOSED","ONEVALUATION_ONGOING_ACTION","CONFIRMED_ONGOING_ACTION","ONPROGRESS_ONGOING_ACTION","PLANNED_ONGOING_ACTION","DIAGNOSED_ONGOING_ACTION","DONE_ONGOING_ACTION"};
     public ActivityFrag_ViewPager(){}
     public ActivityFrag_ViewPager(Integer Ft) {
         FragType=Ft;
     }
-
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -59,7 +53,6 @@ public class ActivityFrag_ViewPager extends Fragment {
         }
         return root;
     }
-
     private void addFragments(List<WorkOrder> workOrders) {
         //Log.d(TAG, "addFragments --> SE AGREGAN LOS WORKORDER ITEMS A LA LISTA" );
 
@@ -73,26 +66,24 @@ public class ActivityFrag_ViewPager extends Fragment {
         }
         if (FragType==1) {
             for (WorkOrder mWorkOrder : workOrders) {
-                if (Objects.equals(mWorkOrder.getState(), "DONE")) {
+                if (mWorkOrder.getState().startsWith("DONE")) {
                     addActivityItem(mWorkOrder);
                 }
             }
         }
         if (FragType==2) {
             for (WorkOrder mWorkOrder : workOrders) {
-                if (Objects.equals(mWorkOrder.getState(), "CLOSED_WARRANTY") || Objects.equals(mWorkOrder.getState(), "CLOSED")) {
+                if (mWorkOrder.getState().startsWith("CLOSED")) {
                     addActivityItem(mWorkOrder);
                 }
             }
         }
     }
-
-
     private void addActivityItem (WorkOrder pWorkOrder){
         ActivityWorkOrderItem mActivityWorkOrderItem = new ActivityWorkOrderItem(requireContext());
         String mWorkOrderType;
-        String mCustomerStates = "PLANNED,DIAGNOSED,DONE";
-        String mProviderStates = "ONEVALUATION,CONFIRMED,ONPROGRESS";
+        String mCustomerStates = "PLANNED,DIAGNOSED,DONE,PLANNED_ONGOING_ACTION,DIAGNOSED_ONGOING_ACTION,DONE_ONGOING_ACTION";
+        String mProviderStates = "ONEVALUATION,CONFIRMED,ONPROGRESS,ONEVALUATION_ONGOING_ACTION,CONFIRMED_ONGOING_ACTION,ONPROGRESS_ONGOING_ACTION";
         if (Objects.equals(pWorkOrder.getCustomer().getCustomerId(), Objects.requireNonNull(mMainActivityViewModel.getLoggedUser().getValue()).getId()))
         {mWorkOrderType="CUSTOMER";}
         else {mWorkOrderType="PROVIDER";}
@@ -122,6 +113,9 @@ public class ActivityFrag_ViewPager extends Fragment {
         } else {
             mActivityWorkOrderItem.setActionIndicator(AppCompatResources.getDrawable(requireContext(), android.R.drawable.presence_invisible));
         }
+//        if (!Utils.isAfter(pWorkOrder.getTimeLimit(),Utils.getISOLocalDate()) ){
+//            mActivityWorkOrderItem.setLimitDate();
+//        }
         mActivityWorkOrderItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

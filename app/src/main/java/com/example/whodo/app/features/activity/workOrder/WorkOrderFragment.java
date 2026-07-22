@@ -32,6 +32,7 @@ import com.example.whodo.app.Callback;
 import com.example.whodo.app.MainActivityViewModel;
 import com.example.whodo.app.domain.Location;
 import com.example.whodo.app.domain.Phone;
+import com.example.whodo.app.domain.paymentOrder.PaymentOrder;
 import com.example.whodo.app.domain.paymentOrder.PaymentRequest;
 import com.example.whodo.app.domain.user.User;
 import com.example.whodo.app.domain.workOrder.WorkOrder;
@@ -44,11 +45,13 @@ import com.example.whodo.app.features.activity.workOrder.workOrderState.OpenStat
 import com.example.whodo.app.features.activity.workOrder.workOrderState.PlannedState;
 import com.example.whodo.app.features.activity.workOrder.workOrderState.ClosedState;
 import com.example.whodo.app.features.hire.HireFragmentViewModel;
+import com.example.whodo.app.network.notifications.WorkOrderRefreshReceiver;
 import com.example.whodo.app.resources.parameters.Parameter;
 import com.example.whodo.app.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -85,19 +88,17 @@ public class WorkOrderFragment extends Fragment {
     private FloatingActionButton startComplaintButton;//TODO: crear la pantalla para iniciar la mediacion
     //***************************************** Parametria, deberia levantarse de base de datos ********************//
     private String[] mValidStates = {"CONFIRMED", "DIAGNOSED"}; //Estados para validar Inspeccion
-    private Integer mAutoClosingDays;//periodo para que el cliente complete la reseña, de lo contrario la orden se cierra y pierde derecho a reclamo
+    private Integer mAutoClosingDays;
     private Integer mFeePercent;
     private Integer mInspetionFeePercent;
     private Integer mInspectionMaxCost;
-    private Integer mMaxWorkLimitTimeExt;//Maxima cantidad de devoluciones de estado DONE a estado ONPROGRESS antes de activar el boton de reclamo para proveedor
-    private Integer mMaxDaysWorkEndDateExt;//Maxima cantidad de DIAS de extension al pasar de estado DONE a estado ONPROGRESS por parte del cliente
-    private Integer mMinDaysWorkEndDateExt;//Minima cantidad de DIAS de extension al pasar de estado DONE a estado ONPROGRESS por parte del cliente
-    private Integer mMaxDaysLimitOpenState; //Maxima cantidad de dias en los que una orden en estado OPEN y ONEVALUATION estaran disponible para ser aceptada por un proveedor
-    private Integer mMaxDaysMeetOnEvalState; //Maxima cantidad de dias para planificar una cita o visita en ONEVALUATION STATE.
-    private Integer mMaxDaysOnConfState; // Maxima cantidad de dias en los q la orden estara para que el cliente cargue la propuesta para el trabajo (tareas, plazos y costo del trabajo)
-    private Integer mActivateUserTypeValidation; // Activa = 1 o Desactiva=2 la validacion del tipo de cliente (customer o provider) lo que hara que dependiendo del estado de la orden
-                                                    // la interfaz sea editable o no en funcion de si quien consulta la orden es el cliente o el proveedor. Si se desactiva, cualquier usuario
-                                                    // puede transicionar la orden a travez de todos los estados, destinado al Testeo.
+    private Integer mMaxWorkLimitTimeExt;
+    private Integer mMaxDaysWorkEndDateExt;
+    private Integer mMinDaysWorkEndDateExt;
+    private Integer mMaxDaysLimitOpenState;
+    private Integer mMaxDaysMeetOnEvalState;
+    private Integer mMaxDaysOnConfState;
+    private Integer mActivateUserTypeValidation;
 
     private String mSetInspectionStatusTittle="Consulta Reprogramacion de Inspeccion";
     private String mSetInspectionStatusMessage="El proveedor se reprogramo la inspeccion? \n Si respondes que NO esto se vera reflejado en el perfil del proveedor y la orden se CERRARA definitivamente." ;
@@ -138,12 +139,10 @@ public class WorkOrderFragment extends Fragment {
     private String mStrDiagTtlDone = "Extension de plazo";
     private String mStartDayTime = "00:00:00";
     private String mEndDayTime = "23:59:59";
-
     private String mSaveChangesButtonColor = "#3F51B5";
     private String mStartComplaintButton ="#FFFF0000";
 
     //**************************************************************************************************************//
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -153,6 +152,7 @@ public class WorkOrderFragment extends Fragment {
         mMainActivityViewModel.getParameters().observe(getViewLifecycleOwner(), this::setParameters);
         mMainActivityViewModel.getPickedWorkOrder().observe(getViewLifecycleOwner(), this::setWorkOrderView);
         mMainActivityViewModel.getPayment().observe(getViewLifecycleOwner(), this::redirectToPayment);
+        mMainActivityViewModel.getPaymentOrder().observe(getViewLifecycleOwner(),this::verifyPaymentOrder);
 
         orderId_label = root.findViewById(R.id.orderId_label);
         saveChangesButton = root.findViewById(R.id.saveChangesButton);
@@ -194,6 +194,12 @@ public class WorkOrderFragment extends Fragment {
         return root;
     }
 
+    private void verifyPaymentOrder(PaymentOrder paymentOrder) {
+        if (paymentOrder != null) {
+
+        }
+    }
+
     private void setParameters(List<Parameter> parameters) {
         mWarrantyDays = Integer.parseInt(Utils.findParameterById(parameters, "WO_WARRANTY_DAYS").getValue());
         mWarrantyMessage = Utils.findParameterById(parameters, "WO_WARRANTY_MESSAGE").getValue();
@@ -210,72 +216,79 @@ public class WorkOrderFragment extends Fragment {
         mActivateUserTypeValidation = Integer.parseInt(Utils.findParameterById(parameters, "WO_USER_TYPE_VALIDATION").getValue());
     }
     private void setWorkOrderView(WorkOrder pWorkOrder) {
-        //TODO: verificar fechas de vencimiento de plazos en cada estado, y desactivar los botones para evitar acciones hasta q el proceso batch las remueva.
         clearWorkOrder();
-        View fila;
+        View fila = null;
+
         if (pWorkOrder == null) {
             openStateWorkOrder();
             startComplaintButton.setVisibility(View.INVISIBLE);
-            fila = workOrderStates_LinearLayout.getChildAt(0); // Índice 2 para la tercera fila
-        } else if (Objects.equals(pWorkOrder.getState(), "ONEVALUATION")) {
-            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
-            orderId_label.setText(mOrderId);
-            onEvalStateWorkOrder(pWorkOrder);
-            startComplaintButton.setVisibility(View.INVISIBLE);
-            fila = workOrderStates_LinearLayout.getChildAt(2); // Índice 2 para la tercera fila
-        } else if (Objects.equals(pWorkOrder.getState(), "PLANNED")) {
-            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
-            orderId_label.setText(mOrderId);
-            startComplaintButton.setVisibility(View.INVISIBLE);
-            plannedStateWorkOrder(pWorkOrder);
-            fila = workOrderStates_LinearLayout.getChildAt(4); // Índice 2 para la tercera fila
-        } else if (Objects.equals(pWorkOrder.getState(), "CONFIRMED")) {
-            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
-            orderId_label.setText(mOrderId);
-            startComplaintButton.setVisibility(View.INVISIBLE);
-            confStateWorkOrder(pWorkOrder);
-            fila = workOrderStates_LinearLayout.getChildAt(6); // Índice 2 para la tercera fila
-        } else if (Objects.equals(pWorkOrder.getState(), "DIAGNOSED")) {
-            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
-            orderId_label.setText(mOrderId);
-            startComplaintButton.setVisibility(View.INVISIBLE);
-            diagStateWorkOrder(pWorkOrder);
-            fila = workOrderStates_LinearLayout.getChildAt(8); // Índice 2 para la tercera fila
-        } else if (Objects.equals(pWorkOrder.getState(), "ONPROGRESS")) {
-            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
-            orderId_label.setText(mOrderId);
-            if (pWorkOrder.getWork().getWorkLimitTimeExtension() >= mMaxWorkLimitTimeExt) {
-                startComplaintButton.setVisibility(View.VISIBLE);
-            } else {
-                startComplaintButton.setVisibility(View.INVISIBLE);
-            }
-            onProgStateWorkOrder(pWorkOrder);
-            fila = workOrderStates_LinearLayout.getChildAt(10); // Índice 2 para la tercera fila
-        } else if (Objects.equals(pWorkOrder.getState(), "DONE")) {
-            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
-            orderId_label.setText(mOrderId);
-            startComplaintButton.setVisibility(View.INVISIBLE);
-            doneStateWorkOrder(pWorkOrder);
-            fila = workOrderStates_LinearLayout.getChildAt(12); // Índice 2 para la tercera fila
-        } else if (Objects.equals(pWorkOrder.getState(), "CLOSED_WARRANTY")) {
-            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
-            orderId_label.setText(mOrderId);
-            startComplaintButton.setVisibility(View.INVISIBLE);
-            closedStateWorkOrder(pWorkOrder);
-            fila = workOrderStates_LinearLayout.getChildAt(14); // Índice 2 para la tercera fila
+            fila = workOrderStates_LinearLayout.getChildAt(0);
         } else {
-            fila = null;
+            String mOrderId = "ID de Orden: " + pWorkOrder.getOrderId();
+            orderId_label.setText(mOrderId);
+
+            String state = pWorkOrder.getState();
+
+            if (state != null) {
+                if (state.startsWith("ONEVALUATION")) {
+                    onEvalStateWorkOrder(pWorkOrder);
+                    startComplaintButton.setVisibility(View.INVISIBLE);
+                    fila = workOrderStates_LinearLayout.getChildAt(2);
+
+                } else if (state.startsWith("PLANNED")) {
+                    plannedStateWorkOrder(pWorkOrder);
+                    startComplaintButton.setVisibility(View.INVISIBLE);
+                    fila = workOrderStates_LinearLayout.getChildAt(4);
+
+                } else if (state.startsWith("CONFIRMED")) {
+                    confStateWorkOrder(pWorkOrder);
+                    startComplaintButton.setVisibility(View.INVISIBLE);
+                    fila = workOrderStates_LinearLayout.getChildAt(6);
+
+                } else if (state.startsWith("DIAGNOSED")) {
+                    diagStateWorkOrder(pWorkOrder);
+                    startComplaintButton.setVisibility(View.INVISIBLE);
+                    fila = workOrderStates_LinearLayout.getChildAt(8);
+
+                } else if (state.startsWith("ONPROGRESS")) {
+                    onProgStateWorkOrder(pWorkOrder);
+                    if (pWorkOrder.getWork().getWorkLimitTimeExtension() >= mMaxWorkLimitTimeExt) {
+                        startComplaintButton.setVisibility(View.VISIBLE);
+                    } else {
+                        startComplaintButton.setVisibility(View.INVISIBLE);
+                    }
+                    fila = workOrderStates_LinearLayout.getChildAt(10);
+
+                } else if (state.startsWith("DONE")) {
+                    doneStateWorkOrder(pWorkOrder);
+                    startComplaintButton.setVisibility(View.INVISIBLE);
+                    fila = workOrderStates_LinearLayout.getChildAt(12);
+
+                } else if (state.startsWith("CLOSED_WARRANTY")) {
+                    closedStateWorkOrder(pWorkOrder);
+                    startComplaintButton.setVisibility(View.INVISIBLE);
+                    fila = workOrderStates_LinearLayout.getChildAt(14);
+                }
+            }
         }
-        work0rderStates_scrollView.post(() -> {
-            if (fila == null) {
-                closeWorkOrderLifeCycle();
-            } else {
-                work0rderStates_scrollView.smoothScrollTo(0, fila.getTop());
+
+        // capturamos fila en una variable final para usar dentro del Runnable
+        final View filaFinal = fila;
+        work0rderStates_scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (filaFinal == null) {
+                    closeWorkOrderLifeCycle();
+                } else {
+                    work0rderStates_scrollView.smoothScrollTo(0, filaFinal.getTop());
+                }
             }
         });
 
         validateInspectionStatus(pWorkOrder);
     }
+
+
     //********************************** Validacion de Inspeccion **********************************//
     private void validateInspectionStatus(WorkOrder pWorkOrder) {
 
@@ -529,6 +542,7 @@ public class WorkOrderFragment extends Fragment {
                     } else {
                         Log.d(TAG1, "BOTÓN ACEPTAR ORDEN PRESIONADO → ejecutando planDate");
                         planDate(pWorkOrder.getOrderId(), mPlanLimitDate, mInspectionDate, mInspectionCharges, mInspectionFee);
+                        this.updateWorkOrderStateTemp(pWorkOrder);
                     }
                 }
             }
@@ -537,8 +551,9 @@ public class WorkOrderFragment extends Fragment {
             if (!this.isWorkOrderEditableByExpiration(pWorkOrder)){
                 this.orderExpiredNotificator();
             } else {
-                this.rejectOrder(pWorkOrder.getOrderId());
                 Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");
+                this.rejectOrder(pWorkOrder.getOrderId());
+                this.updateWorkOrderStateTemp(pWorkOrder);
             }
         });
 
@@ -601,6 +616,8 @@ public class WorkOrderFragment extends Fragment {
             } else {
                 Log.d(TAG1, "BOTON GENERAR ORDEN DE PAGO PRESIONADO");
 
+                //mMainActivityViewModel.loadPaymentOrder(pWorkOrder.getWork().getWorkPaymentOrder());
+
                 // Crear un item
                 PaymentRequest.ItemRequest item = PaymentRequest.ItemRequest.builder()
                         .id(pWorkOrder.getOrderId())
@@ -634,6 +651,7 @@ public class WorkOrderFragment extends Fragment {
 
         // Usar el request en tu ViewModel
                 mMainActivityViewModel.createPayment(mPaymentRequest);
+                this.updateWorkOrderStateTemp(pWorkOrder);
             }
         });
         mPlannedStateItem.setAcceptButtonOCL(v -> {
@@ -651,6 +669,7 @@ public class WorkOrderFragment extends Fragment {
                 this.orderExpiredNotificator();
             } else {
                 this.rejectDate(pWorkOrder.getOrderId());
+                this.updateWorkOrderStateTemp(pWorkOrder);
                 Log.d(TAG1, "BOTON RECHAZAR ORDEN PRESIONADO");
             }
 
@@ -669,8 +688,12 @@ public class WorkOrderFragment extends Fragment {
         plannedStateDetail_vertLine.setBackgroundTintMode(PorterDuff.Mode.SRC_IN);
     }
     private void redirectToPayment(String pPaymentUrl) {
+
+        if (pPaymentUrl!=null){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(pPaymentUrl));
         startActivity(browserIntent);
+        mMainActivityViewModel.setPayment(null);
+        }
     }
     private void confirmDate(String pWorkOrderID, String pPaymentOrderID) {
         String mStateChangeDate = Utils.getISOLocalDate();
@@ -1355,6 +1378,12 @@ public class WorkOrderFragment extends Fragment {
             return false;
         }
 
+        // 🚨 Nueva validación: si está en ONGOING_ACTION, no se puede editar
+        if (pWorkOrder.getState() != null && pWorkOrder.getState().endsWith("_ONGOING_ACTION")) {
+            return false;
+        }
+
+
         boolean isCustomerState = List.of("PLANNED", "DIAGNOSED", "DONE", "CLOSED_WARRANTY")
                 .contains(pWorkOrder.getState());
         boolean isProviderState = List.of("ONEVALUATION", "CONFIRMED", "ONPROGRESS")
@@ -1365,6 +1394,7 @@ public class WorkOrderFragment extends Fragment {
 
         return mActivateUserTypeValidation != 1 || isUserAuthorized;
     }
+
     private boolean isWorkOrderEditableByExpiration(WorkOrder pWorkOrder){
 
         String mExpirationDate = getFieldToValidate(pWorkOrder);
@@ -1397,6 +1427,28 @@ public class WorkOrderFragment extends Fragment {
             case "CLOSED_WARRANTY" -> pWorkOrder.getWork().getWorkWarrantyEndDate();
             default -> null;
         };
+    }
+    private void updateWorkOrderStateTemp(WorkOrder pPickedWorkOrder) {
+        // actualizar pickedWorkOrder
+        pPickedWorkOrder.setState(pPickedWorkOrder.getState() + "_ONGOING_ACTION");
+        mMainActivityViewModel.setPickedWorkOrder(pPickedWorkOrder);
+
+        // recuperar lista desde el LiveData
+        List<WorkOrder> currentList = mMainActivityViewModel.getWorkOrder().getValue();
+        if (currentList != null) {
+            List<WorkOrder> updatedList = new ArrayList<>(currentList);
+            for (int i = 0; i < updatedList.size(); i++) {
+                WorkOrder wo = updatedList.get(i);
+                if (Objects.equals(wo.getOrderId(), pPickedWorkOrder.getOrderId())) {
+                    WorkOrder updatedWO = wo;
+                    updatedWO.setState(pPickedWorkOrder.getState() + "_ONGOING_ACTION");
+                    updatedList.set(i, updatedWO);
+                    break;
+                }
+            }
+            // volver a setear la lista con el método expuesto
+            mMainActivityViewModel.setWorkOrder(updatedList);
+        }
     }
 
 }

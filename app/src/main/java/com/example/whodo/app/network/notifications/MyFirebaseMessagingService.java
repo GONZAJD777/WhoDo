@@ -1,11 +1,11 @@
-package com.example.whodo.app;
+package com.example.whodo.app.network.notifications;
 
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -46,31 +46,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // 👉 Método agregado: recepción de mensajes
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
         Log.d(TAG, "Mensaje recibido de: " + remoteMessage.getFrom());
 
-        String title = null;
-        String body = null;
+        // Extraer título y cuerpo desde el payload de data
+        String title = remoteMessage.getData().get("title");
+        String body = remoteMessage.getData().get("body");
 
-        if (remoteMessage.getNotification() != null) {
-            title = remoteMessage.getNotification().getTitle();
-            body = remoteMessage.getNotification().getBody();
-        }
-
-        if (!remoteMessage.getData().isEmpty()) {
-            Log.d(TAG, "Data: " + remoteMessage.getData());
-            if (title == null) title = remoteMessage.getData().get("title");
-            if (body == null) body = remoteMessage.getData().get("body");
-        }
-
+        // Mostrar notificación manualmente (porque usamos data message)
         if (title != null && body != null) {
             showNotification(title, body);
         }
-        // 👉 NUEVO: Avisar a la App que debe actualizarse
-        // Usamos un Intent con una acción personalizada
-        android.content.Intent refreshIntent = new android.content.Intent("ACTION_REFRESH_WORK_ORDERS");
+
+        // 👉 Avisar a la App que debe actualizarse
+        Intent refreshIntent = new Intent("ACTION_REFRESH_WORK_ORDERS").setClassName(/* TODO: provide the application ID. For example: */ getPackageName(), "com.example.whodo.app.network.notifications.WorkOrderRefreshReceiver");
         sendBroadcast(refreshIntent);
     }
+
 
     // 👉 Método agregado: mostrar notificación
     private void showNotification(String title, String body) {
